@@ -2,3 +2,9 @@ project_id = "nvpdienhjjubowxzjmhq"
 
 [functions.resqai-chat]
 verify_jwt = false
+
+[functions.fetch-disasters]
+verify_jwt = false
+
+[functions.predict-risk]
+verify_jwt = false
