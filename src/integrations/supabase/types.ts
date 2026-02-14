@@ -14,16 +14,243 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      alerts: {
+        Row: {
+          created_at: string
+          id: string
+          lat: number | null
+          lng: number | null
+          message: string
+          region: string | null
+          severity: string
+          source: string | null
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          message: string
+          region?: string | null
+          severity?: string
+          source?: string | null
+          type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          message?: string
+          region?: string | null
+          severity?: string
+          source?: string | null
+          type?: string
+        }
+        Relationships: []
+      }
+      chat_history: {
+        Row: {
+          ai_response: string
+          context: Json | null
+          created_at: string
+          id: string
+          message: string
+          user_id: string
+        }
+        Insert: {
+          ai_response: string
+          context?: Json | null
+          created_at?: string
+          id?: string
+          message: string
+          user_id: string
+        }
+        Update: {
+          ai_response?: string
+          context?: Json | null
+          created_at?: string
+          id?: string
+          message?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          emergency_contact: string | null
+          id: string
+          language: string
+          location_lat: number | null
+          location_lng: number | null
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          emergency_contact?: string | null
+          id?: string
+          language?: string
+          location_lat?: number | null
+          location_lng?: number | null
+          name?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          emergency_contact?: string | null
+          id?: string
+          language?: string
+          location_lat?: number | null
+          location_lng?: number | null
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      reports: {
+        Row: {
+          confidence: number | null
+          created_at: string
+          description: string | null
+          disaster_type: string
+          id: string
+          lat: number
+          lng: number
+          photo_url: string | null
+          title: string
+          user_id: string
+          verified: boolean
+        }
+        Insert: {
+          confidence?: number | null
+          created_at?: string
+          description?: string | null
+          disaster_type?: string
+          id?: string
+          lat: number
+          lng: number
+          photo_url?: string | null
+          title: string
+          user_id: string
+          verified?: boolean
+        }
+        Update: {
+          confidence?: number | null
+          created_at?: string
+          description?: string | null
+          disaster_type?: string
+          id?: string
+          lat?: number
+          lng?: number
+          photo_url?: string | null
+          title?: string
+          user_id?: string
+          verified?: boolean
+        }
+        Relationships: []
+      }
+      risk_predictions: {
+        Row: {
+          created_at: string
+          fire_risk: number
+          flood_risk: number
+          id: string
+          lat: number
+          lng: number
+          quake_risk: number
+          region: string | null
+        }
+        Insert: {
+          created_at?: string
+          fire_risk?: number
+          flood_risk?: number
+          id?: string
+          lat: number
+          lng: number
+          quake_risk?: number
+          region?: string | null
+        }
+        Update: {
+          created_at?: string
+          fire_risk?: number
+          flood_risk?: number
+          id?: string
+          lat?: number
+          lng?: number
+          quake_risk?: number
+          region?: string | null
+        }
+        Relationships: []
+      }
+      shelters: {
+        Row: {
+          capacity: number
+          id: string
+          lat: number
+          lng: number
+          name: string
+          occupancy: number
+          verified_at: string | null
+        }
+        Insert: {
+          capacity?: number
+          id?: string
+          lat: number
+          lng: number
+          name: string
+          occupancy?: number
+          verified_at?: string | null
+        }
+        Update: {
+          capacity?: number
+          id?: string
+          lat?: number
+          lng?: number
+          name?: string
+          occupancy?: number
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "citizen" | "responder" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +377,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["citizen", "responder", "admin"],
+    },
   },
 } as const
