@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { MessageSquare, Map, BarChart3, Radio, ChevronLeft, ChevronRight } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { MessageSquare, Map, BarChart3, Radio, ChevronLeft, ChevronRight, LogIn, LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import DisasterMap from "@/components/DisasterMap";
 import AIChatPanel from "@/components/AIChatPanel";
 import RiskCards from "@/components/RiskCards";
@@ -10,6 +11,8 @@ import ActiveEvents from "@/components/ActiveEvents";
 const Dashboard = () => {
   const [showChat, setShowChat] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <div className="h-screen flex flex-col bg-background">
@@ -35,6 +38,23 @@ const Dashboard = () => {
           >
             <MessageSquare className="w-4 h-4 text-primary" />
           </button>
+          {user ? (
+            <button
+              onClick={() => signOut()}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent transition-colors"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              Sign Out
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate("/auth")}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              Sign In
+            </button>
+          )}
         </div>
       </header>
 
