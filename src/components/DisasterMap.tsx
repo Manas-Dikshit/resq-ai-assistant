@@ -2,19 +2,24 @@ import { useEffect, useRef } from "react";
 import L from "leaflet";
 import { getDisasterColor } from "@/data/mockDisasters";
 import { useRealDisasterData } from "@/hooks/useDisasterData";
+import { useGridPredictions, RISK_COLORS, RISK_LABELS, RISK_ICONS, RiskType } from "@/hooks/useGridPredictions";
 import { supabase } from "@/integrations/supabase/client";
 import { ODISHA_CENTER, ODISHA_ZOOM } from "@/data/odishaData";
 import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 
+const RISK_KEYS: RiskType[] = ["flood_risk", "cyclone_risk", "fire_risk", "earthquake_risk", "landslide_risk", "heat_wave_risk"];
+
 const DisasterMap = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const realLayerRef = useRef<L.LayerGroup | null>(null);
   const shelterLayerRef = useRef<L.LayerGroup | null>(null);
+  const predictionLayerRef = useRef<L.LayerGroup | null>(null);
   const routingControlRef = useRef<any>(null);
   const { data } = useRealDisasterData();
+  const { data: predictions } = useGridPredictions();
 
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
@@ -28,6 +33,7 @@ const DisasterMap = () => {
     mapInstanceRef.current = map;
     realLayerRef.current = L.layerGroup().addTo(map);
     shelterLayerRef.current = L.layerGroup().addTo(map);
+    predictionLayerRef.current = L.layerGroup().addTo(map);
 
     L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
       attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
@@ -38,64 +44,125 @@ const DisasterMap = () => {
       [21, 87.5], [19, 85], [19.5, 84], [20.5, 83.5], [21.5, 83.5]
     ], { color: '#2dd4bf', weight: 1, opacity: 0.3, dashArray: '5, 10' }).addTo(map);
 
-    // Listen for shelter route events
+    // Shelter route events
     const handleShowRoute = (e: Event) => {
       const { userLat, userLng, shelterLat, shelterLng, mode } = (e as CustomEvent).detail;
-      if (routingControlRef.current) {
-        map.removeControl(routingControlRef.current);
-        routingControlRef.current = null;
-      }
-
+      if (routingControlRef.current) { map.removeControl(routingControlRef.current); routingControlRef.current = null; }
       const routerProfile = mode === 'walking' ? 'foot' : 'car';
       routingControlRef.current = (L as any).Routing.control({
-        waypoints: [
-          L.latLng(userLat, userLng),
-          L.latLng(shelterLat, shelterLng),
-        ],
-        router: (L as any).Routing.osrmv1({
-          serviceUrl: 'https://router.project-osrm.org/route/v1',
-          profile: routerProfile,
-        }),
-        lineOptions: {
-          styles: [{ color: '#2dd4bf', weight: 4, opacity: 0.8 }],
-          extendToWaypoints: true,
-          missingRouteTolerance: 10,
-        },
+        waypoints: [L.latLng(userLat, userLng), L.latLng(shelterLat, shelterLng)],
+        router: (L as any).Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1', profile: routerProfile }),
+        lineOptions: { styles: [{ color: '#2dd4bf', weight: 4, opacity: 0.8 }], extendToWaypoints: true, missingRouteTolerance: 10 },
         createMarker: (i: number, wp: any) => {
-          const icon = L.divIcon({
-            className: '',
-            html: `<div style="width:14px;height:14px;border-radius:50%;background:${i === 0 ? '#3b82f6' : '#22c55e'};border:2px solid white;box-shadow:0 0 8px ${i === 0 ? '#3b82f6' : '#22c55e'}"></div>`,
-            iconSize: [14, 14],
-            iconAnchor: [7, 7],
-          });
+          const icon = L.divIcon({ className: '', html: `<div style="width:14px;height:14px;border-radius:50%;background:${i === 0 ? '#3b82f6' : '#22c55e'};border:2px solid white;box-shadow:0 0 8px ${i === 0 ? '#3b82f6' : '#22c55e'}"></div>`, iconSize: [14, 14], iconAnchor: [7, 7] });
           return L.marker(wp.latLng, { icon });
         },
-        show: false,
-        addWaypoints: false,
-        fitSelectedRoutes: true,
-        routeWhileDragging: false,
+        show: false, addWaypoints: false, fitSelectedRoutes: true, routeWhileDragging: false,
       }).addTo(map);
     };
+    const handleClearRoute = () => { if (routingControlRef.current) { map.removeControl(routingControlRef.current); routingControlRef.current = null; } };
 
-    const handleClearRoute = () => {
-      if (routingControlRef.current) {
-        map.removeControl(routingControlRef.current);
-        routingControlRef.current = null;
-      }
+    // Focus prediction point
+    const handleFocusPrediction = (e: Event) => {
+      const { lat, lng } = (e as CustomEvent).detail;
+      map.flyTo([lat, lng], 10, { duration: 0.8 });
     };
 
     window.addEventListener('show-shelter-route', handleShowRoute);
     window.addEventListener('clear-shelter-route', handleClearRoute);
+    window.addEventListener('focus-prediction', handleFocusPrediction);
 
     return () => {
       window.removeEventListener('show-shelter-route', handleShowRoute);
       window.removeEventListener('clear-shelter-route', handleClearRoute);
+      window.removeEventListener('focus-prediction', handleFocusPrediction);
       map.remove();
       mapInstanceRef.current = null;
     };
   }, []);
 
-  // Fetch shelters from database
+  // Prediction overlay
+  useEffect(() => {
+    if (!predictionLayerRef.current || !predictions) return;
+    predictionLayerRef.current.clearLayers();
+
+    predictions.predictions.forEach((point) => {
+      const dominantRisk = RISK_KEYS.reduce((a, b) => point.predictions[a] > point.predictions[b] ? a : b);
+      const maxVal = point.predictions[dominantRisk];
+      const color = RISK_COLORS[dominantRisk];
+      const levelBg = point.risk_level === "CRITICAL" ? "#ef4444" : point.risk_level === "HIGH" ? "#eab308" : point.risk_level === "MEDIUM" ? "#3b82f6" : "#22c55e";
+
+      // Outer glow zone
+      if (maxVal > 0.3) {
+        L.circle([point.latitude, point.longitude], {
+          radius: maxVal * 35000,
+          color,
+          fillColor: color,
+          fillOpacity: 0.08,
+          weight: 1,
+          opacity: 0.3,
+          dashArray: "4,8",
+        }).addTo(predictionLayerRef.current!);
+      }
+
+      // Inner risk zone
+      L.circle([point.latitude, point.longitude], {
+        radius: maxVal * 18000,
+        color,
+        fillColor: color,
+        fillOpacity: 0.15 + maxVal * 0.15,
+        weight: 2,
+        opacity: 0.6,
+      }).addTo(predictionLayerRef.current!);
+
+      // Risk bars popup
+      const barsHtml = RISK_KEYS.map((key) => {
+        const val = point.predictions[key];
+        const barColor = RISK_COLORS[key];
+        return `<div style="display:flex;align-items:center;gap:4px;margin:2px 0">
+          <span style="font-size:10px;width:14px">${RISK_ICONS[key]}</span>
+          <span style="font-size:10px;color:#aaa;width:65px">${RISK_LABELS[key]}</span>
+          <div style="flex:1;height:4px;background:#333;border-radius:2px"><div style="width:${val*100}%;height:100%;background:${barColor};border-radius:2px"></div></div>
+          <span style="font-size:10px;color:white;width:30px;text-align:right">${(val*100).toFixed(0)}%</span>
+        </div>`;
+      }).join("");
+
+      const actionsHtml = point.recommended_actions.slice(0, 2).map(a =>
+        `<p style="font-size:10px;color:#fbbf24;margin:2px 0">⚠ ${a}</p>`
+      ).join("");
+
+      // Marker icon
+      const markerHtml = `<div style="position:relative;display:flex;flex-direction:column;align-items:center">
+        <div style="background:${color};width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.3);box-shadow:0 0 16px ${color}80;font-size:14px">${RISK_ICONS[dominantRisk]}</div>
+        <div style="background:rgba(0,0,0,0.85);border:1px solid ${levelBg};border-radius:4px;padding:1px 6px;margin-top:2px;white-space:nowrap">
+          <span style="font-size:9px;color:${levelBg};font-family:monospace;font-weight:bold">${point.risk_level}</span>
+        </div>
+      </div>`;
+
+      L.marker([point.latitude, point.longitude], {
+        icon: L.divIcon({ className: '', html: markerHtml, iconSize: [32, 48], iconAnchor: [16, 24] }),
+      })
+        .addTo(predictionLayerRef.current!)
+        .bindPopup(
+          `<div style="font-family:Inter,sans-serif;min-width:220px;max-width:260px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+              <b style="font-size:13px;color:white">${RISK_ICONS[dominantRisk]} ${point.label}</b>
+              <span style="font-size:10px;color:${levelBg};background:${levelBg}20;padding:1px 6px;border-radius:10px;border:1px solid ${levelBg}40">${point.risk_level}</span>
+            </div>
+            <div style="margin:8px 0">${barsHtml}</div>
+            ${actionsHtml ? `<div style="border-top:1px solid #333;padding-top:6px;margin-top:6px">${actionsHtml}</div>` : ''}
+            <div style="display:flex;justify-content:space-between;margin-top:8px;padding-top:6px;border-top:1px solid #333">
+              <span style="font-size:9px;color:#666">Confidence: ${(point.confidence*100).toFixed(0)}%</span>
+              <span style="font-size:9px;color:#666">${point.model_version}</span>
+              <span style="font-size:9px;color:#666">${point.forecast_hours}h</span>
+            </div>
+          </div>`,
+          { className: 'prediction-popup' }
+        );
+    });
+  }, [predictions]);
+
+  // Shelters from DB
   useEffect(() => {
     if (!shelterLayerRef.current) return;
     const loadShelters = async () => {
@@ -121,14 +188,11 @@ const DisasterMap = () => {
       });
     };
     loadShelters();
-    const channel = supabase
-      .channel('shelters-map')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'shelters' }, () => loadShelters())
-      .subscribe();
+    const channel = supabase.channel('shelters-map').on('postgres_changes', { event: '*', schema: 'public', table: 'shelters' }, () => loadShelters()).subscribe();
     return () => { supabase.removeChannel(channel); };
   }, []);
 
-  // Overlay real-time events
+  // Real-time events overlay
   useEffect(() => {
     if (!realLayerRef.current || !data) return;
     realLayerRef.current.clearLayers();
