@@ -34,7 +34,7 @@ const RiskCards = () => {
           </div>
           <p className="text-xs text-muted-foreground mb-1">Model: {prediction.model_version} • {prediction.forecast_hours}h forecast</p>
           <div className="space-y-1 mt-2">
-            {prediction.recommended_actions.slice(0, 2).map((a, i) => (
+            {(prediction.recommended_actions ?? []).slice(0, 2).map((a, i) => (
               <p key={i} className="text-xs text-foreground">• {a}</p>
             ))}
           </div>
