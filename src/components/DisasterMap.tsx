@@ -5,15 +5,17 @@ import { useRealDisasterData } from "@/hooks/useDisasterData";
 import { supabase } from "@/integrations/supabase/client";
 import { ODISHA_CENTER, ODISHA_ZOOM } from "@/data/odishaData";
 import "leaflet/dist/leaflet.css";
+import "leaflet-routing-machine";
+import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 
 const DisasterMap = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const realLayerRef = useRef<L.LayerGroup | null>(null);
   const shelterLayerRef = useRef<L.LayerGroup | null>(null);
+  const routingControlRef = useRef<any>(null);
   const { data } = useRealDisasterData();
 
-  // Initialize map (no mock data)
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
 
@@ -31,23 +33,74 @@ const DisasterMap = () => {
       attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
     }).addTo(map);
 
-    // Odisha state boundary hint
     L.polyline([
       [21.5, 83.5], [22.5, 84], [22.5, 86], [22, 87.5],
       [21, 87.5], [19, 85], [19.5, 84], [20.5, 83.5], [21.5, 83.5]
     ], { color: '#2dd4bf', weight: 1, opacity: 0.3, dashArray: '5, 10' }).addTo(map);
 
-    return () => { map.remove(); mapInstanceRef.current = null; };
+    // Listen for shelter route events
+    const handleShowRoute = (e: Event) => {
+      const { userLat, userLng, shelterLat, shelterLng, mode } = (e as CustomEvent).detail;
+      if (routingControlRef.current) {
+        map.removeControl(routingControlRef.current);
+        routingControlRef.current = null;
+      }
+
+      const routerProfile = mode === 'walking' ? 'foot' : 'car';
+      routingControlRef.current = (L as any).Routing.control({
+        waypoints: [
+          L.latLng(userLat, userLng),
+          L.latLng(shelterLat, shelterLng),
+        ],
+        router: (L as any).Routing.osrmv1({
+          serviceUrl: 'https://router.project-osrm.org/route/v1',
+          profile: routerProfile,
+        }),
+        lineOptions: {
+          styles: [{ color: '#2dd4bf', weight: 4, opacity: 0.8 }],
+          extendToWaypoints: true,
+          missingRouteTolerance: 10,
+        },
+        createMarker: (i: number, wp: any) => {
+          const icon = L.divIcon({
+            className: '',
+            html: `<div style="width:14px;height:14px;border-radius:50%;background:${i === 0 ? '#3b82f6' : '#22c55e'};border:2px solid white;box-shadow:0 0 8px ${i === 0 ? '#3b82f6' : '#22c55e'}"></div>`,
+            iconSize: [14, 14],
+            iconAnchor: [7, 7],
+          });
+          return L.marker(wp.latLng, { icon });
+        },
+        show: false,
+        addWaypoints: false,
+        fitSelectedRoutes: true,
+        routeWhileDragging: false,
+      }).addTo(map);
+    };
+
+    const handleClearRoute = () => {
+      if (routingControlRef.current) {
+        map.removeControl(routingControlRef.current);
+        routingControlRef.current = null;
+      }
+    };
+
+    window.addEventListener('show-shelter-route', handleShowRoute);
+    window.addEventListener('clear-shelter-route', handleClearRoute);
+
+    return () => {
+      window.removeEventListener('show-shelter-route', handleShowRoute);
+      window.removeEventListener('clear-shelter-route', handleClearRoute);
+      map.remove();
+      mapInstanceRef.current = null;
+    };
   }, []);
 
-  // Fetch shelters from database (real data)
+  // Fetch shelters from database
   useEffect(() => {
     if (!shelterLayerRef.current) return;
-
     const loadShelters = async () => {
       const { data: shelters } = await supabase.from('shelters').select('*');
       if (!shelters || !shelterLayerRef.current) return;
-
       shelterLayerRef.current.clearLayers();
       shelters.forEach((s) => {
         const utilization = s.occupancy / s.capacity;
@@ -62,42 +115,29 @@ const DisasterMap = () => {
                 <div style="width:100%;height:6px;background:#333;border-radius:3px;margin-top:4px">
                   <div style="width:${(utilization * 100)}%;height:100%;background:${shelterColor};border-radius:3px"></div>
                 </div>
-                <p style="color:${shelterColor};font-size:11px;margin-top:4px">${utilization > 0.8 ? 'Near Full' : utilization > 0.5 ? 'Moderate' : 'Available'}</p>
               </div>
             </div>`
           );
       });
     };
-
     loadShelters();
-
-    // Subscribe to realtime shelter updates
     const channel = supabase
       .channel('shelters-map')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'shelters' }, () => {
-        loadShelters();
-      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'shelters' }, () => loadShelters())
       .subscribe();
-
     return () => { supabase.removeChannel(channel); };
   }, []);
 
-  // Overlay real-time events from APIs
+  // Overlay real-time events
   useEffect(() => {
     if (!realLayerRef.current || !data) return;
     realLayerRef.current.clearLayers();
 
-    const allRealEvents = [...(data.earthquakes || []), ...(data.nasaEvents || [])];
-    allRealEvents.forEach((e: any) => {
+    [...(data.earthquakes || []), ...(data.nasaEvents || [])].forEach((e: any) => {
       if (!e.lat || !e.lng) return;
       const color = getDisasterColor(e.type);
       const severity = e.severity || 0.5;
-
-      // Glow
-      L.circleMarker([e.lat, e.lng], { radius: severity * 20 + 10, color, fillColor: color, fillOpacity: 0.1, weight: 1 })
-        .addTo(realLayerRef.current!);
-
-      // Main marker
+      L.circleMarker([e.lat, e.lng], { radius: severity * 20 + 10, color, fillColor: color, fillOpacity: 0.1, weight: 1 }).addTo(realLayerRef.current!);
       L.circleMarker([e.lat, e.lng], { radius: severity * 12 + 5, color, fillColor: color, fillOpacity: 0.5, weight: 2 })
         .addTo(realLayerRef.current!)
         .bindPopup(
@@ -115,11 +155,9 @@ const DisasterMap = () => {
         );
     });
 
-    // Show city weather markers (real API data)
     (data.cityWeather || []).forEach((c: any) => {
       if (!c.lat || !c.lng || c.temperature == null) return;
       const tempColor = c.temperature > 40 ? '#ef4444' : c.temperature > 30 ? '#f97316' : c.temperature > 20 ? '#eab308' : '#3b82f6';
-
       L.marker([c.lat, c.lng], {
         icon: L.divIcon({
           className: '',

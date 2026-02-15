@@ -1,0 +1,147 @@
+{
+  "app": {
+    "name": "ResQAI",
+    "tagline": "ODISHA COMMAND CENTER",
+    "live": "LIVE",
+    "report": "Report",
+    "admin": "Admin",
+    "signIn": "Sign In",
+    "signOut": "Out"
+  },
+  "hero": {
+    "badge": "LIVE MONITORING ACTIVE",
+    "subtitle": "Global Disaster Intelligence & Response",
+    "description": "AI-powered prediction, real-time situational awareness, and personalized survival guidance — accessible globally, even offline.",
+    "openDashboard": "Open Dashboard",
+    "viewMap": "View Live Map",
+    "aiPrediction": "AI Prediction",
+    "aiPredictionDesc": "ML-powered risk forecasting",
+    "realTimeMapping": "Real-Time Mapping",
+    "realTimeMappingDesc": "Live disaster zone tracking",
+    "survivalGuidance": "Survival Guidance",
+    "survivalGuidanceDesc": "Personalized response plans"
+  },
+  "sidebar": {
+    "events": "Events",
+    "weather": "Weather",
+    "satellite": "Satellite",
+    "charts": "Charts",
+    "shelters": "Shelters"
+  },
+  "events": {
+    "title": "Active Events — Live",
+    "affected": "affected",
+    "details": "Details"
+  },
+  "weather": {
+    "title": "Live Weather — Odisha",
+    "humidity": "Humidity",
+    "wind": "Wind",
+    "pressure": "Pressure",
+    "visibility": "Visibility",
+    "uvIndex": "UV Index",
+    "gusts": "Gusts",
+    "airQuality": "Air Quality",
+    "bayOfBengal": "Bay of Bengal",
+    "waveHeight": "Wave Height",
+    "swell": "Swell",
+    "cityTemperatures": "City Temperatures",
+    "sources": "Sources",
+    "updated": "Updated"
+  },
+  "satellite": {
+    "title": "NASA Satellite & Wind",
+    "trueColor": "True Color",
+    "trueColorDesc": "VIIRS real-color satellite",
+    "fireThermal": "Fire/Thermal",
+    "fireThermalDesc": "Active fire detection",
+    "precipitation": "Precipitation",
+    "precipitationDesc": "GPM IMERG rainfall rate",
+    "aerosol": "Aerosol",
+    "aerosolDesc": "MODIS aerosol depth",
+    "sourceNote": "Live data from NASA Worldview & Windy.com"
+  },
+  "charts": {
+    "tempWind": "Temperature & Wind — 24h Live",
+    "precipCloud": "Precipitation & Cloud Cover — 24h",
+    "airQuality": "Air Quality — 24h",
+    "bayWaves": "Bay of Bengal Waves — 24h",
+    "forecast14": "14-Day Forecast",
+    "loading": "Loading real-time data..."
+  },
+  "risk": {
+    "title": "Risk Forecast — Odisha",
+    "aiAssessment": "AI Risk Assessment",
+    "flood": "Flood",
+    "earthquake": "Earthquake",
+    "fire": "Fire"
+  },
+  "alert": {
+    "critical": "CRITICAL"
+  },
+  "shelter": {
+    "finderTitle": "Shelter Finder",
+    "findNearest": "Find Nearest Shelter",
+    "locating": "Locating...",
+    "nearest": "Nearest Shelter",
+    "distance": "Distance",
+    "capacity": "Capacity",
+    "available": "Available",
+    "moderate": "Moderate",
+    "nearFull": "Near Full",
+    "showRoute": "Show Route",
+    "walking": "Walking",
+    "driving": "Driving",
+    "clearRoute": "Clear Route",
+    "noShelters": "No shelters found in database",
+    "locationError": "Could not detect location"
+  },
+  "sos": {
+    "title": "Emergency SOS",
+    "description": "This will share your live location with emergency responders and create an urgent report.",
+    "sendNow": "Send SOS Now",
+    "sending": "Sending...",
+    "signInRequired": "Sign in to use SOS",
+    "sent": "SOS sent! Your location has been shared with responders.",
+    "failed": "Failed to send SOS",
+    "locationError": "Could not detect location for SOS"
+  },
+  "reportForm": {
+    "title": "Report Incident",
+    "disasterType": "Disaster Type",
+    "incidentTitle": "Title",
+    "titlePlaceholder": "e.g. Road flooded near Cuttack bridge",
+    "description": "Description",
+    "descPlaceholder": "Describe the situation...",
+    "location": "Location",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "submit": "Submit Report",
+    "submitting": "Submitting...",
+    "submitted": "Report submitted! It will be verified shortly.",
+    "failed": "Failed to submit report",
+    "signInRequired": "Sign in to report",
+    "locationRequired": "Location is required"
+  },
+  "chat": {
+    "title": "ResQAI Assistant",
+    "welcome": "I'm **ResQAI**, your disaster intelligence assistant. I can help with evacuation routes, safety protocols, shelter locations, and risk assessments. How can I help you stay safe?",
+    "placeholder": "Ask about safety, shelters, risks...",
+    "signInPlaceholder": "Sign in to use AI chat",
+    "thinking": "Thinking..."
+  },
+  "legend": {
+    "title": "ODISHA — LEGEND",
+    "floodZone": "Flood Zone",
+    "wildfire": "Wildfire / Fire",
+    "earthquake": "Earthquake",
+    "cyclone": "Cyclone / Storm",
+    "shelterAvailable": "Shelter (Available)",
+    "shelterModerate": "Shelter (Moderate)"
+  },
+  "language": {
+    "en": "English",
+    "hi": "हिन्दी",
+    "or": "ଓଡ଼ିଆ"
+  }
+}

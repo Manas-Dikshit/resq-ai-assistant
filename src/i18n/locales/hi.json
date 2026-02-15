@@ -1,0 +1,147 @@
+{
+  "app": {
+    "name": "ResQAI",
+    "tagline": "ओडिशा कमांड सेंटर",
+    "live": "लाइव",
+    "report": "रिपोर्ट",
+    "admin": "एडमिन",
+    "signIn": "साइन इन",
+    "signOut": "बाहर"
+  },
+  "hero": {
+    "badge": "लाइव निगरानी सक्रिय",
+    "subtitle": "वैश्विक आपदा खुफिया और प्रतिक्रिया",
+    "description": "AI-संचालित पूर्वानुमान, रियल-टाइम स्थितिजन्य जागरूकता, और व्यक्तिगत उत्तरजीविता मार्गदर्शन — विश्व स्तर पर उपलब्ध, ऑफ़लाइन भी।",
+    "openDashboard": "डैशबोर्ड खोलें",
+    "viewMap": "लाइव मैप देखें",
+    "aiPrediction": "AI पूर्वानुमान",
+    "aiPredictionDesc": "ML-संचालित जोखिम पूर्वानुमान",
+    "realTimeMapping": "रियल-टाइम मैपिंग",
+    "realTimeMappingDesc": "लाइव आपदा क्षेत्र ट्रैकिंग",
+    "survivalGuidance": "उत्तरजीविता मार्गदर्शन",
+    "survivalGuidanceDesc": "व्यक्तिगत प्रतिक्रिया योजनाएँ"
+  },
+  "sidebar": {
+    "events": "घटनाएँ",
+    "weather": "मौसम",
+    "satellite": "उपग्रह",
+    "charts": "चार्ट",
+    "shelters": "आश्रय"
+  },
+  "events": {
+    "title": "सक्रिय घटनाएँ — लाइव",
+    "affected": "प्रभावित",
+    "details": "विवरण"
+  },
+  "weather": {
+    "title": "लाइव मौसम — ओडिशा",
+    "humidity": "आर्द्रता",
+    "wind": "हवा",
+    "pressure": "दबाव",
+    "visibility": "दृश्यता",
+    "uvIndex": "UV सूचकांक",
+    "gusts": "झोंके",
+    "airQuality": "वायु गुणवत्ता",
+    "bayOfBengal": "बंगाल की खाड़ी",
+    "waveHeight": "तरंग ऊंचाई",
+    "swell": "लहर",
+    "cityTemperatures": "शहर तापमान",
+    "sources": "स्रोत",
+    "updated": "अपडेट"
+  },
+  "satellite": {
+    "title": "NASA उपग्रह और वायु",
+    "trueColor": "असली रंग",
+    "trueColorDesc": "VIIRS वास्तविक रंग उपग्रह",
+    "fireThermal": "अग्नि/ताप",
+    "fireThermalDesc": "सक्रिय अग्नि पहचान",
+    "precipitation": "वर्षा",
+    "precipitationDesc": "GPM IMERG वर्षा दर",
+    "aerosol": "एरोसोल",
+    "aerosolDesc": "MODIS एरोसोल गहराई",
+    "sourceNote": "NASA Worldview और Windy.com से लाइव डेटा"
+  },
+  "charts": {
+    "tempWind": "तापमान और हवा — 24h लाइव",
+    "precipCloud": "वर्षा और बादल — 24h",
+    "airQuality": "वायु गुणवत्ता — 24h",
+    "bayWaves": "बंगाल की खाड़ी तरंगें — 24h",
+    "forecast14": "14-दिवसीय पूर्वानुमान",
+    "loading": "रियल-टाइम डेटा लोड हो रहा है..."
+  },
+  "risk": {
+    "title": "जोखिम पूर्वानुमान — ओडिशा",
+    "aiAssessment": "AI जोखिम मूल्यांकन",
+    "flood": "बाढ़",
+    "earthquake": "भूकंप",
+    "fire": "आग"
+  },
+  "alert": {
+    "critical": "गंभीर"
+  },
+  "shelter": {
+    "finderTitle": "आश्रय खोजक",
+    "findNearest": "निकटतम आश्रय खोजें",
+    "locating": "स्थान खोज रहा है...",
+    "nearest": "निकटतम आश्रय",
+    "distance": "दूरी",
+    "capacity": "क्षमता",
+    "available": "उपलब्ध",
+    "moderate": "मध्यम",
+    "nearFull": "लगभग भरा",
+    "showRoute": "मार्ग दिखाएँ",
+    "walking": "पैदल",
+    "driving": "ड्राइविंग",
+    "clearRoute": "मार्ग हटाएँ",
+    "noShelters": "डेटाबेस में कोई आश्रय नहीं मिला",
+    "locationError": "स्थान पहचान नहीं हो सका"
+  },
+  "sos": {
+    "title": "आपातकालीन SOS",
+    "description": "यह आपका लाइव स्थान आपातकालीन प्रतिक्रियाकर्ताओं के साथ साझा करेगा।",
+    "sendNow": "अभी SOS भेजें",
+    "sending": "भेज रहा है...",
+    "signInRequired": "SOS के लिए साइन इन करें",
+    "sent": "SOS भेजा गया! आपका स्थान साझा किया गया है।",
+    "failed": "SOS भेजने में विफल",
+    "locationError": "SOS के लिए स्थान पहचान नहीं हो सका"
+  },
+  "reportForm": {
+    "title": "घटना रिपोर्ट करें",
+    "disasterType": "आपदा प्रकार",
+    "incidentTitle": "शीर्षक",
+    "titlePlaceholder": "उदा. कटक पुल के पास सड़क जलमग्न",
+    "description": "विवरण",
+    "descPlaceholder": "स्थिति का वर्णन करें...",
+    "location": "स्थान",
+    "latitude": "अक्षांश",
+    "longitude": "देशांतर",
+    "submit": "रिपोर्ट भेजें",
+    "submitting": "भेज रहा है...",
+    "submitted": "रिपोर्ट भेजी गई! इसे जल्द सत्यापित किया जाएगा।",
+    "failed": "रिपोर्ट भेजने में विफल",
+    "signInRequired": "रिपोर्ट के लिए साइन इन करें",
+    "locationRequired": "स्थान आवश्यक है"
+  },
+  "chat": {
+    "title": "ResQAI सहायक",
+    "welcome": "मैं **ResQAI** हूँ, आपका आपदा खुफिया सहायक। मैं निकासी मार्ग, सुरक्षा प्रोटोकॉल, आश्रय स्थान और जोखिम मूल्यांकन में मदद कर सकता हूँ।",
+    "placeholder": "सुरक्षा, आश्रय, जोखिम के बारे में पूछें...",
+    "signInPlaceholder": "AI चैट के लिए साइन इन करें",
+    "thinking": "सोच रहा है..."
+  },
+  "legend": {
+    "title": "ओडिशा — लीजेंड",
+    "floodZone": "बाढ़ क्षेत्र",
+    "wildfire": "जंगल की आग",
+    "earthquake": "भूकंप",
+    "cyclone": "चक्रवात / तूफान",
+    "shelterAvailable": "आश्रय (उपलब्ध)",
+    "shelterModerate": "आश्रय (मध्यम)"
+  },
+  "language": {
+    "en": "English",
+    "hi": "हिन्दी",
+    "or": "ଓଡ଼ିଆ"
+  }
+}
