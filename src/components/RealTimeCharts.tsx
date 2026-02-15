@@ -1,14 +1,16 @@
 import { useRealDisasterData } from "@/hooks/useDisasterData";
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const RealTimeCharts = () => {
   const { data, isLoading } = useRealDisasterData();
+  const { t } = useTranslation();
 
   if (isLoading || !data) {
     return (
       <div className="flex items-center justify-center h-32 text-muted-foreground">
-        <Loader2 className="w-5 h-5 animate-spin mr-2" /> Loading real-time data...
+        <Loader2 className="w-5 h-5 animate-spin mr-2" /> {t('charts.loading')}
       </div>
     );
   }
@@ -63,7 +65,7 @@ const RealTimeCharts = () => {
     <div className="space-y-6">
       {/* Temperature & Wind (24h) */}
       <div>
-        <h4 className="text-xs font-display font-bold text-muted-foreground tracking-wider uppercase mb-3">Temperature & Wind — 24h Live</h4>
+        <h4 className="text-xs font-display font-bold text-muted-foreground tracking-wider uppercase mb-3">{t('charts.tempWind')}</h4>
         <ResponsiveContainer width="100%" height={200}>
           <LineChart data={tempWindData}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 15% 18%)" />
@@ -80,7 +82,7 @@ const RealTimeCharts = () => {
 
       {/* Precipitation & UV */}
       <div>
-        <h4 className="text-xs font-display font-bold text-muted-foreground tracking-wider uppercase mb-3">Precipitation & Cloud Cover — 24h</h4>
+        <h4 className="text-xs font-display font-bold text-muted-foreground tracking-wider uppercase mb-3">{t('charts.precipCloud')}</h4>
         <ResponsiveContainer width="100%" height={180}>
           <AreaChart data={precipPressureData}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 15% 18%)" />
@@ -98,7 +100,7 @@ const RealTimeCharts = () => {
       {/* Air Quality */}
       {aqData.length > 0 && (
         <div>
-          <h4 className="text-xs font-display font-bold text-muted-foreground tracking-wider uppercase mb-3">Air Quality — 24h</h4>
+          <h4 className="text-xs font-display font-bold text-muted-foreground tracking-wider uppercase mb-3">{t('charts.airQuality')}</h4>
           <ResponsiveContainer width="100%" height={180}>
             <BarChart data={aqData}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 15% 18%)" />
@@ -116,7 +118,7 @@ const RealTimeCharts = () => {
       {/* Bay of Bengal Wave Height */}
       {marineData.length > 0 && (
         <div>
-          <h4 className="text-xs font-display font-bold text-muted-foreground tracking-wider uppercase mb-3">Bay of Bengal Waves — 24h</h4>
+          <h4 className="text-xs font-display font-bold text-muted-foreground tracking-wider uppercase mb-3">{t('charts.bayWaves')}</h4>
           <ResponsiveContainer width="100%" height={160}>
             <AreaChart data={marineData}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 15% 18%)" />
@@ -134,7 +136,7 @@ const RealTimeCharts = () => {
       {/* 14-Day Forecast */}
       {dailyData.length > 0 && (
         <div>
-          <h4 className="text-xs font-display font-bold text-muted-foreground tracking-wider uppercase mb-3">14-Day Forecast</h4>
+          <h4 className="text-xs font-display font-bold text-muted-foreground tracking-wider uppercase mb-3">{t('charts.forecast14')}</h4>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={dailyData}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 15% 18%)" />

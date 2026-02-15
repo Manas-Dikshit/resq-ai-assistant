@@ -1,11 +1,11 @@
-import { Droplets, Flame, Mountain, Wind } from "lucide-react";
+import { Droplets, Flame, Mountain } from "lucide-react";
 import { odishaRiskPredictions } from "@/data/odishaData";
 import { useRiskPrediction } from "@/hooks/useDisasterData";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 
 const riskIcons = { flood_risk: Droplets, quake_risk: Mountain, fire_risk: Flame };
 const riskColors = { flood_risk: "text-flood", quake_risk: "text-quake", fire_risk: "text-fire" };
-const riskLabels = { flood_risk: "Flood", quake_risk: "Earthquake", fire_risk: "Fire" };
 const barBgColors = { flood_risk: "bg-flood", quake_risk: "bg-quake", fire_risk: "bg-fire" };
 
 const RiskBar = ({ value, color }: { value: number; color: string }) => (
@@ -16,18 +16,18 @@ const RiskBar = ({ value, color }: { value: number; color: string }) => (
 
 const RiskCards = () => {
   const { data: prediction } = useRiskPrediction();
+  const { t } = useTranslation();
+
+  const riskLabels = { flood_risk: t('risk.flood'), quake_risk: t('risk.earthquake'), fire_risk: t('risk.fire') };
 
   return (
     <div className="space-y-3">
-      <h3 className="font-display text-xs font-bold text-muted-foreground tracking-widest uppercase">
-        Risk Forecast — Odisha
-      </h3>
+      <h3 className="font-display text-xs font-bold text-muted-foreground tracking-widest uppercase">{t('risk.title')}</h3>
       
-      {/* ML Prediction Card */}
       {prediction && (
         <div className="p-3 rounded-lg border border-primary/30 bg-primary/5">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-xs font-display font-bold text-primary">AI Risk Assessment</p>
+            <p className="text-xs font-display font-bold text-primary">{t('risk.aiAssessment')}</p>
             <span className={`text-xs font-display px-2 py-0.5 rounded-full ${prediction.risk_level === 'CRITICAL' ? 'bg-destructive/10 text-destructive' : prediction.risk_level === 'HIGH' ? 'bg-warning/10 text-warning' : 'bg-safe/10 text-safe'}`}>
               {prediction.risk_level}
             </span>

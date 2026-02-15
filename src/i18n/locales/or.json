@@ -1,0 +1,147 @@
+{
+  "app": {
+    "name": "ResQAI",
+    "tagline": "ଓଡ଼ିଶା କମାଣ୍ଡ ସେଣ୍ଟର",
+    "live": "ଲାଇଭ",
+    "report": "ରିପୋର୍ଟ",
+    "admin": "ଏଡମିନ",
+    "signIn": "ସାଇନ ଇନ",
+    "signOut": "ବାହାର"
+  },
+  "hero": {
+    "badge": "ଲାଇଭ ନଜରଦାରି ସକ୍ରିୟ",
+    "subtitle": "ବୈଶ୍ୱିକ ବିପର୍ଯ୍ୟ ବୁଦ୍ଧିମତ୍ତା ଏବଂ ପ୍ରତିକ୍ରିୟା",
+    "description": "AI-ଚାଳିତ ପୂର୍ବାନୁମାନ, ରିଅଲ-ଟାଇମ ସ୍ଥିତିଜ୍ଞ ସଚେତନତା, ଏବଂ ବ୍ୟକ୍ତିଗତ ଜୀବନ ରକ୍ଷା ମାର୍ଗଦର୍ଶନ — ବିଶ୍ୱ ସ୍ତରରେ ଉପಲବ୍ଧ, ଅଫଲାଇନରେ ମଧ୍ୟ।",
+    "openDashboard": "ଡ୍ୟାସବୋର୍ଡ ଖୋଲନ୍ତୁ",
+    "viewMap": "ଲାଇଭ ମ୍ୟାପ ଦେଖନ୍ତୁ",
+    "aiPrediction": "AI ପୂର୍ବାନୁମାନ",
+    "aiPredictionDesc": "ML-ଚାଳିତ ବିପଦ ପୂର୍ବାନୁମାନ",
+    "realTimeMapping": "ରିଅଲ-ଟାଇମ ମ୍ୟାପିଂ",
+    "realTimeMappingDesc": "ଲାଇଭ ବିପର୍ଯ୍ୟ ଅଞ୍ଚଳ ଟ୍ରାକିଂ",
+    "survivalGuidance": "ଜୀବନ ରକ୍ଷା ମାର୍ଗଦର୍ଶନ",
+    "survivalGuidanceDesc": "ବ୍ୟକ୍ତିଗତ ପ୍ରତିକ୍ରିୟା ଯୋଜନା"
+  },
+  "sidebar": {
+    "events": "ଘଟଣା",
+    "weather": "ପାଣିପାଗ",
+    "satellite": "ଉପଗ୍ରହ",
+    "charts": "ଚାର୍ଟ",
+    "shelters": "ଆଶ୍ରୟ"
+  },
+  "events": {
+    "title": "ସକ୍ରିୟ ଘଟଣା — ଲାଇଭ",
+    "affected": "ପ୍ରଭାବିତ",
+    "details": "ବିବରଣୀ"
+  },
+  "weather": {
+    "title": "ଲାଇଭ ପାଣିପାଗ — ଓଡ଼ିଶା",
+    "humidity": "ଆର୍ଦ୍ରତା",
+    "wind": "ପବନ",
+    "pressure": "ଚାପ",
+    "visibility": "ଦୃଶ୍ୟମାନତା",
+    "uvIndex": "UV ସୂଚକାଙ୍କ",
+    "gusts": "ଝଡ଼",
+    "airQuality": "ବାୟୁ ଗୁଣବତ୍ତା",
+    "bayOfBengal": "ବଙ୍ଗୋପସାଗର",
+    "waveHeight": "ତରଙ୍ଗ ଉଚ୍ଚତା",
+    "swell": "ଲହର",
+    "cityTemperatures": "ସହର ତାପମାତ୍ରା",
+    "sources": "ଉତ୍ସ",
+    "updated": "ଅଦ୍ୟତନ"
+  },
+  "satellite": {
+    "title": "NASA ଉପଗ୍ରହ ଏବଂ ପବନ",
+    "trueColor": "ପ୍ରକୃତ ରଙ୍ଗ",
+    "trueColorDesc": "VIIRS ପ୍ରକୃତ ରଙ୍ଗ ଉପଗ୍ରହ",
+    "fireThermal": "ଅଗ୍ନି/ତାପ",
+    "fireThermalDesc": "ସକ୍ରିୟ ଅଗ୍ନି ଚିହ୍ନଟ",
+    "precipitation": "ବୃଷ୍ଟିପାତ",
+    "precipitationDesc": "GPM IMERG ବୃଷ୍ଟି ହାର",
+    "aerosol": "ଏରୋସୋଲ",
+    "aerosolDesc": "MODIS ଏରୋସୋଲ ଗଭୀରତା",
+    "sourceNote": "NASA Worldview ଏବଂ Windy.com ରୁ ଲାଇଭ ଡାଟା"
+  },
+  "charts": {
+    "tempWind": "ତାପମାତ୍ରା ଏବଂ ପବନ — 24h ଲାଇଭ",
+    "precipCloud": "ବୃଷ୍ଟିପାତ ଏବଂ ମେଘ — 24h",
+    "airQuality": "ବାୟୁ ଗୁଣବତ୍ତା — 24h",
+    "bayWaves": "ବଙ୍ଗୋପସାଗର ତରଙ୍ଗ — 24h",
+    "forecast14": "14-ଦିନ ପୂର୍ବାନୁମାନ",
+    "loading": "ରିଅଲ-ଟାଇମ ଡାଟା ଲୋଡ ହେଉଛି..."
+  },
+  "risk": {
+    "title": "ବିପଦ ପୂର୍ବାନୁମାନ — ଓଡ଼ିଶା",
+    "aiAssessment": "AI ବିପଦ ମୂଲ୍ୟାୟନ",
+    "flood": "ବନ୍ୟା",
+    "earthquake": "ଭୂକମ୍ପ",
+    "fire": "ଅଗ୍ନି"
+  },
+  "alert": {
+    "critical": "ଗୁରୁତର"
+  },
+  "shelter": {
+    "finderTitle": "ଆଶ୍ରୟ ଖୋଜକ",
+    "findNearest": "ନିକଟତମ ଆଶ୍ରୟ ଖୋଜନ୍ତୁ",
+    "locating": "ସ୍ଥାନ ଖୋଜୁଛି...",
+    "nearest": "ନିକଟତମ ଆଶ୍ରୟ",
+    "distance": "ଦୂରତା",
+    "capacity": "ସାମର୍ଥ୍ୟ",
+    "available": "ଉପಲବ୍ଧ",
+    "moderate": "ମଧ୍ୟମ",
+    "nearFull": "ପ୍ରାୟ ଭରି ଯାଇଛି",
+    "showRoute": "ମାର୍ଗ ଦେଖାନ୍ତୁ",
+    "walking": "ଚାଲିବା",
+    "driving": "ଗାଡ଼ି ଚଳାଇବା",
+    "clearRoute": "ମାର୍ଗ ହଟାନ୍ତୁ",
+    "noShelters": "ଡାଟାବେସରେ କୌଣସି ଆଶ୍ରୟ ମିଳିଲା ନାହିଁ",
+    "locationError": "ସ୍ଥାନ ଚିହ୍ନଟ ହୋଇ ପାରିଲା ନାହିଁ"
+  },
+  "sos": {
+    "title": "ଜରୁରୀ SOS",
+    "description": "ଏହା ଆପଣଙ୍କ ଲାଇଭ ସ୍ଥାନ ଜରୁରୀ ପ୍ରତିକ୍ରିୟାକାରୀଙ୍କ ସହ ଅଂଶୀଦାର କରିବ।",
+    "sendNow": "ବର୍ତ୍ତମାନ SOS ପଠାନ୍ତୁ",
+    "sending": "ପଠାଉଛି...",
+    "signInRequired": "SOS ପାଇଁ ସାଇନ ଇନ କରନ୍ତୁ",
+    "sent": "SOS ପଠାଗଲା! ଆପଣଙ୍କ ସ୍ଥାନ ଅଂଶୀଦାର କରାଗଲା।",
+    "failed": "SOS ପଠାଇବାରେ ବିଫଳ",
+    "locationError": "SOS ପାଇଁ ସ୍ଥାନ ଚିହ୍ନଟ ହୋଇ ପାରିଲା ନାହିଁ"
+  },
+  "reportForm": {
+    "title": "ଘଟଣା ରିପୋର୍ଟ କରନ୍ତୁ",
+    "disasterType": "ବିପର୍ଯ୍ୟ ପ୍ରକାର",
+    "incidentTitle": "ଶିରୋନାମା",
+    "titlePlaceholder": "ଯଥା: କଟକ ବ୍ରିଜ ନିକଟ ରାସ୍ତା ଜଳମଗ୍ନ",
+    "description": "ବିବରଣ",
+    "descPlaceholder": "ପରିସ୍ଥିତି ବର୍ଣ୍ଣନା କରନ୍ତୁ...",
+    "location": "ସ୍ଥାନ",
+    "latitude": "ଅକ୍ଷାଂଶ",
+    "longitude": "ଦେଶାନ୍ତର",
+    "submit": "ରିପୋର୍ଟ ଦାଖଲ କରନ୍ତୁ",
+    "submitting": "ଦାଖଲ ହେଉଛି...",
+    "submitted": "ରିପୋର୍ଟ ଦାଖଲ ହେଲା! ଶୀଘ୍ର ଯାଞ୍ଚ ହେବ।",
+    "failed": "ରିପୋର୍ଟ ଦାଖଲ ବିଫଳ",
+    "signInRequired": "ରିପୋର୍ଟ ପାଇଁ ସାଇନ ଇନ କରନ୍ତୁ",
+    "locationRequired": "ସ୍ଥାନ ଆବଶ୍ୟକ"
+  },
+  "chat": {
+    "title": "ResQAI ସହାୟକ",
+    "welcome": "ମୁଁ **ResQAI**, ଆପଣଙ୍କ ବିପର୍ଯ୍ୟ ବୁଦ୍ଧିମତ୍ତା ସହାୟକ। ମୁଁ ନିଷ୍କାସନ ମାର୍ଗ, ସୁରକ୍ଷା ପ୍ରୋଟୋକଲ, ଆଶ୍ରୟ ସ୍ଥାନ ଏବଂ ବିପଦ ମୂଲ୍ୟାୟନରେ ସାହାଯ୍ୟ କରିପାରିବି।",
+    "placeholder": "ସୁରକ୍ଷା, ଆଶ୍ରୟ, ବିପଦ ବିଷୟରେ ପଚାରନ୍ତୁ...",
+    "signInPlaceholder": "AI ଚାଟ ପାଇଁ ସାଇନ ଇନ କରନ୍ତୁ",
+    "thinking": "ଚିନ୍ତା କରୁଛି..."
+  },
+  "legend": {
+    "title": "ଓଡ଼ିଶା — ଲିଜେଣ୍ଡ",
+    "floodZone": "ବନ୍ୟା ଅଞ୍ଚଳ",
+    "wildfire": "ଦାବାନଳ / ଅଗ୍ନି",
+    "earthquake": "ଭୂକମ୍ପ",
+    "cyclone": "ଘୂର୍ଣ୍ଣିବାୟୁ / ଝଡ଼",
+    "shelterAvailable": "ଆଶ୍ରୟ (ଉପಲବ୍ଧ)",
+    "shelterModerate": "ଆଶ୍ରୟ (ମଧ୍ୟମ)"
+  },
+  "language": {
+    "en": "English",
+    "hi": "हिन्दी",
+    "or": "ଓଡ଼ିଆ"
+  }
+}
