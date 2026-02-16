@@ -9,9 +9,15 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { messages, location } = await req.json();
+    const { messages, location, language } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+
+    const langInstructions: Record<string, string> = {
+      en: "Respond in English.",
+      hi: "Respond in Hindi (हिन्दी). Use Devanagari script.",
+      or: "Respond in Odia (ଓଡ଼ିଆ). Use Odia script. This is critical — the user speaks Odia and may not understand English or Hindi.",
+    };
 
     const systemPrompt = `You are ResQAI, an emergency disaster response AI assistant. You provide critical, life-saving guidance during natural disasters.
 
@@ -30,7 +36,9 @@ Rules:
 - Be concise but thorough — lives depend on clarity
 - If location coordinates are provided, reference them in your guidance
 - Use emergency formatting: bold key actions, use warning emojis for critical info
-- Always end with "Stay safe. ResQAI is here for you."
+- Always end with "Stay safe. ResQAI is here for you." (translated to the response language)
+
+LANGUAGE: ${langInstructions[language] || langInstructions.en}
 
 ${location ? `User's current location: ${location.lat}, ${location.lng}` : ""}`;
 
