@@ -38,6 +38,12 @@ export interface GridPredictionPoint {
   recommended_actions: string[];
   forecast_hours: number;
   model_version: string;
+  explainability?: {
+    factors: { factor: string; impact: number; direction: string }[];
+    summary: string;
+    method: string;
+  };
+  alert_tier?: string;
 }
 
 export interface GridPredictionResponse {
@@ -84,6 +90,12 @@ export const useGridPredictions = () => {
         body: { points: PREDICTION_GRID },
       });
       if (error) throw error;
+      
+      // Cache predictions for offline use
+      if ((window as any).__resqai_cache_predictions) {
+        (window as any).__resqai_cache_predictions(data.predictions);
+      }
+      
       return data;
     },
     staleTime: 5 * 60 * 1000,

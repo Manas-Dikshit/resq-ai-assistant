@@ -113,10 +113,47 @@ export type Database = {
         }
         Relationships: []
       }
+      report_validations: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          report_id: string
+          user_id: string
+          vote: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          report_id: string
+          user_id: string
+          vote: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          report_id?: string
+          user_id?: string
+          vote?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_validations_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reports: {
         Row: {
           confidence: number | null
+          confirm_count: number
           created_at: string
+          deny_count: number
           description: string | null
           disaster_type: string
           id: string
@@ -124,12 +161,15 @@ export type Database = {
           lng: number
           photo_url: string | null
           title: string
+          trust_score: number
           user_id: string
           verified: boolean
         }
         Insert: {
           confidence?: number | null
+          confirm_count?: number
           created_at?: string
+          deny_count?: number
           description?: string | null
           disaster_type?: string
           id?: string
@@ -137,12 +177,15 @@ export type Database = {
           lng: number
           photo_url?: string | null
           title: string
+          trust_score?: number
           user_id: string
           verified?: boolean
         }
         Update: {
           confidence?: number | null
+          confirm_count?: number
           created_at?: string
+          deny_count?: number
           description?: string | null
           disaster_type?: string
           id?: string
@@ -150,6 +193,7 @@ export type Database = {
           lng?: number
           photo_url?: string | null
           title?: string
+          trust_score?: number
           user_id?: string
           verified?: boolean
         }
@@ -157,34 +201,55 @@ export type Database = {
       }
       risk_predictions: {
         Row: {
+          community_validations: number | null
           created_at: string
+          cyclone_risk: number
+          explanation: Json | null
           fire_risk: number
           flood_risk: number
+          heat_wave_risk: number
           id: string
+          landslide_risk: number
           lat: number
           lng: number
           quake_risk: number
           region: string | null
+          risk_level: string | null
+          trust_score: number | null
         }
         Insert: {
+          community_validations?: number | null
           created_at?: string
+          cyclone_risk?: number
+          explanation?: Json | null
           fire_risk?: number
           flood_risk?: number
+          heat_wave_risk?: number
           id?: string
+          landslide_risk?: number
           lat: number
           lng: number
           quake_risk?: number
           region?: string | null
+          risk_level?: string | null
+          trust_score?: number | null
         }
         Update: {
+          community_validations?: number | null
           created_at?: string
+          cyclone_risk?: number
+          explanation?: Json | null
           fire_risk?: number
           flood_risk?: number
+          heat_wave_risk?: number
           id?: string
+          landslide_risk?: number
           lat?: number
           lng?: number
           quake_risk?: number
           region?: string | null
+          risk_level?: string | null
+          trust_score?: number | null
         }
         Relationships: []
       }

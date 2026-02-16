@@ -17,6 +17,7 @@ const DisasterMap = () => {
   const realLayerRef = useRef<L.LayerGroup | null>(null);
   const shelterLayerRef = useRef<L.LayerGroup | null>(null);
   const predictionLayerRef = useRef<L.LayerGroup | null>(null);
+  const reportLayerRef = useRef<L.LayerGroup | null>(null);
   const routingControlRef = useRef<any>(null);
   const { data } = useRealDisasterData();
   const { data: predictions } = useGridPredictions();
@@ -34,6 +35,7 @@ const DisasterMap = () => {
     realLayerRef.current = L.layerGroup().addTo(map);
     shelterLayerRef.current = L.layerGroup().addTo(map);
     predictionLayerRef.current = L.layerGroup().addTo(map);
+    reportLayerRef.current = L.layerGroup().addTo(map);
 
     L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
       attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
@@ -127,15 +129,37 @@ const DisasterMap = () => {
         </div>`;
       }).join("");
 
-      const actionsHtml = point.recommended_actions.slice(0, 2).map(a =>
+      const actionsHtml = (point.recommended_actions || []).slice(0, 2).map(a =>
         `<p style="font-size:10px;color:#fbbf24;margin:2px 0">⚠ ${a}</p>`
       ).join("");
+
+      // Explainability section
+      const explainHtml = point.explainability?.factors?.length
+        ? `<div style="border-top:1px solid #333;padding-top:6px;margin-top:6px">
+            <p style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">🔍 Why this prediction</p>
+            <p style="font-size:10px;color:#d1d5db;line-height:1.4">${point.explainability.summary}</p>
+            ${point.explainability.factors.slice(0, 2).map(f =>
+              `<div style="display:flex;align-items:center;gap:4px;margin:2px 0">
+                <span style="font-size:9px;color:#fbbf24">↑</span>
+                <span style="font-size:9px;color:#aaa;flex:1">${f.factor}</span>
+                <span style="font-size:9px;color:#fbbf24">+${(f.impact*100).toFixed(0)}%</span>
+              </div>`
+            ).join("")}
+          </div>`
+        : "";
+
+      // Alert tier badge
+      const tierColors: Record<string, string> = {
+        VERIFIED_CRITICAL: "#ef4444", AI_PREDICTED: "#eab308", MONITORING: "#3b82f6", LOW_WATCH: "#22c55e",
+      };
+      const tierColor = tierColors[point.alert_tier || "LOW_WATCH"] || "#22c55e";
+      const tierLabel = point.alert_tier?.replace("_", " ") || "LOW WATCH";
 
       // Marker icon
       const markerHtml = `<div style="position:relative;display:flex;flex-direction:column;align-items:center">
         <div style="background:${color};width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.3);box-shadow:0 0 16px ${color}80;font-size:14px">${RISK_ICONS[dominantRisk]}</div>
-        <div style="background:rgba(0,0,0,0.85);border:1px solid ${levelBg};border-radius:4px;padding:1px 6px;margin-top:2px;white-space:nowrap">
-          <span style="font-size:9px;color:${levelBg};font-family:monospace;font-weight:bold">${point.risk_level}</span>
+        <div style="background:rgba(0,0,0,0.85);border:1px solid ${tierColor};border-radius:4px;padding:1px 6px;margin-top:2px;white-space:nowrap">
+          <span style="font-size:9px;color:${tierColor};font-family:monospace;font-weight:bold">${tierLabel}</span>
         </div>
       </div>`;
 
@@ -144,13 +168,14 @@ const DisasterMap = () => {
       })
         .addTo(predictionLayerRef.current!)
         .bindPopup(
-          `<div style="font-family:Inter,sans-serif;min-width:220px;max-width:260px">
+          `<div style="font-family:Inter,sans-serif;min-width:220px;max-width:280px">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
               <b style="font-size:13px;color:white">${RISK_ICONS[dominantRisk]} ${point.label}</b>
-              <span style="font-size:10px;color:${levelBg};background:${levelBg}20;padding:1px 6px;border-radius:10px;border:1px solid ${levelBg}40">${point.risk_level}</span>
+              <span style="font-size:10px;color:${tierColor};background:${tierColor}20;padding:1px 6px;border-radius:10px;border:1px solid ${tierColor}40">${tierLabel}</span>
             </div>
             <div style="margin:8px 0">${barsHtml}</div>
             ${actionsHtml ? `<div style="border-top:1px solid #333;padding-top:6px;margin-top:6px">${actionsHtml}</div>` : ''}
+            ${explainHtml}
             <div style="display:flex;justify-content:space-between;margin-top:8px;padding-top:6px;border-top:1px solid #333">
               <span style="font-size:9px;color:#666">Confidence: ${(point.confidence*100).toFixed(0)}%</span>
               <span style="font-size:9px;color:#666">${point.model_version}</span>
@@ -244,6 +269,58 @@ const DisasterMap = () => {
         );
     });
   }, [data]);
+
+  // Community reports overlay
+  useEffect(() => {
+    if (!reportLayerRef.current) return;
+    const loadReports = async () => {
+      const { data: reports } = await supabase.from('reports').select('*').order('created_at', { ascending: false }).limit(30);
+      if (!reports || !reportLayerRef.current) return;
+      reportLayerRef.current.clearLayers();
+
+      reports.forEach((r: any) => {
+        const emoji: Record<string, string> = { flood: "🌊", cyclone: "🌀", fire: "🔥", earthquake: "🏔️", landslide: "⛰️", storm: "⛈️", other: "⚠️" };
+        const trustColor = r.verified ? "#22c55e" : r.trust_score >= 0.5 ? "#eab308" : "#888";
+        const tierLabel = r.verified ? "VERIFIED" : r.trust_score > 0 ? "COMMUNITY" : "UNCONFIRMED";
+
+        const icon = L.divIcon({
+          className: '',
+          html: `<div style="display:flex;flex-direction:column;align-items:center">
+            <div style="background:rgba(0,0,0,0.8);border:2px solid ${trustColor};width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:0 0 10px ${trustColor}60">${emoji[r.disaster_type] || "⚠️"}</div>
+            <div style="background:rgba(0,0,0,0.85);border:1px solid ${trustColor};border-radius:3px;padding:0 4px;margin-top:1px">
+              <span style="font-size:7px;color:${trustColor};font-family:monospace">${tierLabel}</span>
+            </div>
+          </div>`,
+          iconSize: [28, 40],
+          iconAnchor: [14, 20],
+        });
+
+        L.marker([r.lat, r.lng], { icon })
+          .addTo(reportLayerRef.current!)
+          .bindPopup(
+            `<div style="font-family:Inter,sans-serif;min-width:200px">
+              <b style="font-size:13px;color:white">${emoji[r.disaster_type] || "⚠️"} ${r.title}</b>
+              <div style="display:flex;align-items:center;gap:4px;margin-top:4px">
+                <span style="font-size:9px;color:${trustColor};background:${trustColor}20;padding:1px 6px;border-radius:10px;border:1px solid ${trustColor}40">${tierLabel}</span>
+                <span style="font-size:9px;color:#888">${r.confirm_count || 0} 👍 ${r.deny_count || 0} 👎</span>
+              </div>
+              ${r.description ? `<p style="font-size:11px;color:#aaa;margin-top:4px">${r.description}</p>` : ""}
+              <div style="display:flex;justify-content:space-between;margin-top:6px;padding-top:4px;border-top:1px solid #333">
+                <span style="font-size:9px;color:#666">Trust: ${r.trust_score > 0 ? (r.trust_score * 100).toFixed(0) + "%" : "—"}</span>
+                <span style="font-size:9px;color:#666">${new Date(r.created_at).toLocaleString("en-IN", { hour: "2-digit", minute: "2-digit", day: "numeric", month: "short" })}</span>
+              </div>
+            </div>`,
+            { className: 'prediction-popup' }
+          );
+      });
+    };
+    loadReports();
+
+    const channel = supabase.channel('reports-map')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'reports' }, () => loadReports())
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, []);
 
   return (
     <div className="w-full h-full rounded-lg overflow-hidden border border-border">

@@ -15,7 +15,7 @@ import {
 } from "@/components/AnalyticsCharts";
 import { odishaDisasters, odishaShelters } from "@/data/odishaData";
 
-type Tab = 'overview' | 'analytics' | 'alerts' | 'shelters' | 'reports' | 'users';
+type Tab = 'overview' | 'analytics' | 'alerts' | 'shelters' | 'reports' | 'users' | 'validation';
 
 const Admin = () => {
   const { user, signOut } = useAuth();
@@ -44,7 +44,16 @@ const Admin = () => {
   const { data: reports } = useQuery({
     queryKey: ['admin-reports'],
     queryFn: async () => {
-      const { data } = await supabase.from('reports').select('*').order('created_at', { ascending: false }).limit(20);
+      const { data } = await supabase.from('reports').select('*').order('created_at', { ascending: false }).limit(50);
+      return data || [];
+    },
+    enabled: isAdmin === true,
+  });
+
+  const { data: validations } = useQuery({
+    queryKey: ['admin-validations'],
+    queryFn: async () => {
+      const { data } = await supabase.from('report_validations').select('*').order('created_at', { ascending: false }).limit(100);
       return data || [];
     },
     enabled: isAdmin === true,
@@ -88,6 +97,7 @@ const Admin = () => {
   const tabs = [
     { id: 'overview' as Tab, icon: LayoutDashboard, label: 'Overview' },
     { id: 'analytics' as Tab, icon: BarChart3, label: 'Analytics' },
+    { id: 'validation' as Tab, icon: Shield, label: 'Validation' },
     { id: 'alerts' as Tab, icon: Bell, label: 'Broadcast' },
     { id: 'shelters' as Tab, icon: MapPin, label: 'Shelters' },
     { id: 'reports' as Tab, icon: AlertTriangle, label: 'Reports' },
@@ -248,6 +258,54 @@ const Admin = () => {
             ) : (
               <p className="text-muted-foreground text-sm">No reports filed yet.</p>
             )}
+          </div>
+        )}
+
+        {activeTab === 'validation' && (
+          <div className="space-y-6">
+            <h2 className="font-display text-2xl font-bold text-foreground">Community Validation Dashboard</h2>
+            
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                { label: 'Total Reports', value: reports?.length || 0, color: 'text-primary', bg: 'bg-primary/10' },
+                { label: 'Verified', value: reports?.filter((r: any) => r.verified).length || 0, color: 'text-safe', bg: 'bg-safe/10' },
+                { label: 'Pending', value: reports?.filter((r: any) => !r.verified).length || 0, color: 'text-warning', bg: 'bg-warning/10' },
+                { label: 'Total Votes', value: validations?.length || 0, color: 'text-primary', bg: 'bg-primary/10' },
+              ].map(s => (
+                <div key={s.label} className="p-4 rounded-xl border border-border bg-card">
+                  <p className="text-xs font-display text-muted-foreground">{s.label}</p>
+                  <p className={`text-2xl font-display font-bold mt-1 ${s.color}`}>{s.value}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Reports with trust scores */}
+            <div className="space-y-3">
+              <h3 className="font-display text-lg font-bold text-foreground">Reports by Trust Score</h3>
+              {(reports || []).sort((a: any, b: any) => b.trust_score - a.trust_score).map((r: any) => (
+                <div key={r.id} className="p-4 rounded-xl border border-border bg-card">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="font-display text-sm font-bold text-foreground">{r.title}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{r.disaster_type} • {new Date(r.created_at).toLocaleString()}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-display ${r.verified ? 'bg-safe/10 text-safe' : r.trust_score >= 0.5 ? 'bg-warning/10 text-warning' : 'bg-muted text-muted-foreground'}`}>
+                        {r.verified ? '✓ Verified' : r.trust_score > 0 ? `${(r.trust_score * 100).toFixed(0)}% trust` : 'Unvalidated'}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="mt-2 flex items-center gap-4 text-xs text-muted-foreground">
+                    <span>👍 {r.confirm_count} confirms</span>
+                    <span>👎 {r.deny_count} denies</span>
+                    <div className="flex-1 h-1.5 rounded-full bg-secondary">
+                      <div className="h-full rounded-full bg-safe" style={{ width: `${r.trust_score * 100}%` }} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

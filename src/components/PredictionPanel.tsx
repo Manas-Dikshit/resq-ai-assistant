@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
-import { Brain, ChevronDown, ChevronUp, AlertTriangle, Shield, Clock, Cpu } from "lucide-react";
+import { Brain, ChevronDown, ChevronUp, AlertTriangle, Shield, Clock, Cpu, Info } from "lucide-react";
 import {
   useGridPredictions,
   GridPredictionPoint,
@@ -11,6 +11,9 @@ import {
   RISK_ICONS,
 } from "@/hooks/useGridPredictions";
 import { Skeleton } from "@/components/ui/skeleton";
+import ExplainabilityTooltip from "@/components/ExplainabilityTooltip";
+import OfflinePredictionEngine from "@/components/OfflinePredictionEngine";
+import MeshAlertBanner from "@/components/MeshAlertBanner";
 
 const RISK_KEYS: RiskType[] = ["flood_risk", "cyclone_risk", "fire_risk", "earthquake_risk", "landslide_risk", "heat_wave_risk"];
 
@@ -63,7 +66,10 @@ const PredictionPanel = () => {
   const criticalCount = sorted.filter(p => p.risk_level === "CRITICAL" || p.risk_level === "HIGH").length;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" role="region" aria-label="AI Risk Predictions">
+      {/* Mesh & Offline Status */}
+      <MeshAlertBanner />
+      <OfflinePredictionEngine />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -79,20 +85,20 @@ const PredictionPanel = () => {
       </div>
 
       {/* Global Summary Card */}
-      <div className={`p-3 rounded-lg border ${levelColor(globalLevel)}`}>
+      <div className={`p-3 rounded-lg border ${levelColor(globalLevel)}`} role="alert" aria-live="polite">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <Shield className="w-4 h-4" />
+            <Shield className="w-4 h-4" aria-hidden="true" />
             <span className="text-sm font-display font-bold">Overall: {globalLevel}</span>
           </div>
           <div className="flex items-center gap-1 text-xs opacity-80">
-            <Clock className="w-3 h-3" />
+            <Clock className="w-3 h-3" aria-hidden="true" />
             48h forecast
           </div>
         </div>
         {criticalCount > 0 && (
           <p className="text-xs opacity-90">
-            <AlertTriangle className="w-3 h-3 inline mr-1" />
+            <AlertTriangle className="w-3 h-3 inline mr-1" aria-hidden="true" />
             {criticalCount} region{criticalCount > 1 ? "s" : ""} at elevated risk
           </p>
         )}
@@ -221,6 +227,13 @@ const PredictionPanel = () => {
                               {action}
                             </p>
                           ))}
+                        </div>
+                      )}
+
+                      {/* Explainability */}
+                      {point.explainability && (
+                        <div className="pt-1 border-t border-border">
+                          <ExplainabilityTooltip explainability={point.explainability} alertTier={point.alert_tier} />
                         </div>
                       )}
 

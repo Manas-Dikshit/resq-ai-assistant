@@ -141,6 +141,25 @@ function generateHeuristicPrediction(lat: number, lng: number, features?: any) {
   if (landslideRisk > 0.3) actions.push("Avoid hilly terrain during rain", "Monitor slope conditions");
   if (actions.length === 0) actions.push("Stay alert and monitor official announcements");
 
+  // Build explainability factors
+  const factors: { factor: string; impact: number; direction: string }[] = [];
+  if (isMonsoon) factors.push({ factor: "Monsoon season active", impact: 0.5, direction: "increases flood risk" });
+  if (isRiverDelta) factors.push({ factor: "River delta proximity", impact: 0.3, direction: "increases flood risk" });
+  if (isCoastal) factors.push({ factor: "Coastal location", impact: 0.2, direction: "increases cyclone & flood risk" });
+  if (isCycloneSeason) factors.push({ factor: "Cyclone season (Oct-Nov)", impact: 0.4, direction: "increases cyclone risk" });
+  if (isForested && isSummer) factors.push({ factor: "Forested area in summer", impact: 0.35, direction: "increases fire risk" });
+  if (isSummer) factors.push({ factor: "Summer heat peak", impact: 0.4, direction: "increases heat wave risk" });
+  if (isWestern) factors.push({ factor: "Western hilly terrain", impact: 0.1, direction: "increases landslide risk" });
+  if (features?.precipitation_7d > 100) factors.push({ factor: `Heavy rainfall: ${features.precipitation_7d}mm/7d`, impact: 0.3, direction: "increases flood risk" });
+  if (features?.wind_speed_max > 80) factors.push({ factor: `High winds: ${features.wind_speed_max}km/h`, impact: 0.4, direction: "increases cyclone risk" });
+  if (features?.temperature_max > 42) factors.push({ factor: `Extreme heat: ${features.temperature_max}°C`, impact: 0.3, direction: "increases fire & heat wave risk" });
+
+  // Natural language explanation
+  const topFactors = factors.sort((a, b) => b.impact - a.impact).slice(0, 3);
+  const explanation = topFactors.length > 0
+    ? topFactors.map(f => `${f.factor} (${f.direction})`).join(". ") + "."
+    : "No significant risk factors detected for this location.";
+
   return {
     predictions: {
       flood_risk: Math.round(floodRisk * 100) / 100,
@@ -155,5 +174,11 @@ function generateHeuristicPrediction(lat: number, lng: number, features?: any) {
     recommended_actions: actions,
     forecast_hours: 48,
     model_version: "heuristic-v1.0",
+    explainability: {
+      factors: topFactors,
+      summary: explanation,
+      method: "rule-based-attribution",
+    },
+    alert_tier: maxRisk > 0.8 ? "VERIFIED_CRITICAL" : maxRisk > 0.6 ? "AI_PREDICTED" : maxRisk > 0.3 ? "MONITORING" : "LOW_WATCH",
   };
 }

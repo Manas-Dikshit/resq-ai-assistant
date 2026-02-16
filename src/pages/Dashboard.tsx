@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { MessageSquare, Map, BarChart3, Radio, ChevronLeft, ChevronRight, LogIn, LogOut, AlertTriangle, Shield, FileWarning, Satellite, Thermometer, Home, Brain } from "lucide-react";
+import { MessageSquare, Map, BarChart3, Radio, ChevronLeft, ChevronRight, LogIn, LogOut, AlertTriangle, Shield, FileWarning, Satellite, Thermometer, Home, Brain, Users } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslation } from "react-i18next";
 import DisasterMap from "@/components/DisasterMap";
@@ -16,8 +16,9 @@ import SOSButton from "@/components/SOSButton";
 import ReportForm from "@/components/ReportForm";
 import LanguageToggle from "@/components/LanguageToggle";
 import PredictionPanel from "@/components/PredictionPanel";
+import CommunityValidation from "@/components/CommunityValidation";
 
-type SidebarTab = 'predictions' | 'events' | 'weather' | 'satellite' | 'charts' | 'shelters';
+type SidebarTab = 'predictions' | 'community' | 'events' | 'weather' | 'satellite' | 'charts' | 'shelters';
 
 const Dashboard = () => {
   const [showChat, setShowChat] = useState(false);
@@ -30,6 +31,7 @@ const Dashboard = () => {
 
   const sidebarTabs: { id: SidebarTab; label: string; icon: any }[] = [
     { id: 'predictions', label: 'Predictions', icon: Brain },
+    { id: 'community', label: 'Community', icon: Users },
     { id: 'events', label: t('sidebar.events'), icon: AlertTriangle },
     { id: 'weather', label: t('sidebar.weather'), icon: Thermometer },
     { id: 'shelters', label: t('sidebar.shelters'), icon: Home },
@@ -103,6 +105,7 @@ const Dashboard = () => {
             </div>
             <div className="flex-1 overflow-y-auto p-4 space-y-6">
               {sidebarTab === 'predictions' && <PredictionPanel />}
+              {sidebarTab === 'community' && <CommunityValidation />}
               {sidebarTab === 'events' && (<><LiveEventsPanel /><RiskCards /></>)}
               {sidebarTab === 'weather' && <WeatherPanel />}
               {sidebarTab === 'shelters' && <ShelterFinder />}
