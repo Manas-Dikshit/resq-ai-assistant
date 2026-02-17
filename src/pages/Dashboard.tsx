@@ -31,8 +31,8 @@ const Dashboard = () => {
   const { t } = useTranslation();
 
   const sidebarTabs: { id: SidebarTab; label: string; icon: any }[] = [
-    { id: 'predictions', label: 'Predictions', icon: Brain },
-    { id: 'community', label: 'Community', icon: Users },
+    { id: 'predictions', label: t('sidebar.predictions'), icon: Brain },
+    { id: 'community', label: t('sidebar.community'), icon: Users },
     { id: 'events', label: t('sidebar.events'), icon: AlertTriangle },
     { id: 'weather', label: t('sidebar.weather'), icon: Thermometer },
     { id: 'shelters', label: t('sidebar.shelters'), icon: Home },

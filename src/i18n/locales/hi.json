@@ -26,7 +26,9 @@
     "weather": "मौसम",
     "satellite": "उपग्रह",
     "charts": "चार्ट",
-    "shelters": "आश्रय"
+    "shelters": "आश्रय",
+    "predictions": "पूर्वानुमान",
+    "community": "समुदाय"
   },
   "events": {
     "title": "सक्रिय घटनाएँ — लाइव",
@@ -94,7 +96,17 @@
     "driving": "ड्राइविंग",
     "clearRoute": "मार्ग हटाएँ",
     "noShelters": "डेटाबेस में कोई आश्रय नहीं मिला",
-    "locationError": "स्थान पहचान नहीं हो सका"
+    "locationError": "स्थान पहचान नहीं हो सका",
+    "occupancy": "अधिभोग",
+    "status": "स्थिति",
+    "liveUpdates": "लाइव अपडेट",
+    "lastUpdated": "अंतिम अपडेट",
+    "contact": "संपर्क",
+    "address": "पता",
+    "availableSpots": "उपलब्ध स्थान",
+    "full": "भरा हुआ",
+    "tapToRoute": "मार्ग के लिए टैप करें",
+    "loading": "आश्रय लोड हो रहे हैं..."
   },
   "sos": {
     "title": "आपातकालीन SOS",
@@ -143,5 +155,55 @@
     "en": "English",
     "hi": "हिन्दी",
     "or": "ଓଡ଼ିଆ"
+  },
+  "prediction": {
+    "title": "AI जोखिम पूर्वानुमान",
+    "live": "लाइव",
+    "overall": "समग्र",
+    "forecast48h": "48h पूर्वानुमान",
+    "monitoringPoints": "निगरानी बिंदु",
+    "updated": "अपडेट",
+    "realtimeFeed": "रियलटाइम फ़ीड सक्रिय · हर 2 मिनट में ऑटो-रिफ्रेश · गंभीर अलर्ट से तुरंत अपडेट",
+    "syncing": "सिंक हो रहा है",
+    "inSync": "सिंक में",
+    "all": "सभी",
+    "recommendedActions": "अनुशंसित कार्रवाई",
+    "loading": "पूर्वानुमान लोड हो रहे हैं...",
+    "failed": "पूर्वानुमान लोड नहीं हो सका।",
+    "retry": "पुनः प्रयास",
+    "regions": "क्षेत्र",
+    "regionsPlural": "क्षेत्र",
+    "elevatedRisk": "उच्च जोखिम में",
+    "rising": "बढ़ रहा है",
+    "updating": "अपडेट हो रहा है…"
+  },
+  "community": {
+    "title": "सामुदायिक रिपोर्ट",
+    "reports": "रिपोर्ट",
+    "verified": "सत्यापित",
+    "community": "समुदाय",
+    "unconfirmed": "अपुष्ट",
+    "noReports": "अभी तक कोई सामुदायिक रिपोर्ट नहीं। पहले रिपोर्ट करें!",
+    "trust": "विश्वास",
+    "votes": "वोट",
+    "votesPlural": "वोट",
+    "loading": "रिपोर्ट लोड हो रही हैं...",
+    "confirm": "पुष्टि करें",
+    "deny": "अस्वीकार करें"
+  },
+  "admin": {
+    "title": "ADMIN CONTROL CENTER",
+    "accessDenied": "पहुँच अस्वीकृत",
+    "noPrivileges": "आपके पास एडमिन अधिकार नहीं हैं।",
+    "backToDashboard": "← डैशबोर्ड पर वापस",
+    "overview": "अवलोकन",
+    "analytics": "विश्लेषण",
+    "validation": "सत्यापन",
+    "broadcast": "प्रसारण",
+    "shelters": "आश्रय",
+    "reports": "रिपोर्ट",
+    "users": "उपयोगकर्ता",
+    "liveDashboard": "लाइव डैशबोर्ड",
+    "signOut": "साइन आउट"
   }
 }

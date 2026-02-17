@@ -102,9 +102,9 @@ const CommunityValidation = () => {
   };
 
   const getTierLabel = (report: Report) => {
-    if (report.verified) return { label: "VERIFIED", className: "bg-safe/10 text-safe border-safe/30" };
-    if (report.confirm_count >= 2) return { label: "COMMUNITY", className: "bg-primary/10 text-primary border-primary/30" };
-    return { label: "UNCONFIRMED", className: "bg-muted text-muted-foreground border-border" };
+    if (report.verified) return { label: t('community.verified').toUpperCase(), className: "bg-safe/10 text-safe border-safe/30" };
+    if (report.confirm_count >= 2) return { label: t('community.community').toUpperCase(), className: "bg-primary/10 text-primary border-primary/30" };
+    return { label: t('community.unconfirmed').toUpperCase(), className: "bg-muted text-muted-foreground border-border" };
   };
 
   if (isLoading) {
@@ -112,7 +112,7 @@ const CommunityValidation = () => {
       <div className="space-y-3">
         <div className="flex items-center gap-2">
           <Users className="w-4 h-4 text-primary animate-pulse" />
-          <h3 className="font-display text-xs font-bold text-muted-foreground tracking-widest uppercase">Loading Reports...</h3>
+          <h3 className="font-display text-xs font-bold text-muted-foreground tracking-widest uppercase">{t('community.loading')}</h3>
         </div>
       </div>
     );
@@ -123,22 +123,20 @@ const CommunityValidation = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Users className="w-4 h-4 text-primary" />
-          <h3 className="font-display text-xs font-bold text-muted-foreground tracking-widest uppercase">
-            Community Reports
-          </h3>
+          <h3 className="font-display text-xs font-bold text-muted-foreground tracking-widest uppercase">{t('community.title')}</h3>
         </div>
-        <span className="text-xs text-muted-foreground font-display">{reports?.length || 0} reports</span>
+        <span className="text-xs text-muted-foreground font-display">{reports?.length || 0} {t('community.reports')}</span>
       </div>
 
       {/* Trust Legend */}
       <div className="flex items-center gap-3 text-xs text-muted-foreground p-2 rounded-lg bg-secondary/50">
-        <span className="flex items-center gap-1"><CheckCircle2 className="w-3 h-3 text-safe" /> Verified</span>
-        <span className="flex items-center gap-1"><Shield className="w-3 h-3 text-primary" /> Community</span>
-        <span className="flex items-center gap-1"><MessageSquare className="w-3 h-3 text-muted-foreground" /> Unconfirmed</span>
+        <span className="flex items-center gap-1"><CheckCircle2 className="w-3 h-3 text-safe" /> {t('community.verified')}</span>
+        <span className="flex items-center gap-1"><Shield className="w-3 h-3 text-primary" /> {t('community.community')}</span>
+        <span className="flex items-center gap-1"><MessageSquare className="w-3 h-3 text-muted-foreground" /> {t('community.unconfirmed')}</span>
       </div>
 
       {(!reports || reports.length === 0) && (
-        <p className="text-xs text-muted-foreground text-center py-6">No community reports yet. Be the first to report!</p>
+        <p className="text-xs text-muted-foreground text-center py-6">{t('community.noReports')}</p>
       )}
 
       <div className="space-y-2">
@@ -181,7 +179,7 @@ const CommunityValidation = () => {
 
                 {/* Trust Score Bar */}
                 <div className="mt-2 flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground w-12">Trust</span>
+                  <span className="text-xs text-muted-foreground w-12">{t('community.trust')}</span>
                   <div className="flex-1 h-1.5 rounded-full bg-secondary">
                     <motion.div
                       className="h-full rounded-full bg-safe"
@@ -223,7 +221,7 @@ const CommunityValidation = () => {
                     <ThumbsDown className="w-3 h-3" />
                     <span>{report.deny_count}</span>
                   </button>
-                  <span className="ml-auto text-[10px] text-muted-foreground">{totalVotes} vote{totalVotes !== 1 ? "s" : ""}</span>
+                  <span className="ml-auto text-[10px] text-muted-foreground">{totalVotes} {totalVotes !== 1 ? t('community.votesPlural') : t('community.votes')}</span>
                 </div>
               </motion.div>
             );
