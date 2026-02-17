@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import L from "leaflet";
 import { getDisasterColor } from "@/data/mockDisasters";
 import { useRealDisasterData } from "@/hooks/useDisasterData";
@@ -11,6 +11,33 @@ import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 
 const RISK_KEYS: RiskType[] = ["flood_risk", "cyclone_risk", "fire_risk", "earthquake_risk", "landslide_risk", "heat_wave_risk"];
 
+// --- Heatmap Canvas Layer ---
+type HeatPoint = { lat: number; lng: number; value: number; color: string };
+
+function renderHeatmap(canvas: HTMLCanvasElement, map: L.Map, points: HeatPoint[], activeRisk: RiskType) {
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const radius = Math.max(80, canvas.width / 8);
+
+  points.forEach(({ lat, lng, value, color }) => {
+    if (value < 0.05) return;
+    const pt = map.latLngToContainerPoint([lat, lng]);
+    const r = parseInt(color.slice(1, 3), 16);
+    const g = parseInt(color.slice(3, 5), 16);
+    const b = parseInt(color.slice(5, 7), 16);
+    const grad = ctx.createRadialGradient(pt.x, pt.y, 0, pt.x, pt.y, radius * (0.5 + value));
+    grad.addColorStop(0, `rgba(${r},${g},${b},${0.55 * value})`);
+    grad.addColorStop(0.4, `rgba(${r},${g},${b},${0.3 * value})`);
+    grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(pt.x, pt.y, radius * (0.5 + value), 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
+
 const DisasterMap = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -18,9 +45,38 @@ const DisasterMap = () => {
   const shelterLayerRef = useRef<L.LayerGroup | null>(null);
   const predictionLayerRef = useRef<L.LayerGroup | null>(null);
   const reportLayerRef = useRef<L.LayerGroup | null>(null);
+  const heatCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const routingControlRef = useRef<any>(null);
+  const animFrameRef = useRef<number | null>(null);
+
+  const [heatmapOn, setHeatmapOn] = useState(false);
+  const [activeRisk, setActiveRisk] = useState<RiskType>("flood_risk");
+  const [showRiskPicker, setShowRiskPicker] = useState(false);
+
   const { data } = useRealDisasterData();
   const { data: predictions } = useGridPredictions();
+
+  // Compute heat points from predictions
+  const getHeatPoints = useCallback((): HeatPoint[] => {
+    if (!predictions) return [];
+    return predictions.predictions.map((p) => ({
+      lat: p.latitude,
+      lng: p.longitude,
+      value: p.predictions[activeRisk],
+      color: RISK_COLORS[activeRisk],
+    }));
+  }, [predictions, activeRisk]);
+
+  // Redraw heatmap on map move/zoom
+  const redrawHeatmap = useCallback(() => {
+    if (!heatCanvasRef.current || !mapInstanceRef.current) return;
+    const map = mapInstanceRef.current;
+    const canvas = heatCanvasRef.current;
+    const size = map.getSize();
+    canvas.width = size.x;
+    canvas.height = size.y;
+    renderHeatmap(canvas, map, getHeatPoints(), activeRisk);
+  }, [getHeatPoints, activeRisk]);
 
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
@@ -83,6 +139,38 @@ const DisasterMap = () => {
     };
   }, []);
 
+  // Mount/unmount canvas layer and bind map events
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+
+    if (heatmapOn) {
+      if (!heatCanvasRef.current) {
+        const canvas = document.createElement("canvas");
+        canvas.style.cssText = "position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:400;";
+        mapRef.current?.appendChild(canvas);
+        heatCanvasRef.current = canvas;
+      }
+      redrawHeatmap();
+      map.on("moveend zoomend resize", redrawHeatmap);
+    } else {
+      if (heatCanvasRef.current) {
+        heatCanvasRef.current.remove();
+        heatCanvasRef.current = null;
+      }
+      map.off("moveend zoomend resize", redrawHeatmap);
+    }
+
+    return () => {
+      map.off("moveend zoomend resize", redrawHeatmap);
+    };
+  }, [heatmapOn, redrawHeatmap]);
+
+  // Redraw when predictions or activeRisk changes
+  useEffect(() => {
+    if (heatmapOn) redrawHeatmap();
+  }, [predictions, activeRisk, heatmapOn, redrawHeatmap]);
+
   // Prediction overlay
   useEffect(() => {
     if (!predictionLayerRef.current || !predictions) return;
@@ -92,7 +180,11 @@ const DisasterMap = () => {
       const dominantRisk = RISK_KEYS.reduce((a, b) => point.predictions[a] > point.predictions[b] ? a : b);
       const maxVal = point.predictions[dominantRisk];
       const color = RISK_COLORS[dominantRisk];
-      const levelBg = point.risk_level === "CRITICAL" ? "#ef4444" : point.risk_level === "HIGH" ? "#eab308" : point.risk_level === "MEDIUM" ? "#3b82f6" : "#22c55e";
+      const tierColors: Record<string, string> = {
+        VERIFIED_CRITICAL: "#ef4444", AI_PREDICTED: "#eab308", MONITORING: "#3b82f6", LOW_WATCH: "#22c55e",
+      };
+      const tierColor = tierColors[point.alert_tier || "LOW_WATCH"] || "#22c55e";
+      const tierLabel = point.alert_tier?.replace("_", " ") || "LOW WATCH";
 
       // Outer glow zone
       if (maxVal > 0.3) {
@@ -133,7 +225,6 @@ const DisasterMap = () => {
         `<p style="font-size:10px;color:#fbbf24;margin:2px 0">⚠ ${a}</p>`
       ).join("");
 
-      // Explainability section
       const explainHtml = point.explainability?.factors?.length
         ? `<div style="border-top:1px solid #333;padding-top:6px;margin-top:6px">
             <p style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">🔍 Why this prediction</p>
@@ -148,13 +239,6 @@ const DisasterMap = () => {
           </div>`
         : "";
 
-      // Alert tier badge
-      const tierColors: Record<string, string> = {
-        VERIFIED_CRITICAL: "#ef4444", AI_PREDICTED: "#eab308", MONITORING: "#3b82f6", LOW_WATCH: "#22c55e",
-      };
-      const tierColor = tierColors[point.alert_tier || "LOW_WATCH"] || "#22c55e";
-      const tierLabel = point.alert_tier?.replace("_", " ") || "LOW WATCH";
-
       // Pulse rings for CRITICAL / HIGH risk
       const isCritical = point.risk_level === "CRITICAL" || point.risk_level === "HIGH";
       const pulseRingsHtml = isCritical
@@ -165,7 +249,6 @@ const DisasterMap = () => {
           </div>`
         : "";
 
-      // Marker icon
       const markerHtml = `<div style="position:relative;display:flex;flex-direction:column;align-items:center">
         ${pulseRingsHtml}
         <div style="background:${color};width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.3);box-shadow:0 0 ${isCritical ? '24' : '16'}px ${color}${isCritical ? '' : '80'};font-size:14px;position:relative;z-index:1">${RISK_ICONS[dominantRisk]}</div>
@@ -334,8 +417,66 @@ const DisasterMap = () => {
   }, []);
 
   return (
-    <div className="w-full h-full rounded-lg overflow-hidden border border-border">
+    <div className="w-full h-full rounded-lg overflow-hidden border border-border relative">
       <div ref={mapRef} className="w-full h-full" style={{ background: "hsl(220 20% 7%)" }} />
+
+      {/* Heatmap Controls */}
+      <div className="absolute top-3 right-3 z-[500] flex flex-col items-end gap-1.5">
+        {/* Toggle button */}
+        <button
+          onClick={() => { setHeatmapOn(v => !v); setShowRiskPicker(v => !v || !heatmapOn); }}
+          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold border transition-all shadow-lg ${
+            heatmapOn
+              ? 'bg-black/80 border-white/20 text-white backdrop-blur-sm'
+              : 'bg-black/60 border-white/10 text-white/60 hover:border-white/20 hover:text-white/80 backdrop-blur-sm'
+          }`}
+          title="Toggle Risk Heatmap"
+        >
+          <span style={{ color: heatmapOn ? RISK_COLORS[activeRisk] : undefined }}>◉</span>
+          <span>HEATMAP</span>
+          {heatmapOn && (
+            <span
+              className="ml-1 px-1.5 py-0.5 rounded text-xs"
+              style={{ background: RISK_COLORS[activeRisk] + "30", color: RISK_COLORS[activeRisk], border: `1px solid ${RISK_COLORS[activeRisk]}50` }}
+            >
+              {RISK_LABELS[activeRisk].toUpperCase()}
+            </span>
+          )}
+        </button>
+
+        {/* Risk type picker — visible when heatmap is on */}
+        {heatmapOn && (
+          <div className="flex flex-col gap-1 bg-black/80 backdrop-blur-sm border border-white/10 rounded-lg p-1.5 shadow-xl animate-fade-in">
+            {RISK_KEYS.map((key) => (
+              <button
+                key={key}
+                onClick={() => setActiveRisk(key)}
+                className={`flex items-center gap-2 px-2 py-1 rounded text-xs font-mono transition-all whitespace-nowrap ${
+                  activeRisk === key ? 'text-white font-bold' : 'text-white/50 hover:text-white/80'
+                }`}
+                style={activeRisk === key ? { background: RISK_COLORS[key] + "25", borderLeft: `2px solid ${RISK_COLORS[key]}` } : {}}
+              >
+                <span>{RISK_ICONS[key]}</span>
+                <span>{RISK_LABELS[key]}</span>
+              </button>
+            ))}
+
+            {/* Legend gradient bar */}
+            <div className="mt-1 px-1">
+              <div
+                className="h-2 rounded-full w-full"
+                style={{
+                  background: `linear-gradient(to right, transparent, ${RISK_COLORS[activeRisk]}80, ${RISK_COLORS[activeRisk]})`,
+                }}
+              />
+              <div className="flex justify-between mt-0.5">
+                <span className="text-[9px] text-white/30 font-mono">LOW</span>
+                <span className="text-[9px] font-mono" style={{ color: RISK_COLORS[activeRisk] }}>HIGH</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
