@@ -1,4 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 // Grid points covering Odisha's key regions
@@ -82,24 +83,86 @@ export const RISK_ICONS: Record<RiskType, string> = {
   heat_wave_risk: "🌡️",
 };
 
+export const REFETCH_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
+
 export const useGridPredictions = () => {
-  return useQuery<GridPredictionResponse>({
+  const queryClient = useQueryClient();
+
+  const query = useQuery<GridPredictionResponse>({
     queryKey: ["grid-predictions"],
     queryFn: async () => {
       const { data, error } = await supabase.functions.invoke("predict-risk", {
         body: { points: PREDICTION_GRID },
       });
       if (error) throw error;
-      
+
       // Cache predictions for offline use
       if ((window as any).__resqai_cache_predictions) {
         (window as any).__resqai_cache_predictions(data.predictions);
       }
-      
+
+      // Persist grid to risk_predictions table for realtime sync across clients
+      try {
+        await supabase.from("risk_predictions").insert(
+          data.predictions.map((p: GridPredictionPoint) => ({
+            lat: p.latitude,
+            lng: p.longitude,
+            region: p.label,
+            flood_risk: p.predictions.flood_risk,
+            quake_risk: p.predictions.earthquake_risk,
+            fire_risk: p.predictions.fire_risk,
+            cyclone_risk: p.predictions.cyclone_risk,
+            landslide_risk: p.predictions.landslide_risk,
+            heat_wave_risk: p.predictions.heat_wave_risk,
+            risk_level: p.risk_level,
+            explanation: p.explainability as any,
+            trust_score: p.confidence,
+          }))
+        );
+      } catch (_) {
+        // Non-critical — don't throw if DB write fails
+      }
+
       return data;
     },
-    staleTime: 5 * 60 * 1000,
-    refetchInterval: 10 * 60 * 1000,
+    staleTime: 60 * 1000,               // 1 min cache
+    refetchInterval: REFETCH_INTERVAL_MS,
     retry: 2,
   });
+
+  // Realtime: re-fetch when new risk_predictions are inserted by any client / admin tool
+  useEffect(() => {
+    const riskChannel = supabase
+      .channel("risk-predictions-live")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "risk_predictions" },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["grid-predictions"] });
+        }
+      )
+      .subscribe();
+
+    // Also trigger re-prediction on critical/high alerts
+    const alertChannel = supabase
+      .channel("alerts-prediction-trigger")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "alerts" },
+        (payload) => {
+          const alert = payload.new as any;
+          if (alert.severity === "critical" || alert.severity === "high") {
+            queryClient.invalidateQueries({ queryKey: ["grid-predictions"] });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(riskChannel);
+      supabase.removeChannel(alertChannel);
+    };
+  }, [queryClient]);
+
+  return query;
 };
