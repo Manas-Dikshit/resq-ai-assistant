@@ -94,7 +94,7 @@ const PredictionPanel = () => {
       <div className="space-y-3">
         <div className="flex items-center gap-2 mb-2">
           <Brain className="w-4 h-4 text-primary animate-pulse" />
-          <h3 className="font-display text-xs font-bold text-muted-foreground tracking-widest uppercase">Loading Predictions...</h3>
+          <h3 className="font-display text-xs font-bold text-muted-foreground tracking-widest uppercase">{t('prediction.loading')}</h3>
         </div>
         {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-20 w-full rounded-lg" />)}
       </div>
@@ -107,13 +107,13 @@ const PredictionPanel = () => {
         <div className="p-4 rounded-lg border border-destructive/30 bg-destructive/5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <WifiOff className="w-4 h-4 text-destructive" />
-            <p className="text-xs text-destructive font-display">Failed to load predictions.</p>
+            <p className="text-xs text-destructive font-display">{t('prediction.failed')}</p>
           </div>
           <button
             onClick={() => refetch()}
             className="flex items-center gap-1 px-2 py-1 rounded text-xs font-display bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors"
           >
-            <RefreshCw className="w-3 h-3" /> Retry
+            <RefreshCw className="w-3 h-3" /> {t('prediction.retry')}
           </button>
         </div>
         <OfflinePredictionEngine />
@@ -162,7 +162,7 @@ const PredictionPanel = () => {
         <div className="flex items-center gap-2">
           <Brain className="w-4 h-4 text-primary" />
           <h3 className="font-display text-xs font-bold text-muted-foreground tracking-widest uppercase">
-            AI Risk Predictions
+            {t('prediction.title')}
           </h3>
           {/* LIVE pulsing dot */}
           <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-safe/10 border border-safe/20">
@@ -170,7 +170,7 @@ const PredictionPanel = () => {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-safe opacity-75" />
               <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-safe" />
             </span>
-            <span className="text-[9px] font-mono text-safe font-bold">LIVE</span>
+            <span className="text-[9px] font-mono text-safe font-bold">{t('prediction.live')}</span>
           </span>
         </div>
         <div className="flex items-center gap-1.5">
@@ -215,26 +215,26 @@ const PredictionPanel = () => {
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <Shield className="w-4 h-4" aria-hidden="true" />
-            <span className="text-sm font-display font-bold">Overall: {globalLevel}</span>
+            <span className="text-sm font-display font-bold">{t('prediction.overall')}: {globalLevel}</span>
           </div>
           <div className="flex items-center gap-2 text-xs opacity-80">
             <Clock className="w-3 h-3" aria-hidden="true" />
-            <span>48h forecast</span>
+            <span>{t('prediction.forecast48h')}</span>
             {isRefreshing && (
-              <span className="text-[9px] font-mono opacity-60 animate-pulse">updating…</span>
+              <span className="text-[9px] font-mono opacity-60 animate-pulse">{t('prediction.updating')}</span>
             )}
           </div>
         </div>
         {criticalCount > 0 && (
           <p className="text-xs opacity-90">
-            <AlertTriangle className="w-3 h-3 inline mr-1" aria-hidden="true" />
-            {criticalCount} region{criticalCount > 1 ? "s" : ""} at elevated risk
+          <AlertTriangle className="w-3 h-3 inline mr-1" aria-hidden="true" />
+            {criticalCount} {criticalCount > 1 ? t('prediction.regionsPlural') : t('prediction.regions')} {t('prediction.elevatedRisk')}
           </p>
         )}
         <div className="flex items-center justify-between mt-1">
-          <p className="text-xs opacity-60">{data.grid_count} monitoring points</p>
+          <p className="text-xs opacity-60">{data.grid_count} {t('prediction.monitoringPoints')}</p>
           <p className="text-xs opacity-60">
-            Updated {new Date(data.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+            {t('prediction.updated')} {new Date(data.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
           </p>
         </div>
       </motion.div>
@@ -243,10 +243,10 @@ const PredictionPanel = () => {
       <div className="flex items-center gap-1.5 px-2 py-1.5 rounded-md bg-secondary/50 border border-border">
         <Wifi className="w-3 h-3 text-safe" />
         <span className="text-[10px] font-mono text-muted-foreground flex-1">
-          Realtime feed active · auto-refresh every 2 min · critical alerts trigger instant update
+          {t('prediction.realtimeFeed')}
         </span>
         <span className={`text-[9px] font-mono px-1 py-0.5 rounded ${isRefreshing ? "text-primary animate-pulse" : "text-safe"}`}>
-          {isRefreshing ? "SYNCING" : "IN SYNC"}
+          {isRefreshing ? t('prediction.syncing') : t('prediction.inSync')}
         </span>
       </div>
 
@@ -258,7 +258,7 @@ const PredictionPanel = () => {
             selectedRisk === "all" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"
           }`}
         >
-          All
+          {t('prediction.all')}
         </button>
         {RISK_KEYS.map((key) => (
           <button
@@ -311,7 +311,7 @@ const PredictionPanel = () => {
                         <p className="text-sm font-display font-bold text-foreground truncate">{point.label}</p>
                         {hasIncrease && (
                           <span className="text-[8px] font-mono px-1 py-0.5 rounded bg-warning/10 text-warning border border-warning/20 shrink-0">
-                            ↑ RISING
+                            ↑ {t('prediction.rising')}
                           </span>
                         )}
                       </div>
@@ -387,7 +387,7 @@ const PredictionPanel = () => {
                         {/* Actions */}
                         {point.recommended_actions.length > 0 && (
                           <div className="space-y-1">
-                            <p className="text-xs font-display font-bold text-muted-foreground">Recommended Actions</p>
+                            <p className="text-xs font-display font-bold text-muted-foreground">{t('prediction.recommendedActions')}</p>
                             {point.recommended_actions.map((action, i) => (
                               <p key={i} className="text-xs text-foreground flex items-start gap-1.5">
                                 <AlertTriangle className="w-3 h-3 text-warning mt-0.5 shrink-0" />

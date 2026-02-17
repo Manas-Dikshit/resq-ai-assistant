@@ -26,7 +26,9 @@
     "weather": "Weather",
     "satellite": "Satellite",
     "charts": "Charts",
-    "shelters": "Shelters"
+    "shelters": "Shelters",
+    "predictions": "Predictions",
+    "community": "Community"
   },
   "events": {
     "title": "Active Events — Live",
@@ -94,7 +96,17 @@
     "driving": "Driving",
     "clearRoute": "Clear Route",
     "noShelters": "No shelters found in database",
-    "locationError": "Could not detect location"
+    "locationError": "Could not detect location",
+    "occupancy": "Occupancy",
+    "status": "Status",
+    "liveUpdates": "Live updates",
+    "lastUpdated": "Last updated",
+    "contact": "Contact",
+    "address": "Address",
+    "availableSpots": "Available Spots",
+    "full": "Full",
+    "tapToRoute": "Tap to get route",
+    "loading": "Loading shelters..."
   },
   "sos": {
     "title": "Emergency SOS",
@@ -143,5 +155,55 @@
     "en": "English",
     "hi": "हिन्दी",
     "or": "ଓଡ଼ିଆ"
+  },
+  "prediction": {
+    "title": "AI Risk Predictions",
+    "live": "LIVE",
+    "overall": "Overall",
+    "forecast48h": "48h forecast",
+    "monitoringPoints": "monitoring points",
+    "updated": "Updated",
+    "realtimeFeed": "Realtime feed active · auto-refresh every 2 min · critical alerts trigger instant update",
+    "syncing": "SYNCING",
+    "inSync": "IN SYNC",
+    "all": "All",
+    "recommendedActions": "Recommended Actions",
+    "loading": "Loading Predictions...",
+    "failed": "Failed to load predictions.",
+    "retry": "Retry",
+    "regions": "region",
+    "regionsPlural": "regions",
+    "elevatedRisk": "at elevated risk",
+    "rising": "RISING",
+    "updating": "updating…"
+  },
+  "community": {
+    "title": "Community Reports",
+    "reports": "reports",
+    "verified": "Verified",
+    "community": "Community",
+    "unconfirmed": "Unconfirmed",
+    "noReports": "No community reports yet. Be the first to report!",
+    "trust": "Trust",
+    "votes": "vote",
+    "votesPlural": "votes",
+    "loading": "Loading Reports...",
+    "confirm": "Confirm",
+    "deny": "Deny"
+  },
+  "admin": {
+    "title": "ADMIN CONTROL CENTER",
+    "accessDenied": "Access Denied",
+    "noPrivileges": "You don't have admin privileges.",
+    "backToDashboard": "← Back to Dashboard",
+    "overview": "Overview",
+    "analytics": "Analytics",
+    "validation": "Validation",
+    "broadcast": "Broadcast",
+    "shelters": "Shelters",
+    "reports": "Reports",
+    "users": "Users",
+    "liveDashboard": "Live Dashboard",
+    "signOut": "Sign Out"
   }
 }
