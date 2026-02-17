@@ -155,16 +155,27 @@ const DisasterMap = () => {
       const tierColor = tierColors[point.alert_tier || "LOW_WATCH"] || "#22c55e";
       const tierLabel = point.alert_tier?.replace("_", " ") || "LOW WATCH";
 
+      // Pulse rings for CRITICAL / HIGH risk
+      const isCritical = point.risk_level === "CRITICAL" || point.risk_level === "HIGH";
+      const pulseRingsHtml = isCritical
+        ? `<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none">
+            <span style="position:absolute;display:block;width:48px;height:48px;border-radius:50%;border:2px solid ${color};opacity:0;animation:pulse-ring 2s cubic-bezier(0,0,0.2,1) infinite;top:-24px;left:-24px"></span>
+            <span style="position:absolute;display:block;width:48px;height:48px;border-radius:50%;border:2px solid ${color};opacity:0;animation:pulse-ring 2s cubic-bezier(0,0,0.2,1) infinite 0.6s;top:-24px;left:-24px"></span>
+            <span style="position:absolute;display:block;width:48px;height:48px;border-radius:50%;border:2px solid ${color};opacity:0;animation:pulse-ring 2s cubic-bezier(0,0,0.2,1) infinite 1.2s;top:-24px;left:-24px"></span>
+          </div>`
+        : "";
+
       // Marker icon
       const markerHtml = `<div style="position:relative;display:flex;flex-direction:column;align-items:center">
-        <div style="background:${color};width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.3);box-shadow:0 0 16px ${color}80;font-size:14px">${RISK_ICONS[dominantRisk]}</div>
-        <div style="background:rgba(0,0,0,0.85);border:1px solid ${tierColor};border-radius:4px;padding:1px 6px;margin-top:2px;white-space:nowrap">
+        ${pulseRingsHtml}
+        <div style="background:${color};width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.3);box-shadow:0 0 ${isCritical ? '24' : '16'}px ${color}${isCritical ? '' : '80'};font-size:14px;position:relative;z-index:1">${RISK_ICONS[dominantRisk]}</div>
+        <div style="background:rgba(0,0,0,0.85);border:1px solid ${tierColor};border-radius:4px;padding:1px 6px;margin-top:2px;white-space:nowrap;position:relative;z-index:1">
           <span style="font-size:9px;color:${tierColor};font-family:monospace;font-weight:bold">${tierLabel}</span>
         </div>
       </div>`;
 
       L.marker([point.latitude, point.longitude], {
-        icon: L.divIcon({ className: '', html: markerHtml, iconSize: [32, 48], iconAnchor: [16, 24] }),
+        icon: L.divIcon({ className: '', html: markerHtml, iconSize: [64, 64], iconAnchor: [32, 32] }),
       })
         .addTo(predictionLayerRef.current!)
         .bindPopup(
