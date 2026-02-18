@@ -77,6 +77,167 @@ export type Database = {
         }
         Relationships: []
       }
+      flood_stations: {
+        Row: {
+          created_at: string
+          current_level: number
+          danger_level: number
+          forecast_24h: number | null
+          forecast_48h: number | null
+          forecast_72h: number | null
+          id: string
+          last_updated: string
+          lat: number
+          lng: number
+          name: string
+          rainfall_mm: number | null
+          river: string
+          state: string
+          status: string
+          warning_level: number
+        }
+        Insert: {
+          created_at?: string
+          current_level?: number
+          danger_level?: number
+          forecast_24h?: number | null
+          forecast_48h?: number | null
+          forecast_72h?: number | null
+          id?: string
+          last_updated?: string
+          lat: number
+          lng: number
+          name: string
+          rainfall_mm?: number | null
+          river: string
+          state: string
+          status?: string
+          warning_level?: number
+        }
+        Update: {
+          created_at?: string
+          current_level?: number
+          danger_level?: number
+          forecast_24h?: number | null
+          forecast_48h?: number | null
+          forecast_72h?: number | null
+          id?: string
+          last_updated?: string
+          lat?: number
+          lng?: number
+          name?: string
+          rainfall_mm?: number | null
+          river?: string
+          state?: string
+          status?: string
+          warning_level?: number
+        }
+        Relationships: []
+      }
+      incident_logs: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          incident_id: string
+          log_type: string
+          message: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          incident_id: string
+          log_type?: string
+          message: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          incident_id?: string
+          log_type?: string
+          message?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incident_logs_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incidents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      incidents: {
+        Row: {
+          affected_population: number | null
+          assigned_to: string | null
+          closed_at: string | null
+          created_at: string
+          created_by: string
+          description: string | null
+          district: string | null
+          id: string
+          lat: number | null
+          lng: number | null
+          location_name: string
+          photo_url: string | null
+          resources_deployed: string[] | null
+          responders_deployed: number | null
+          severity: string
+          state: string
+          status: string
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          affected_population?: number | null
+          assigned_to?: string | null
+          closed_at?: string | null
+          created_at?: string
+          created_by: string
+          description?: string | null
+          district?: string | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          location_name: string
+          photo_url?: string | null
+          resources_deployed?: string[] | null
+          responders_deployed?: number | null
+          severity?: string
+          state: string
+          status?: string
+          title: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          affected_population?: number | null
+          assigned_to?: string | null
+          closed_at?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          district?: string | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          location_name?: string
+          photo_url?: string | null
+          resources_deployed?: string[] | null
+          responders_deployed?: number | null
+          severity?: string
+          state?: string
+          status?: string
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       institutions: {
         Row: {
           category: string
@@ -104,6 +265,96 @@ export type Database = {
           id?: string
           name?: string
           state?: string | null
+        }
+        Relationships: []
+      }
+      landslide_zones: {
+        Row: {
+          advisory: string | null
+          created_at: string
+          district: string
+          id: string
+          last_updated: string
+          rainfall_mm: number | null
+          risk_level: string
+          risk_score: number
+          slope_angle: number | null
+          soil_saturation: number | null
+          state: string
+        }
+        Insert: {
+          advisory?: string | null
+          created_at?: string
+          district: string
+          id?: string
+          last_updated?: string
+          rainfall_mm?: number | null
+          risk_level?: string
+          risk_score?: number
+          slope_angle?: number | null
+          soil_saturation?: number | null
+          state: string
+        }
+        Update: {
+          advisory?: string | null
+          created_at?: string
+          district?: string
+          id?: string
+          last_updated?: string
+          rainfall_mm?: number | null
+          risk_level?: string
+          risk_score?: number
+          slope_angle?: number | null
+          soil_saturation?: number | null
+          state?: string
+        }
+        Relationships: []
+      }
+      ocean_stations: {
+        Row: {
+          alert_level: string
+          created_at: string
+          id: string
+          last_updated: string
+          lat: number
+          lng: number
+          name: string
+          sea_level_m: number | null
+          state: string
+          tsunami_probability: number | null
+          type: string
+          wave_height_m: number | null
+          wave_period_s: number | null
+        }
+        Insert: {
+          alert_level?: string
+          created_at?: string
+          id?: string
+          last_updated?: string
+          lat: number
+          lng: number
+          name: string
+          sea_level_m?: number | null
+          state: string
+          tsunami_probability?: number | null
+          type?: string
+          wave_height_m?: number | null
+          wave_period_s?: number | null
+        }
+        Update: {
+          alert_level?: string
+          created_at?: string
+          id?: string
+          last_updated?: string
+          lat?: number
+          lng?: number
+          name?: string
+          sea_level_m?: number | null
+          state?: string
+          tsunami_probability?: number | null
+          type?: string
+          wave_height_m?: number | null
+          wave_period_s?: number | null
         }
         Relationships: []
       }
@@ -226,6 +477,72 @@ export type Database = {
           trust_score?: number
           user_id?: string
           verified?: boolean
+        }
+        Relationships: []
+      }
+      resources: {
+        Row: {
+          category: string
+          condition: string
+          contact_person: string | null
+          contact_phone: string | null
+          created_at: string
+          created_by: string
+          id: string
+          lat: number | null
+          lng: number | null
+          location_name: string
+          name: string
+          notes: string | null
+          owner_org: string
+          quantity: number
+          state: string
+          status: string
+          type: string
+          unit: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          condition?: string
+          contact_person?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          created_by: string
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          location_name: string
+          name: string
+          notes?: string | null
+          owner_org: string
+          quantity?: number
+          state: string
+          status?: string
+          type?: string
+          unit?: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          condition?: string
+          contact_person?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          location_name?: string
+          name?: string
+          notes?: string | null
+          owner_org?: string
+          quantity?: number
+          state?: string
+          status?: string
+          type?: string
+          unit?: string
+          updated_at?: string
         }
         Relationships: []
       }
