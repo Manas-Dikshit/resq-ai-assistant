@@ -97,11 +97,17 @@ export default function TrainingDashboard() {
 
         <div className="flex items-center gap-2">
           <LanguageToggle />
-          <Link
-            to="/dashboard"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-          >
-            <Radio className="w-3.5 h-3.5" /> Disaster Dashboard
+          <Link to="/dashboard" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
+            <Radio className="w-3.5 h-3.5" /> Dashboard
+          </Link>
+          <Link to="/control-room" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
+            <Shield className="w-3.5 h-3.5" /> Control Room
+          </Link>
+          <Link to="/resources" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
+            <Bell className="w-3.5 h-3.5" /> Resources
+          </Link>
+          <Link to="/forecast" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
+            <BarChart3 className="w-3.5 h-3.5" /> Forecasts
           </Link>
           {/* Realtime notifications bell */}
           <TrainingNotifications />

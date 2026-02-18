@@ -26,9 +26,12 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<Index />} />
+          <Route path="/" element={<Index />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/training" element={<TrainingDashboard />} />
+            <Route path="/resources" element={<ResourceInventory />} />
+            <Route path="/forecast" element={<ForecastCenter />} />
+            <Route path="/control-room" element={<ControlRoom />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<NotFound />} />
