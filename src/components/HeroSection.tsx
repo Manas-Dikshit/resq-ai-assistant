@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Shield, Brain, Globe, Activity, Zap, Users } from "lucide-react";
+import { ArrowRight, Shield, Brain, Globe, Activity, Zap, Users, GraduationCap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import heroGlobe from "@/assets/hero-globe.jpg";
@@ -84,6 +84,15 @@ const HeroSection = () => {
             >
               {t('hero.openDashboard')}
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </motion.button>
+            <motion.button
+              onClick={() => navigate("/training")}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.98 }}
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-lg border border-primary/30 text-foreground font-display hover:bg-primary/10 hover:border-primary/50 transition-all"
+            >
+              <GraduationCap className="w-5 h-5 text-primary" />
+              Training Monitoring
             </motion.button>
             <motion.button
               onClick={() => navigate("/dashboard")}

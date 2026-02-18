@@ -77,6 +77,36 @@ export type Database = {
         }
         Relationships: []
       }
+      institutions: {
+        Row: {
+          category: string
+          contact_email: string | null
+          contact_person: string | null
+          created_at: string
+          id: string
+          name: string
+          state: string | null
+        }
+        Insert: {
+          category?: string
+          contact_email?: string | null
+          contact_person?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          state?: string | null
+        }
+        Update: {
+          category?: string
+          contact_email?: string | null
+          contact_person?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          state?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -282,6 +312,110 @@ export type Database = {
           verified_at?: string | null
         }
         Relationships: []
+      }
+      training_themes: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          theme_name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          theme_name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          theme_name?: string
+        }
+        Relationships: []
+      }
+      trainings: {
+        Row: {
+          created_at: string
+          created_by: string
+          documents: string[] | null
+          end_date: string
+          id: string
+          institution_id: string | null
+          lat: number | null
+          level: string
+          lng: number | null
+          location_name: string
+          organizer: string
+          outcome_summary: string | null
+          participants_female: number
+          participants_male: number
+          participants_total: number
+          start_date: string
+          state: string
+          theme: string
+          title: string
+          trainer_names: string | null
+          updated_at: string
+          verified: boolean
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          documents?: string[] | null
+          end_date: string
+          id?: string
+          institution_id?: string | null
+          lat?: number | null
+          level?: string
+          lng?: number | null
+          location_name: string
+          organizer: string
+          outcome_summary?: string | null
+          participants_female?: number
+          participants_male?: number
+          participants_total?: number
+          start_date: string
+          state: string
+          theme: string
+          title: string
+          trainer_names?: string | null
+          updated_at?: string
+          verified?: boolean
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          documents?: string[] | null
+          end_date?: string
+          id?: string
+          institution_id?: string | null
+          lat?: number | null
+          level?: string
+          lng?: number | null
+          location_name?: string
+          organizer?: string
+          outcome_summary?: string | null
+          participants_female?: number
+          participants_male?: number
+          participants_total?: number
+          start_date?: string
+          state?: string
+          theme?: string
+          title?: string
+          trainer_names?: string | null
+          updated_at?: string
+          verified?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trainings_institution_id_fkey"
+            columns: ["institution_id"]
+            isOneToOne: false
+            referencedRelation: "institutions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
