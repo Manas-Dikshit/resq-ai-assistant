@@ -77,6 +77,15 @@ const Dashboard = () => {
           <Link to="/training" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
             <GraduationCap className="w-3.5 h-3.5 text-primary" /><span className="hidden sm:inline">Training</span>
           </Link>
+          <Link to="/resources" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
+            <Map className="w-3.5 h-3.5 text-primary" /><span className="hidden sm:inline">Resources</span>
+          </Link>
+          <Link to="/control-room" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
+            <Radio className="w-3.5 h-3.5 text-primary" /><span className="hidden sm:inline">Control Room</span>
+          </Link>
+          <Link to="/forecast" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
+            <BarChart3 className="w-3.5 h-3.5 text-primary" /><span className="hidden sm:inline">Forecasts</span>
+          </Link>
           <button onClick={() => setShowChat(!showChat)} className={`p-2 rounded-md transition-colors ${showChat ? 'bg-primary/10 text-primary' : 'hover:bg-accent text-muted-foreground hover:text-foreground'}`} title="Toggle AI Chat">
             <MessageSquare className="w-4 h-4" />
           </button>

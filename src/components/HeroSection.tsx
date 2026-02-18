@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Shield, Brain, Globe, Activity, Zap, Users, GraduationCap } from "lucide-react";
+import { ArrowRight, Shield, Brain, Globe, Activity, Zap, Users, GraduationCap, Package, Waves } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import heroGlobe from "@/assets/hero-globe.jpg";
@@ -89,18 +89,37 @@ const HeroSection = () => {
               onClick={() => navigate("/training")}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-lg border border-primary/30 text-foreground font-display hover:bg-primary/10 hover:border-primary/50 transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-primary/30 text-foreground font-display hover:bg-primary/10 hover:border-primary/50 transition-all text-sm"
             >
-              <GraduationCap className="w-5 h-5 text-primary" />
-              Training Monitoring
+              <GraduationCap className="w-4 h-4 text-primary" />
+              Training
             </motion.button>
             <motion.button
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/control-room")}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-lg border border-border text-foreground font-display hover:bg-accent hover:border-primary/30 transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-destructive/30 text-foreground font-display hover:bg-destructive/10 hover:border-destructive/50 transition-all text-sm"
             >
-              {t('hero.viewMap')}
+              <Shield className="w-4 h-4 text-destructive" />
+              Control Room
+            </motion.button>
+            <motion.button
+              onClick={() => navigate("/resources")}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.98 }}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-border text-foreground font-display hover:bg-accent hover:border-primary/30 transition-all text-sm"
+            >
+              <Package className="w-4 h-4 text-warning" />
+              Resources
+            </motion.button>
+            <motion.button
+              onClick={() => navigate("/forecast")}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.98 }}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-border text-foreground font-display hover:bg-accent hover:border-primary/30 transition-all text-sm"
+            >
+              <Waves className="w-4 h-4 text-flood" />
+              Forecast Center
             </motion.button>
           </div>
         </motion.div>
