@@ -12,6 +12,7 @@ import TrainingMap from "@/components/training/TrainingMap";
 import TrainingList from "@/components/training/TrainingList";
 import TrainingAnalytics from "@/components/training/TrainingAnalytics";
 import AddTrainingForm from "@/components/training/AddTrainingForm";
+import TrainingNotifications from "@/components/training/TrainingNotifications";
 import LanguageToggle from "@/components/LanguageToggle";
 import { Button } from "@/components/ui/button";
 import {
@@ -102,6 +103,8 @@ export default function TrainingDashboard() {
           >
             <Radio className="w-3.5 h-3.5" /> Disaster Dashboard
           </Link>
+          {/* Realtime notifications bell */}
+          <TrainingNotifications />
           {/* Live indicator */}
           <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-safe/10 border border-safe/20 text-xs text-safe font-display">
             <span className="relative flex h-2 w-2">
