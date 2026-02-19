@@ -289,7 +289,7 @@ Tiered Alert System → VERIFIED_CRITICAL > AI_PREDICTED > MONITORING > LOW_WATC
 | **Web Audio API** | Native | Audible alert tones |
 | **PWA / Service Worker** | vite-plugin-pwa | Offline caching, installability |
 
-### Backend (Lovable Cloud)
+### Backend (Cloud)
 | Technology | Purpose |
 |---|---|
 | **PostgreSQL** | Primary database (reports, shelters, alerts, predictions, chat history, profiles) |
@@ -297,13 +297,13 @@ Tiered Alert System → VERIFIED_CRITICAL > AI_PREDICTED > MONITORING > LOW_WATC
 | **Supabase Auth** | Email/password auth with role management |
 | **Realtime (WebSocket)** | Live updates for shelters, reports, alerts |
 | **Edge Functions (Deno)** | Serverless backend logic — predictions, AI chat, data fetching |
-| **Lovable AI Gateway** | No-key AI model access (Gemini / GPT class) |
+| **AI Gateway** | No-key AI model access (Gemini / GPT class) |
 
 ### Edge Functions
 | Function | Runtime | Purpose |
 |---|---|---|
 | `predict-risk` | Deno | Accepts 15-point grid, calls ML model or heuristics, returns risk scores + explainability |
-| `resqai-chat` | Deno | AI chat powered by Lovable AI — context-aware disaster Q&A |
+| `resqai-chat` | Deno | AI chat powered by AI — context-aware disaster Q&A |
 | `fetch-disasters` | Deno | Aggregates USGS, NASA EONET, and weather APIs |
 
 ### Database Schema
@@ -374,7 +374,7 @@ resqai/
 │   │       ├── hi.json              # Hindi translations
 │   │       └── or.json              # Odia translations
 │   ├── integrations/supabase/
-│   │   └── client.ts                # Lovable Cloud client (auto-generated)
+│   │   └── client.ts                # Cloud client (auto-generated)
 │   ├── pages/
 │   │   ├── Index.tsx                # Landing page
 │   │   ├── Dashboard.tsx            # Main operational dashboard
