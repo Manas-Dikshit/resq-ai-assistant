@@ -10,7 +10,12 @@ interface Message { role: "user" | "assistant"; content: string; }
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/resqai-chat`;
 
-const LANG_MAP: Record<string, string> = { en: "en-US", hi: "hi-IN", or: "or-IN" };
+// Odia uses 'or-IN' BCP47 tag; some browsers map to 'or' — we try both
+const LANG_MAP: Record<string, string[]> = {
+  en: ["en-US"],
+  hi: ["hi-IN"],
+  or: ["or-IN", "or"],
+};
 
 const AIChatPanel = () => {
   const { user } = useAuth();
@@ -29,42 +34,105 @@ const AIChatPanel = () => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
+  // Get preferred TTS voice for language
+  const getVoice = useCallback((lang: string): SpeechSynthesisVoice | null => {
+    if (!('speechSynthesis' in window)) return null;
+    const voices = window.speechSynthesis.getVoices();
+    const langCodes = LANG_MAP[lang] || LANG_MAP.en;
+    for (const code of langCodes) {
+      const match = voices.find(v => v.lang.startsWith(code) || v.lang === code);
+      if (match) return match;
+    }
+    // Fallback: find any voice matching the base language
+    const base = lang.split('-')[0];
+    return voices.find(v => v.lang.startsWith(base)) || null;
+  }, []);
+
   // Speak text using Web Speech API
   const speak = useCallback((text: string) => {
     if (!ttsEnabled || !('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
     const clean = text.replace(/[*#_~`>]/g, '').replace(/\[.*?\]\(.*?\)/g, '');
     const utterance = new SpeechSynthesisUtterance(clean);
-    utterance.lang = LANG_MAP[i18n.language] || "en-US";
-    utterance.rate = 0.95;
+    const lang = i18n.language;
+    const voice = getVoice(lang);
+    if (voice) {
+      utterance.voice = voice;
+      utterance.lang = voice.lang;
+    } else {
+      utterance.lang = LANG_MAP[lang]?.[0] || "en-US";
+    }
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
     window.speechSynthesis.speak(utterance);
-  }, [ttsEnabled, i18n.language]);
+  }, [ttsEnabled, i18n.language, getVoice]);
 
-  // Start voice recognition
+  // Load voices asynchronously (Chrome loads them async)
+  useEffect(() => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.getVoices(); // trigger load
+      window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+    }
+  }, []);
+
+  // Start voice recognition — tries each lang code until one works
   const startListening = useCallback(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) { toast.error("Speech recognition not supported in this browser"); return; }
+    if (!SpeechRecognition) {
+      toast.error(t('chat.voiceNotSupported'));
+      return;
+    }
 
     const recognition = new SpeechRecognition();
-    recognition.lang = LANG_MAP[i18n.language] || "en-US";
+    const lang = i18n.language;
+    const codes = LANG_MAP[lang] || LANG_MAP.en;
+    recognition.lang = codes[0]; // primary code
     recognition.interimResults = true;
     recognition.continuous = false;
+    recognition.maxAlternatives = 3;
 
     recognition.onresult = (event: any) => {
-      const transcript = Array.from(event.results).map((r: any) => r[0].transcript).join('');
+      // Take the best alternative from the last result
+      const lastResult = event.results[event.results.length - 1];
+      const transcript = lastResult[0].transcript;
       setInput(transcript);
     };
+
     recognition.onend = () => setIsListening(false);
+
     recognition.onerror = (e: any) => {
-      console.error("Speech error:", e.error);
+      console.error("Speech error:", e.error, "lang:", recognition.lang);
       setIsListening(false);
-      if (e.error !== 'aborted') toast.error("Voice input failed");
+      // For Odia, browser may not support or-IN — silently show message
+      if (e.error === 'language-not-supported' && codes.length > 1) {
+        // Retry with fallback code
+        const recognition2 = new SpeechRecognition();
+        recognition2.lang = codes[1];
+        recognition2.interimResults = true;
+        recognition2.continuous = false;
+        recognition2.onresult = (ev: any) => {
+          const t2 = ev.results[ev.results.length - 1][0].transcript;
+          setInput(t2);
+        };
+        recognition2.onend = () => setIsListening(false);
+        recognition2.onerror = () => {
+          setIsListening(false);
+          toast.error(t('chat.voiceFailed'));
+        };
+        recognitionRef.current = recognition2;
+        recognition2.start();
+        setIsListening(true);
+        return;
+      }
+      if (e.error !== 'aborted' && e.error !== 'no-speech') {
+        toast.error(t('chat.voiceFailed'));
+      }
     };
 
     recognitionRef.current = recognition;
     recognition.start();
     setIsListening(true);
-  }, [i18n.language]);
+  }, [i18n.language, t]);
 
   const stopListening = useCallback(() => {
     recognitionRef.current?.stop();
@@ -148,7 +216,7 @@ const AIChatPanel = () => {
         <span className="font-display text-sm font-bold text-foreground">{t('chat.title')}</span>
         <div className="ml-auto flex items-center gap-1.5">
           <button onClick={() => { setTtsEnabled(!ttsEnabled); if (ttsEnabled) window.speechSynthesis?.cancel(); }}
-            className="p-1 rounded hover:bg-accent transition-colors" title={ttsEnabled ? "Mute voice" : "Enable voice"}>
+            className="p-1 rounded hover:bg-accent transition-colors" title={ttsEnabled ? t('chat.muteVoice') : t('chat.enableVoice')}>
             {ttsEnabled ? <Volume2 className="w-3.5 h-3.5 text-primary" /> : <VolumeX className="w-3.5 h-3.5 text-muted-foreground" />}
           </button>
           <span className="w-2 h-2 rounded-full bg-safe animate-pulse-glow" />
@@ -194,7 +262,7 @@ const AIChatPanel = () => {
         <div className="flex gap-2">
           <button onClick={isListening ? stopListening : startListening} disabled={!user}
             className={`p-2 rounded-md transition-colors ${isListening ? 'bg-destructive text-destructive-foreground animate-pulse' : 'bg-secondary text-muted-foreground hover:text-foreground hover:bg-accent'} disabled:opacity-50`}
-            title={isListening ? "Stop listening" : "Voice input"}>
+            title={isListening ? t('chat.stopListening') : t('chat.voiceInput')}>
             {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
           </button>
           <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
