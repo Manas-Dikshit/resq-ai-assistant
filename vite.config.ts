@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "robots.txt", "placeholder.svg"],
+      includeAssets: ["Resq.png", "robots.txt", "placeholder.svg"],
       manifest: {
         name: "ResQAI - Disaster Response Platform",
         short_name: "ResQAI",
@@ -30,8 +30,8 @@ export default defineConfig(({ mode }) => ({
         scope: "/",
         start_url: "/",
         icons: [
-          { src: "/favicon.ico", sizes: "64x64", type: "image/x-icon" },
-          { src: "/favicon.ico", sizes: "192x192", type: "image/png", purpose: "any maskable" },
+          { src: "/Resq.png", sizes: "64x64", type: "image/png" },
+          { src: "/Resq.png", sizes: "192x192", type: "image/png", purpose: "any maskable" },
         ],
       },
       workbox: {

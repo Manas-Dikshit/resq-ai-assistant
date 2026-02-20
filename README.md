@@ -389,7 +389,7 @@ resqai/
 │       ├── resqai-chat/index.ts     # AI chat edge function
 │       └── fetch-disasters/index.ts # External data aggregator
 └── public/
-    └── robots.txt, favicon.ico
+    └── robots.txt, Resq.png
 ```
 
 ---
