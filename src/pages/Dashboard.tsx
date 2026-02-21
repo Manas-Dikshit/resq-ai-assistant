@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { MessageSquare, Map, BarChart3, Radio, ChevronLeft, ChevronRight, LogIn, LogOut, AlertTriangle, Shield, FileWarning, Satellite, Thermometer, Home, Brain, Users, GraduationCap } from "lucide-react";
+import { MessageSquare, Map, BarChart3, Radio, ChevronLeft, ChevronRight, LogIn, LogOut, AlertTriangle, Shield, FileWarning, Satellite, Thermometer, Home, Brain, Users, GraduationCap, Route } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
@@ -76,6 +76,9 @@ const Dashboard = () => {
           )}
           <Link to="/training" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
             <GraduationCap className="w-3.5 h-3.5 text-primary" /><span className="hidden sm:inline">{t('nav.training')}</span>
+          </Link>
+          <Link to="/evacuate" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display bg-destructive/10 text-destructive hover:bg-destructive/20 border border-destructive/20 transition-colors">
+            <Route className="w-3.5 h-3.5" /><span className="hidden sm:inline">{t('nav.evacuate')}</span>
           </Link>
           <Link to="/resources" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
             <Map className="w-3.5 h-3.5 text-primary" /><span className="hidden sm:inline">{t('nav.resources')}</span>

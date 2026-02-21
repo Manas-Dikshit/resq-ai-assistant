@@ -13,6 +13,7 @@ import ForecastCenter from "./pages/ForecastCenter";
 import ControlRoom from "./pages/ControlRoom";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
+import EvacuationPlanner from "./pages/EvacuationPlanner";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/forecast" element={<ForecastCenter />} />
             <Route path="/control-room" element={<ControlRoom />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/evacuate" element={<EvacuationPlanner />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

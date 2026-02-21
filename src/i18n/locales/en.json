@@ -14,7 +14,31 @@
     "resources": "Resources",
     "controlRoom": "Control Room",
     "forecasts": "Forecasts",
-    "aiChat": "AI Chat"
+    "aiChat": "AI Chat",
+    "evacuate": "Evacuate"
+  },
+  "evacuation": {
+    "title": "Evacuation Route Planner",
+    "emergency": "EMERGENCY",
+    "detectLocation": "Detect My Location",
+    "updateLocation": "Update Location",
+    "locating": "Locating...",
+    "locationError": "Could not detect location",
+    "stayCalm": "Stay Calm — Follow Your Route",
+    "stayDesc": "Move to the nearest available shelter. Avoid flood zones, fallen power lines, and damaged structures.",
+    "routeFound": "✅ Route Calculated",
+    "shelters": "shelters",
+    "spotsAvailable": "spots available",
+    "nearest": "Nearest Available",
+    "allShelters": "All Shelters",
+    "checklist": "Evacuation Checklist",
+    "checkId": "📋 ID documents & important papers",
+    "checkWater": "💧 Water bottles (2L per person)",
+    "checkMeds": "💊 Essential medications",
+    "checkPhone": "📱 Charged phone & power bank",
+    "checkDocs": "📄 Insurance & property documents",
+    "checkClothes": "👕 Change of clothes & blanket",
+    "emergencyContacts": "Emergency Contacts"
   },
   "hero": {
     "badge": "LIVE MONITORING ACTIVE",
