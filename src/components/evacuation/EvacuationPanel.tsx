@@ -82,8 +82,53 @@ const EvacuationPanel = ({ userPos, onUserPosChange, selectedShelterId, onSelect
     setLocating(true);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        onUserPosChange({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        setLocating(false);
+        (async () => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          onUserPosChange({ lat, lng });
+
+          // fetch latest shelters and find nearest available
+          try {
+            const { data } = await supabase.from('shelters').select('*');
+            if (data && data.length > 0) {
+              const mapped = data.map((s: any) => ({
+                ...s,
+                distance: haversineDistance(lat, lng, s.lat, s.lng),
+                availableSpots: Math.max(0, s.capacity - s.occupancy),
+                utilization: s.capacity > 0 ? s.occupancy / s.capacity : 1,
+              }));
+              // sort by availability then distance
+              mapped.sort((a: any, b: any) => {
+                if (a.availableSpots === 0 && b.availableSpots > 0) return 1;
+                if (a.availableSpots > 0 && b.availableSpots === 0) return -1;
+                return a.distance - b.distance;
+              });
+              const nearest = mapped.find((m: any) => m.availableSpots > 0) || mapped[0];
+              if (nearest) {
+                onSelectShelter(nearest.id);
+
+                // notify nearby people by inserting a notification row
+                try {
+                  const message = `User at ${lat.toFixed(4)},${lng.toFixed(4)} requesting evacuation to ${nearest.name}`;
+                  await supabase.from('evac_notifications').insert([{
+                    user_lat: lat,
+                    user_lng: lng,
+                    shelter_id: nearest.id,
+                    message,
+                    created_at: new Date().toISOString(),
+                  }]);
+                  toast.success(t('evacuation.requestSent'));
+                } catch (err) {
+                  console.error('notify error', err);
+                }
+              }
+            }
+          } catch (e) {
+            console.error('fetch shelters error', e);
+          } finally {
+            setLocating(false);
+          }
+        })();
       },
       () => {
         toast.error(t('evacuation.locationError'));

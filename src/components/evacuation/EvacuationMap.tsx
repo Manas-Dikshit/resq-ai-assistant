@@ -31,6 +31,7 @@ const EvacuationMap = ({ userPos, onUserPosChange, selectedShelterId, onSelectSh
   const mapInstanceRef = useRef<L.Map | null>(null);
   const shelterLayerRef = useRef<L.LayerGroup | null>(null);
   const hazardLayerRef = useRef<L.LayerGroup | null>(null);
+  const notificationLayerRef = useRef<L.LayerGroup | null>(null);
   const userMarkerRef = useRef<L.Marker | null>(null);
   const routingControlRef = useRef<any>(null);
   const sheltersRef = useRef<Shelter[]>([]);
@@ -51,6 +52,7 @@ const EvacuationMap = ({ userPos, onUserPosChange, selectedShelterId, onSelectSh
     mapInstanceRef.current = map;
     shelterLayerRef.current = L.layerGroup().addTo(map);
     hazardLayerRef.current = L.layerGroup().addTo(map);
+    notificationLayerRef.current = L.layerGroup().addTo(map);
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
@@ -134,6 +136,20 @@ const EvacuationMap = ({ userPos, onUserPosChange, selectedShelterId, onSelectSh
     const channel = supabase
       .channel('evac-shelters-map')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'shelters' }, () => loadShelters())
+      .subscribe();
+    // subscribe to evacuation notifications to display user requests on the map
+    const notifChannel = supabase
+      .channel('evac-notifications-map')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'evac_notifications' }, (payload) => {
+        const n = payload.new as any;
+        if (!notificationLayerRef.current) return;
+        const marker = L.marker([n.user_lat || n.latitude, n.user_lng || n.longitude], {
+          icon: L.divIcon({ html: `<div style="background:#f97316;color:#fff;padding:6px 8px;border-radius:6px;font-size:12px">📣</div>`, className: '' })
+        }).addTo(notificationLayerRef.current!);
+        marker.bindPopup(`<div style="font-family:monospace;min-width:200px"><b>Evac Request</b><p style="font-size:12px;color:#aaa;margin-top:6px">${n.message || ''}</p></div>`).openPopup();
+        // remove after 45s
+        setTimeout(() => { notificationLayerRef.current && notificationLayerRef.current.removeLayer(marker); }, 45000);
+      })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [onSelectShelter]);
