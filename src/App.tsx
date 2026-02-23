@@ -14,6 +14,7 @@ import ControlRoom from "./pages/ControlRoom";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import EvacuationPlanner from "./pages/EvacuationPlanner";
+import PostDisaster from "./pages/PostDisaster";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/control-room" element={<ControlRoom />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/evacuate" element={<EvacuationPlanner />} />
+            <Route path="/post-disaster" element={<PostDisaster />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
