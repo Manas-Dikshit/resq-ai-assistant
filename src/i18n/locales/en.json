@@ -15,7 +15,8 @@
     "controlRoom": "Control Room",
     "forecasts": "Forecasts",
     "aiChat": "AI Chat",
-    "evacuate": "Evacuate"
+    "evacuate": "Evacuate",
+    "postDisaster": "Recovery"
   },
   "evacuation": {
     "title": "Evacuation Shelters",
