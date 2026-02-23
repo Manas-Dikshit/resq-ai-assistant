@@ -60,8 +60,12 @@ serve(async (req) => {
     const marine = marineRes?.ok ? await marineRes.json() : null;
     const multiCity = multiCityRes?.ok ? await multiCityRes.json() : null;
 
-    // Process earthquake data
-    const earthquakeEvents = (earthquakes.features || []).slice(0, 20).map((f: any) => ({
+    // Process earthquake data (filter to Odisha region)
+    const earthquakeEvents = (earthquakes.features || []).filter((f: any) => {
+      const lat = f.geometry.coordinates[1];
+      const lng = f.geometry.coordinates[0];
+      return Math.abs(lat - centerLat) < 5 && Math.abs(lng - centerLng) < 5;
+    }).slice(0, 20).map((f: any) => ({
       id: f.id,
       type: 'earthquake',
       title: f.properties.title,

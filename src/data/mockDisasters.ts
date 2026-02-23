@@ -28,26 +28,26 @@ export interface RiskPrediction {
 }
 
 export const mockDisasters: DisasterEvent[] = [
-  { id: '1', type: 'flood', title: 'Severe Flooding - Mumbai', lat: 19.076, lng: 72.8777, severity: 0.85, description: 'Heavy monsoon flooding across coastal districts', timestamp: '2026-02-14T08:00Z', affected: 45000 },
-  { id: '2', type: 'earthquake', title: 'Earthquake - Tokyo Bay', lat: 35.6762, lng: 139.6503, severity: 0.62, description: 'M5.8 earthquake detected near Tokyo Bay', timestamp: '2026-02-14T06:30Z', affected: 12000 },
-  { id: '3', type: 'fire', title: 'Wildfire - California', lat: 34.0522, lng: -118.2437, severity: 0.78, description: 'Fast-moving wildfire in Los Angeles county', timestamp: '2026-02-14T03:00Z', affected: 8500 },
-  { id: '4', type: 'storm', title: 'Cyclone Alert - Bay of Bengal', lat: 13.0827, lng: 80.2707, severity: 0.91, description: 'Category 4 cyclone approaching eastern coast', timestamp: '2026-02-14T10:00Z', affected: 120000 },
-  { id: '5', type: 'flood', title: 'River Overflow - Bangladesh', lat: 23.685, lng: 90.3563, severity: 0.73, description: 'Padma river breached embankments', timestamp: '2026-02-14T05:00Z', affected: 67000 },
-  { id: '6', type: 'fire', title: 'Industrial Fire - Istanbul', lat: 41.0082, lng: 28.9784, severity: 0.45, description: 'Chemical plant fire with hazmat risk', timestamp: '2026-02-14T09:00Z', affected: 2000 },
+  { id: '1', type: 'flood', title: 'Mahanadi River Flooding - Cuttack', lat: 20.4625, lng: 85.8828, severity: 0.88, description: 'Mahanadi river breached embankments near Naraj barrage, low-lying areas submerged', timestamp: '2026-02-14T04:00Z', affected: 75000 },
+  { id: '2', type: 'storm', title: 'Cyclone Warning - Puri Coast', lat: 19.8135, lng: 85.8312, severity: 0.92, description: 'Deep depression in Bay of Bengal intensifying, landfall expected near Puri within 48 hrs', timestamp: '2026-02-14T02:00Z', affected: 250000 },
+  { id: '3', type: 'flood', title: 'Brahmani River Overflow - Jajpur', lat: 20.8372, lng: 86.3275, severity: 0.71, description: 'Brahmani river above danger level at Akhuapada, 50 villages affected', timestamp: '2026-02-14T06:00Z', affected: 32000 },
+  { id: '4', type: 'flood', title: 'Waterlogging - Bhubaneswar', lat: 20.2961, lng: 85.8245, severity: 0.55, description: 'Heavy rainfall causing urban flooding in low-lying areas of Bhubaneswar', timestamp: '2026-02-14T08:00Z', affected: 15000 },
+  { id: '5', type: 'storm', title: 'Lightning Alert - Mayurbhanj', lat: 21.9371, lng: 86.7379, severity: 0.48, description: 'Severe thunderstorm with lightning activity across Mayurbhanj district', timestamp: '2026-02-14T07:00Z', affected: 8000 },
+  { id: '6', type: 'fire', title: 'Forest Fire - Similipal', lat: 21.8282, lng: 86.3740, severity: 0.63, description: 'Forest fire detected in Similipal National Park, spread over 200 hectares', timestamp: '2026-02-14T05:00Z', affected: 500 },
 ];
 
 export const mockShelters: Shelter[] = [
-  { id: 's1', name: 'Mumbai Central Shelter', lat: 19.08, lng: 72.88, capacity: 500, occupancy: 340 },
-  { id: 's2', name: 'Tokyo Emergency Center', lat: 35.68, lng: 139.66, capacity: 1200, occupancy: 450 },
-  { id: 's3', name: 'LA Convention Center', lat: 34.04, lng: -118.27, capacity: 3000, occupancy: 1200 },
-  { id: 's4', name: 'Chennai Relief Camp', lat: 13.09, lng: 80.28, capacity: 800, occupancy: 790 },
+  { id: 's1', name: 'Cuttack Indoor Stadium Shelter', lat: 20.4686, lng: 85.8918, capacity: 2000, occupancy: 1450 },
+  { id: 's2', name: 'Puri Jagannath Temple Complex', lat: 19.8048, lng: 85.8177, capacity: 5000, occupancy: 2800 },
+  { id: 's3', name: 'OSDMA HQ - Bhubaneswar', lat: 20.2756, lng: 85.8214, capacity: 800, occupancy: 200 },
+  { id: 's4', name: 'Jajpur Collectorate Relief Camp', lat: 20.8507, lng: 86.3386, capacity: 1500, occupancy: 980 },
 ];
 
 export const mockRiskPredictions: RiskPrediction[] = [
-  { region: 'South Asia', flood_risk: 0.81, quake_risk: 0.12, fire_risk: 0.05, timestamp: '2026-02-15T10:00Z' },
-  { region: 'East Asia', flood_risk: 0.35, quake_risk: 0.58, fire_risk: 0.08, timestamp: '2026-02-15T10:00Z' },
-  { region: 'North America', flood_risk: 0.15, quake_risk: 0.22, fire_risk: 0.72, timestamp: '2026-02-15T10:00Z' },
-  { region: 'Europe', flood_risk: 0.28, quake_risk: 0.08, fire_risk: 0.41, timestamp: '2026-02-15T10:00Z' },
+  { region: 'Coastal Odisha (Puri, Jagatsinghpur, Kendrapara)', flood_risk: 0.89, quake_risk: 0.05, fire_risk: 0.03, timestamp: '2026-02-15T10:00Z' },
+  { region: 'Central Odisha (Cuttack, Dhenkanal, Angul)', flood_risk: 0.76, quake_risk: 0.08, fire_risk: 0.12, timestamp: '2026-02-15T10:00Z' },
+  { region: 'Western Odisha (Balangir, Bargarh, Sambalpur)', flood_risk: 0.62, quake_risk: 0.10, fire_risk: 0.18, timestamp: '2026-02-15T10:00Z' },
+  { region: 'Northern Odisha (Mayurbhanj, Keonjhar)', flood_risk: 0.45, quake_risk: 0.15, fire_risk: 0.55, timestamp: '2026-02-15T10:00Z' },
 ];
 
 export const getDisasterColor = (type: DisasterEvent['type']) => {
