@@ -77,6 +77,33 @@ export type Database = {
         }
         Relationships: []
       }
+      evac_notifications: {
+        Row: {
+          created_at: string | null
+          id: string
+          message: string | null
+          shelter_id: string | null
+          user_lat: number
+          user_lng: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message?: string | null
+          shelter_id?: string | null
+          user_lat: number
+          user_lng: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message?: string | null
+          shelter_id?: string | null
+          user_lat?: number
+          user_lng?: number
+        }
+        Relationships: []
+      }
       flood_stations: {
         Row: {
           created_at: string
