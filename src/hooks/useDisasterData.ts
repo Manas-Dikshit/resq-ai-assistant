@@ -158,3 +158,57 @@ export const getWindDirectionLabel = (deg: number): string => {
   const dirs = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
   return dirs[Math.round(deg / 22.5) % 16];
 };
+
+// ─── NASA FIRMS – Forest Fire / Active Fire Hotspots ─────────────────────────
+export interface ForestFireHotspot {
+  latitude: number;
+  longitude: number;
+  bright_ti4: number;   // brightness temperature channel 4 (K)
+  bright_ti5: number;   // brightness temperature channel 5 (K)
+  frp: number;          // fire radiative power (MW)
+  acq_date: string;     // "YYYY-MM-DD"
+  acq_time: string;     // "HHMM"
+  satellite: string;    // "N" = NOAA-20, "NPP" = Suomi NPP
+  confidence: string;   // "high" | "nominal" | "low"
+  daynight: string;     // "D" | "N"
+  scan: number;
+  track: number;
+}
+
+/**
+ * Fetches active forest-fire hotspots from NASA FIRMS VIIRS_SNPP_NRT for a
+ * bounding box that covers Odisha (and surrounding regions).
+ *
+ * API key (MAP_KEY): https://firms.modaps.eosdis.nasa.gov/usfs/api/area/
+ * Set VITE_NASA_FIRMS_API_KEY in your .env file.
+ */
+export const useForestFireData = (days = 1) => {
+  const apiKey = import.meta.env.VITE_NASA_FIRMS_API_KEY as string | undefined;
+
+  return useQuery<ForestFireHotspot[]>({
+    queryKey: ["forest-fires", days],
+    queryFn: async () => {
+      if (!apiKey || apiKey === "YOUR_FIRMS_MAP_KEY_HERE") {
+        // Return mock hotspots when no key is configured
+        return [
+          { latitude: 21.8282, longitude: 86.374, bright_ti4: 340.1, bright_ti5: 305.6, frp: 28.4, acq_date: new Date().toISOString().slice(0, 10), acq_time: "0610", satellite: "NPP", confidence: "high", daynight: "D", scan: 0.4, track: 0.4 },
+          { latitude: 21.6740, longitude: 86.2800, bright_ti4: 332.8, bright_ti5: 301.2, frp: 14.2, acq_date: new Date().toISOString().slice(0, 10), acq_time: "0612", satellite: "NPP", confidence: "nominal", daynight: "D", scan: 0.4, track: 0.4 },
+          { latitude: 21.9100, longitude: 86.5500, bright_ti4: 358.3, bright_ti5: 312.1, frp: 52.7, acq_date: new Date().toISOString().slice(0, 10), acq_time: "0615", satellite: "N", confidence: "high", daynight: "D", scan: 0.4, track: 0.4 },
+          { latitude: 20.4200, longitude: 84.9600, bright_ti4: 325.0, bright_ti5: 298.5, frp: 8.1, acq_date: new Date().toISOString().slice(0, 10), acq_time: "0618", satellite: "N", confidence: "low", daynight: "N", scan: 0.4, track: 0.4 },
+        ];
+      }
+
+      // Bounding box covering Odisha + buffer: west,south,east,north
+      const area = "81.3,17.7,87.4,22.6";
+      const url = `https://firms.modaps.eosdis.nasa.gov/api/area/json/${apiKey}/VIIRS_SNPP_NRT/${area}/${days}`;
+
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`FIRMS API error: ${response.status} ${response.statusText}`);
+      const json = await response.json();
+      return (json as ForestFireHotspot[]);
+    },
+    staleTime: 10 * 60 * 1000,    // 10-min cache
+    refetchInterval: 15 * 60 * 1000, // refresh every 15 min
+    retry: 2,
+  });
+};

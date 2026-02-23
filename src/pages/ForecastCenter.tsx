@@ -5,8 +5,9 @@ import {
   Waves, Mountain, Activity, AlertTriangle, ChevronLeft, ChevronRight,
   LogOut, LogIn, Radio, GraduationCap, Package, Shield, Loader2,
   TrendingUp, TrendingDown, Minus, Droplets, Wind, Thermometer,
-  MapPin, Clock, RefreshCw, Volume2
+  MapPin, Clock, RefreshCw, Volume2, Flame, Satellite, Info
 } from "lucide-react";
+import { useForestFireData, ForestFireHotspot } from "@/hooks/useDisasterData";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -339,8 +340,179 @@ function TsunamiSection({ stations }: { stations: OceanStation[] }) {
   );
 }
 
+// ─── Forest Fire Section ─────────────────────────────────────────────────────
+const CONFIDENCE_COLORS: Record<string, string> = {
+  high: "text-destructive bg-destructive/10 border-destructive/30",
+  nominal: "text-warning bg-warning/10 border-warning/30",
+  low: "text-safe bg-safe/10 border-safe/30",
+};
+
+function ForestFireSection() {
+  const apiKey = import.meta.env.VITE_NASA_FIRMS_API_KEY as string | undefined;
+  const isMock = !apiKey || apiKey === "YOUR_FIRMS_MAP_KEY_HERE";
+  const [days, setDays] = useState<1 | 2 | 3>(1);
+  const { data: hotspots = [], isLoading, isError, refetch } = useForestFireData(days);
+  const [selected, setSelected] = useState<ForestFireHotspot | null>(null);
+
+  const highCount = hotspots.filter(h => h.confidence === "high").length;
+  const totalFRP = hotspots.reduce((s, h) => s + (h.frp ?? 0), 0);
+
+  return (
+    <div className="space-y-4">
+      {/* API-key notice */}
+      {isMock && (
+        <div className="glass rounded-xl p-3 border border-warning/30 bg-warning/5 flex items-start gap-3">
+          <Info className="w-4 h-4 text-warning flex-shrink-0 mt-0.5" />
+          <div className="text-xs text-muted-foreground">
+            <span className="text-warning font-bold">Demo mode</span> — showing sample hotspot data.
+            {" "}Set <code className="bg-muted px-1 rounded">VITE_NASA_FIRMS_API_KEY</code> in your{" "}
+            <code className="bg-muted px-1 rounded">.env</code> file with a free key from{" "}
+            <a href="https://firms.modaps.eosdis.nasa.gov/usfs/api/area/" target="_blank" rel="noopener noreferrer"
+              className="text-primary underline">
+              NASA FIRMS
+            </a>{" "}to get live data.
+          </div>
+        </div>
+      )}
+
+      {/* Summary row */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="glass rounded-xl p-4 border border-border text-center space-y-1">
+          <p className="text-2xl font-bold text-destructive">{hotspots.length}</p>
+          <p className="text-xs text-muted-foreground font-display">Active Hotspots</p>
+        </div>
+        <div className="glass rounded-xl p-4 border border-border text-center space-y-1">
+          <p className="text-2xl font-bold text-fire">{highCount}</p>
+          <p className="text-xs text-muted-foreground font-display">High Confidence</p>
+        </div>
+        <div className="glass rounded-xl p-4 border border-border text-center space-y-1">
+          <p className="text-2xl font-bold text-warning">{totalFRP.toFixed(1)}</p>
+          <p className="text-xs text-muted-foreground font-display">Total FRP (MW)</p>
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div className="flex items-center gap-3">
+        <span className="text-xs text-muted-foreground font-display">Look-back:</span>
+        {([1, 2, 3] as const).map(d => (
+          <button key={d} onClick={() => setDays(d)}
+            className={`px-3 py-1 rounded-md text-xs font-display border transition-all ${
+              days === d ? "bg-primary/10 border-primary/30 text-primary" : "border-border text-muted-foreground hover:border-primary/20"
+            }`}>{d}d</button>
+        ))}
+        <button onClick={() => refetch()}
+          className="ml-auto p-1.5 rounded-md hover:bg-accent transition-colors" title="Refresh">
+          <RefreshCw className="w-3.5 h-3.5 text-muted-foreground" />
+        </button>
+      </div>
+
+      {isLoading ? (
+        <div className="flex items-center justify-center py-16">
+          <Loader2 className="w-7 h-7 animate-spin text-primary" />
+        </div>
+      ) : isError ? (
+        <div className="glass rounded-xl p-6 border border-destructive/30 text-center text-sm text-destructive">
+          Failed to fetch fire data. Check your API key or network connection.
+        </div>
+      ) : hotspots.length === 0 ? (
+        <div className="glass rounded-xl p-6 border border-border text-center text-sm text-muted-foreground">
+          No active hotspots detected in the selected period.
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+          {hotspots.map((h, i) => (
+            <motion.button key={i} onClick={() => setSelected(selected && selected.latitude === h.latitude && selected.longitude === h.longitude ? null : h)}
+              className={`glass rounded-xl p-4 text-left border transition-all space-y-3 ${
+                selected?.latitude === h.latitude && selected?.longitude === h.longitude
+                  ? "border-fire/40 bg-fire/5"
+                  : "border-border hover:border-fire/20"
+              }`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Flame className={`w-4 h-4 ${ h.confidence === "high" ? "text-destructive" : h.confidence === "nominal" ? "text-warning" : "text-muted-foreground"}`} />
+                  <div>
+                    <p className="font-display text-sm font-bold text-foreground">
+                      {h.latitude.toFixed(4)}°N, {h.longitude.toFixed(4)}°E
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {h.acq_date} · {h.acq_time.padStart(4,"0").replace(/(\d{2})(\d{2})/, "$1:$2")} UTC
+                    </p>
+                  </div>
+                </div>
+                <span className={`text-[10px] font-display px-2 py-0.5 rounded-full border capitalize ${
+                  CONFIDENCE_COLORS[h.confidence] || CONFIDENCE_COLORS.low
+                }`}>
+                  {h.confidence}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2 text-xs">
+                <div className="glass rounded-md p-2 text-center">
+                  <p className="text-foreground font-bold">{h.frp.toFixed(1)}</p>
+                  <p className="text-muted-foreground text-[10px]">FRP (MW)</p>
+                </div>
+                <div className="glass rounded-md p-2 text-center">
+                  <p className="text-foreground font-bold">{h.bright_ti4.toFixed(0)}K</p>
+                  <p className="text-muted-foreground text-[10px]">Ti4 Temp</p>
+                </div>
+                <div className="glass rounded-md p-2 text-center">
+                  <p className={`font-bold ${h.daynight === "D" ? "text-warning" : "text-primary"}`}>
+                    {h.daynight === "D" ? "Day" : "Night"}
+                  </p>
+                  <p className="text-muted-foreground text-[10px]">Pass</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                <Satellite className="w-3 h-3" />
+                <span>{h.satellite === "N" ? "NOAA-20" : "Suomi NPP"}</span>
+                <span className="ml-auto">Scan {h.scan}km × {h.track}km</span>
+              </div>
+            </motion.button>
+          ))}
+        </div>
+      )}
+
+      {/* Detail panel for selected hotspot */}
+      {selected && (
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+          className="glass rounded-xl p-4 border border-fire/30 space-y-3">
+          <div className="flex items-center gap-2">
+            <Flame className="w-4 h-4 text-destructive" />
+            <h3 className="font-display text-sm font-bold text-foreground">Hotspot Detail</h3>
+            <button onClick={() => setSelected(null)} className="ml-auto text-xs text-muted-foreground hover:text-foreground">✕ Close</button>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+            {[
+              { label: "Latitude", value: `${selected.latitude.toFixed(5)}°N` },
+              { label: "Longitude", value: `${selected.longitude.toFixed(5)}°E` },
+              { label: "FRP", value: `${selected.frp.toFixed(2)} MW` },
+              { label: "Ti4 Brightness", value: `${selected.bright_ti4.toFixed(1)} K` },
+              { label: "Ti5 Brightness", value: `${selected.bright_ti5.toFixed(1)} K` },
+              { label: "Confidence", value: selected.confidence },
+              { label: "Satellite", value: selected.satellite === "N" ? "NOAA-20" : "Suomi NPP" },
+              { label: "Day/Night", value: selected.daynight === "D" ? "Daytime" : "Nighttime" },
+            ].map(({ label, value }) => (
+              <div key={label} className="glass rounded-md p-2 text-center">
+                <p className="text-foreground font-bold">{value}</p>
+                <p className="text-muted-foreground text-[10px]">{label}</p>
+              </div>
+            ))}
+          </div>
+          <a
+            href={`https://firms.modaps.eosdis.nasa.gov/map/#d:24hrs;@${selected.longitude},${selected.latitude},10z`}
+            target="_blank" rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline">
+            <Satellite className="w-3 h-3" /> View on NASA FIRMS Map
+          </a>
+        </motion.div>
+      )}
+    </div>
+  );
+}
+
 // ─── Main Page ───────────────────────────────────────────────────────────────
-type Tab = "flood" | "landslide" | "tsunami";
+type Tab = "flood" | "landslide" | "tsunami" | "forest_fire";
 
 export default function ForecastCenter() {
   const { user, signOut } = useAuth();
@@ -426,6 +598,10 @@ export default function ForecastCenter() {
     refetchOcean();
   }, [queryClient, refetchFlood, refetchLandslide, refetchOcean]);
 
+  // Forest fire badge count (uses the same hook, stale-time avoids double fetch)
+  const { data: fireBadgeData = [] } = useForestFireData(1);
+  const forestFireCount = fireBadgeData.filter(h => h.confidence === "high").length;
+
   return (
     <div className="h-screen flex flex-col bg-background">
       {/* Header */}
@@ -473,6 +649,7 @@ export default function ForecastCenter() {
           { id: "flood", icon: Waves, label: "Flood Watch", badge: criticalFlood, color: "text-flood" },
           { id: "landslide", icon: Mountain, label: "Landslide Forecast", badge: criticalLandslide, color: "text-fire" },
           { id: "tsunami", icon: Activity, label: "Tsunami & Ocean", badge: tsunamiAlerts, color: "text-warning" },
+          { id: "forest_fire", icon: Flame, label: "Forest Fire", badge: forestFireCount, color: "text-destructive" },
         ] as const).map(t => (
           <button key={t.id} onClick={() => setTab(t.id)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-display transition-all ${tab === t.id ? "bg-primary/10 text-primary border border-primary/20" : "text-muted-foreground hover:text-foreground hover:bg-accent"}`}>
@@ -513,6 +690,7 @@ export default function ForecastCenter() {
               {tab === "flood" && <FloodSection stations={floodStations} />}
               {tab === "landslide" && <LandslideSection zones={landslideZones} />}
               {tab === "tsunami" && <TsunamiSection stations={oceanStations} />}
+              {tab === "forest_fire" && <ForestFireSection />}
             </motion.div>
           </AnimatePresence>
         )}
