@@ -26,13 +26,14 @@ const Dashboard = () => {
   const [showSidebar, setShowSidebar] = useState(true);
   const [showReport, setShowReport] = useState(false);
   const [sidebarTab, setSidebarTab] = useState<SidebarTab>('predictions');
+  const [bigView, setBigView] = useState(false);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
   const sidebarTabs: { id: SidebarTab; label: string; icon: any }[] = [
     { id: 'predictions', label: t('sidebar.predictions'), icon: Brain },
-    { id: 'community', label: t('sidebar.community'), icon: Users },
+    { id: 'community', label: t('sidebar.communication', { defaultValue: 'Communication' }), icon: Users },
     { id: 'events', label: t('sidebar.events'), icon: AlertTriangle },
     { id: 'weather', label: t('sidebar.weather'), icon: Thermometer },
     { id: 'shelters', label: t('sidebar.shelters'), icon: Home },
@@ -121,17 +122,56 @@ const Dashboard = () => {
         <AlertBanner />
       </div>
 
+      <div className="px-4 pb-2">
+        <div className="glass rounded-xl border border-border/70 px-3 py-2 flex items-center gap-2 overflow-x-auto">
+          {sidebarTabs.map(tab => (
+            <button
+              key={`quick-${tab.id}`}
+              onClick={() => {
+                setSidebarTab(tab.id);
+                setShowSidebar(true);
+              }}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-display transition-colors whitespace-nowrap ${
+                sidebarTab === tab.id
+                  ? 'bg-primary/15 text-primary border border-primary/30'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+              }`}
+            >
+              <tab.icon className="w-3.5 h-3.5" />
+              <span>{tab.label}</span>
+            </button>
+          ))}
+
+          <div className="w-px h-5 bg-border mx-1" />
+          <button
+            onClick={() => {
+              setShowSidebar(true);
+              setBigView(v => !v);
+            }}
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-display transition-colors whitespace-nowrap ${
+              bigView
+                ? 'bg-primary/15 text-primary border border-primary/30'
+                : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+            }`}
+            title={bigView ? 'Exit Big View' : 'Open Big View'}
+          >
+            {bigView ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+            <span>{bigView ? 'Exit Big View' : 'Big View'}</span>
+          </button>
+        </div>
+      </div>
+
       <div className="flex-1 flex overflow-hidden">
         <AnimatePresence>
           {showSidebar && (
             <motion.aside
               initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 384, opacity: 1 }}
+              animate={{ width: bigView ? 640 : 384, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.25, ease: "easeInOut" }}
               className="border-r border-border overflow-hidden bg-card/30 hidden lg:flex flex-col"
             >
-              <div className="flex border-b border-border overflow-x-auto">
+              <div className="flex items-center border-b border-border overflow-x-auto">
                 {sidebarTabs.map(tab => (
                   <button
                     key={tab.id}
@@ -146,8 +186,15 @@ const Dashboard = () => {
                     <span className="hidden xl:inline">{tab.label}</span>
                   </button>
                 ))}
+                <button
+                  onClick={() => setBigView(v => !v)}
+                  className="px-2.5 py-2 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                  title={bigView ? 'Exit Big View' : 'Big View'}
+                >
+                  {bigView ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+                </button>
               </div>
-              <div className="flex-1 overflow-y-auto p-4 space-y-6">
+              <div className={`flex-1 overflow-y-auto ${bigView ? 'p-5 space-y-7' : 'p-4 space-y-6'}`}>
                 {sidebarTab === 'predictions' && <PredictionPanel />}
                 {sidebarTab === 'community' && <CommunityValidation />}
                 {sidebarTab === 'events' && (<><LiveEventsPanel /><RiskCards /></>)}

@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import { odishaShelters } from "@/data/odishaData";
 
 interface Shelter {
   id: string;
@@ -47,6 +48,17 @@ const ShelterFinder = () => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [mode, setMode] = useState<'walking' | 'driving'>('driving');
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+
+  const evacuationTotalCapacity = odishaShelters.reduce((sum, shelter) => sum + shelter.capacity, 0);
+  const evacuationAvailable = odishaShelters.reduce((sum, shelter) => sum + Math.max(0, shelter.capacity - shelter.occupancy), 0);
+  const topEvacShelters = [...odishaShelters]
+    .map((shelter) => ({
+      ...shelter,
+      availableSpots: Math.max(0, shelter.capacity - shelter.occupancy),
+      utilization: shelter.capacity > 0 ? shelter.occupancy / shelter.capacity : 1,
+    }))
+    .sort((a, b) => b.availableSpots - a.availableSpots)
+    .slice(0, 3);
 
   const fetchShelters = async (uLat?: number, uLng?: number) => {
     const { data } = await supabase.from('shelters').select('*');
@@ -217,6 +229,40 @@ const ShelterFinder = () => {
           </span>
         </div>
       )}
+
+      {/* Evacuation shelters snapshot */}
+      <div className="rounded-xl border border-border/70 bg-card/70 p-3 space-y-2">
+        <div className="flex items-center justify-between">
+          <p className="text-[11px] font-display font-bold uppercase tracking-wider text-muted-foreground">Evacuation Shelter Snapshot</p>
+          <span className="text-[10px] text-primary font-display">{odishaShelters.length} linked</span>
+        </div>
+        <div className="grid grid-cols-2 gap-2 text-[11px]">
+          <div className="rounded-md bg-muted/40 px-2 py-1.5 text-muted-foreground">
+            <span className="block text-[10px] uppercase tracking-wide">Total Capacity</span>
+            <span className="font-bold text-foreground">{evacuationTotalCapacity.toLocaleString()}</span>
+          </div>
+          <div className="rounded-md bg-muted/40 px-2 py-1.5 text-muted-foreground">
+            <span className="block text-[10px] uppercase tracking-wide">Available Spots</span>
+            <span className="font-bold text-safe">{evacuationAvailable.toLocaleString()}</span>
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          {topEvacShelters.map((shelter) => (
+            <div key={shelter.id} className="rounded-md border border-border/70 bg-background/60 px-2.5 py-2">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-[11px] font-display font-bold text-foreground truncate">{shelter.name}</p>
+                <span className={`text-[10px] font-display ${shelter.utilization > 0.8 ? 'text-destructive' : shelter.utilization > 0.5 ? 'text-warning' : 'text-safe'}`}>
+                  {Math.round(shelter.utilization * 100)}%
+                </span>
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-0.5">
+                {shelter.availableSpots.toLocaleString()} spots open · capacity {shelter.capacity.toLocaleString()}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* Shelter list */}
       {shelters.length === 0 && (
