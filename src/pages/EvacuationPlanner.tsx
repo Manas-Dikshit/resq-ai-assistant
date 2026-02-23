@@ -12,9 +12,7 @@ import SOSButton from "@/components/SOSButton";
 const EvacuationPlanner = () => {
   const { t } = useTranslation();
   const [showChat, setShowChat] = useState(false);
-  const [userPos, setUserPos] = useState<{ lat: number; lng: number } | null>(null);
   const [selectedShelterId, setSelectedShelterId] = useState<string | null>(null);
-  const [routeInfo, setRouteInfo] = useState<{ distance: string; time: string } | null>(null);
 
   return (
     <div className="h-screen flex flex-col bg-background">
@@ -55,22 +53,16 @@ const EvacuationPlanner = () => {
         {/* Side Panel */}
         <aside className="w-[380px] border-r border-border bg-card/30 flex-shrink-0 overflow-y-auto hidden lg:block">
           <EvacuationPanel
-            userPos={userPos}
-            onUserPosChange={setUserPos}
             selectedShelterId={selectedShelterId}
             onSelectShelter={setSelectedShelterId}
-            routeInfo={routeInfo}
           />
         </aside>
 
         {/* Map */}
         <main className="flex-1 relative">
           <EvacuationMap
-            userPos={userPos}
-            onUserPosChange={setUserPos}
             selectedShelterId={selectedShelterId}
             onSelectShelter={setSelectedShelterId}
-            onRouteFound={setRouteInfo}
           />
         </main>
 
