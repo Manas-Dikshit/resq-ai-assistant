@@ -77,6 +77,98 @@ export type Database = {
         }
         Relationships: []
       }
+      damage_assessments: {
+        Row: {
+          affected_households: number | null
+          affected_population: number | null
+          assessed_at: string
+          assessor_id: string
+          created_at: string
+          damage_type: string
+          description: string | null
+          district: string
+          estimated_cost_inr: number | null
+          id: string
+          incident_id: string | null
+          infrastructure_damage: Json | null
+          lat: number | null
+          lng: number | null
+          location_name: string
+          notes: string | null
+          photo_urls: string[] | null
+          priority: string
+          recovery_phase: string
+          recovery_progress: number | null
+          severity: string
+          state: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          affected_households?: number | null
+          affected_population?: number | null
+          assessed_at?: string
+          assessor_id: string
+          created_at?: string
+          damage_type?: string
+          description?: string | null
+          district: string
+          estimated_cost_inr?: number | null
+          id?: string
+          incident_id?: string | null
+          infrastructure_damage?: Json | null
+          lat?: number | null
+          lng?: number | null
+          location_name: string
+          notes?: string | null
+          photo_urls?: string[] | null
+          priority?: string
+          recovery_phase?: string
+          recovery_progress?: number | null
+          severity?: string
+          state?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          affected_households?: number | null
+          affected_population?: number | null
+          assessed_at?: string
+          assessor_id?: string
+          created_at?: string
+          damage_type?: string
+          description?: string | null
+          district?: string
+          estimated_cost_inr?: number | null
+          id?: string
+          incident_id?: string | null
+          infrastructure_damage?: Json | null
+          lat?: number | null
+          lng?: number | null
+          location_name?: string
+          notes?: string | null
+          photo_urls?: string[] | null
+          priority?: string
+          recovery_phase?: string
+          recovery_progress?: number | null
+          severity?: string
+          state?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "damage_assessments_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incidents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       evac_notifications: {
         Row: {
           created_at: string | null
