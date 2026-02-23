@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Radio, Shield, AlertTriangle, Clock, Users, Truck,
   Plus, X, LogOut, LogIn, Package, Activity,
-  Loader2, Send, Eye, FileWarning, Siren, RefreshCw
+  Loader2, Send, FileWarning, Siren, RefreshCw
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -325,7 +325,6 @@ export default function ControlRoom() {
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
   const [filterStatus, setFilterStatus] = useState("");
   const [filterSeverity, setFilterSeverity] = useState("");
-  const [darkOpsMode, setDarkOpsMode] = useState(false);
 
   const getElapsed = useCallback((createdAt: string) => {
     const elapsed = Math.floor((Date.now() - new Date(createdAt).getTime()) / 60000);
@@ -421,7 +420,7 @@ export default function ControlRoom() {
   const totalAffected = incidents.reduce((s, i) => s + i.affected_population, 0);
 
   return (
-    <div className={`h-screen flex flex-col ${darkOpsMode ? "bg-[hsl(220_25%_4%)]" : "bg-background"}`}>
+    <div className="h-screen flex flex-col bg-background">
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-2 border-b border-border glass-strong z-20 flex-shrink-0">
         <div className="flex items-center gap-3">
@@ -437,10 +436,6 @@ export default function ControlRoom() {
         </div>
         <div className="flex items-center gap-2">
           <LanguageToggle />
-          <button onClick={() => setDarkOpsMode(!darkOpsMode)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display transition-colors ${darkOpsMode ? "bg-primary/10 text-primary border border-primary/20" : "text-muted-foreground hover:bg-accent hover:text-foreground"}`}>
-            <Eye className="w-3.5 h-3.5" /> Ops Mode
-          </button>
           <Link to="/dashboard" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
             <Radio className="w-3.5 h-3.5" /><span className="hidden sm:inline">Dashboard</span>
           </Link>
