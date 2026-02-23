@@ -1,11 +1,10 @@
-import { useState, useRef, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Radio, Shield, AlertTriangle, Clock, Users, Truck, CheckCircle,
-  XCircle, Plus, X, LogOut, LogIn, GraduationCap, Package, Activity,
-  Loader2, MapPin, ChevronDown, ChevronUp, MessageSquare, Send,
-  Eye, FileWarning, Siren, RefreshCw, BarChart3
+  Radio, Shield, AlertTriangle, Clock, Users, Truck,
+  Plus, X, LogOut, LogIn, Package, Activity,
+  Loader2, Send, Eye, FileWarning, Siren, RefreshCw
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +12,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import LanguageToggle from "@/components/LanguageToggle";
+import IncidentCard from "@/components/IncidentCard";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface Incident {
@@ -45,6 +45,7 @@ const STATUS_COLORS: Record<string, string> = {
   resolved: "text-safe bg-safe/10 border-safe/30",
   closed: "text-muted-foreground bg-muted border-border",
 };
+const STATUS_FLOW = ["open", "investigating", "responding", "resolved", "closed"];
 
 // ─── Add Incident Modal ───────────────────────────────────────────────────────
 function AddIncidentModal({ onClose }: { onClose: () => void }) {
@@ -299,44 +300,19 @@ function IncidentDetail({ incident, onClose, onStatusChange }: {
   );
 }
 
-// ─── Incident Row ─────────────────────────────────────────────────────────────
-function IncidentRow({ incident, onSelect }: { incident: Incident; onSelect: () => void }) {
-  const elapsed = Math.floor((Date.now() - new Date(incident.created_at).getTime()) / 60000);
-  const elapsedStr = elapsed < 60 ? `${elapsed}m ago` : elapsed < 1440 ? `${Math.floor(elapsed / 60)}h ago` : `${Math.floor(elapsed / 1440)}d ago`;
-
+function IncidentCardSkeleton() {
   return (
-    <motion.div initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
-      className="glass rounded-xl p-4 border border-border hover:border-primary/20 transition-colors cursor-pointer"
-      onClick={onSelect}>
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className={`p-2 rounded-lg flex-shrink-0 ${incident.severity === "Critical" ? "bg-destructive/10" : incident.severity === "High" ? "bg-fire/10" : "bg-warning/10"}`}>
-            <AlertTriangle className={`w-4 h-4 ${incident.severity === "Critical" ? "text-destructive" : incident.severity === "High" ? "text-fire" : "text-warning"}`} />
-          </div>
-          <div className="min-w-0">
-            <p className="font-display text-sm font-bold text-foreground truncate">{incident.title}</p>
-            <div className="flex items-center gap-2 mt-0.5 text-xs text-muted-foreground flex-wrap">
-              <span className="flex items-center gap-1"><MapPin className="w-2.5 h-2.5" />{incident.location_name}, {incident.state}</span>
-              <span>·</span>
-              <span className="flex items-center gap-1"><Clock className="w-2.5 h-2.5" />{elapsedStr}</span>
-            </div>
-          </div>
+    <div className="rounded-2xl border border-border/70 bg-card/70 p-4">
+      <div className="animate-pulse space-y-3">
+        <div className="h-4 w-2/3 rounded bg-muted" />
+        <div className="h-3 w-1/2 rounded bg-muted/80" />
+        <div className="grid grid-cols-2 gap-2 pt-2">
+          <div className="h-8 rounded bg-muted/70" />
+          <div className="h-8 rounded bg-muted/70" />
         </div>
-        <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
-          <span className={`text-[10px] font-display px-2 py-0.5 rounded-full border capitalize ${STATUS_COLORS[incident.status] || STATUS_COLORS.open}`}>
-            {incident.status}
-          </span>
-          <span className={`text-[10px] font-display px-1.5 py-0.5 rounded border ${SEVERITY_COLORS[incident.severity]}`}>
-            {incident.severity}
-          </span>
-        </div>
+        <div className="h-8 w-full rounded bg-muted/70" />
       </div>
-      <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
-        <span className="flex items-center gap-1"><Users className="w-3 h-3" />{incident.affected_population.toLocaleString()} affected</span>
-        <span className="flex items-center gap-1"><Truck className="w-3 h-3" />{incident.responders_deployed} responders</span>
-        <span className="flex items-center gap-1 text-primary">{incident.type}</span>
-      </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -350,6 +326,13 @@ export default function ControlRoom() {
   const [filterStatus, setFilterStatus] = useState("");
   const [filterSeverity, setFilterSeverity] = useState("");
   const [darkOpsMode, setDarkOpsMode] = useState(false);
+
+  const getElapsed = useCallback((createdAt: string) => {
+    const elapsed = Math.floor((Date.now() - new Date(createdAt).getTime()) / 60000);
+    if (elapsed < 60) return `${elapsed}m ago`;
+    if (elapsed < 1440) return `${Math.floor(elapsed / 60)}h ago`;
+    return `${Math.floor(elapsed / 1440)}d ago`;
+  }, []);
 
   const { data: incidents = [], isLoading, refetch } = useQuery({
     queryKey: ["incidents", filterStatus, filterSeverity],
@@ -383,6 +366,54 @@ export default function ControlRoom() {
       toast({ title: "Status Updated", description: `Incident moved to ${status}.` });
     },
   });
+
+  const getNextStatus = useCallback((status: string) => {
+    const currentIndex = STATUS_FLOW.indexOf(status);
+    if (currentIndex === -1 || currentIndex >= STATUS_FLOW.length - 1) return null;
+    return STATUS_FLOW[currentIndex + 1];
+  }, []);
+
+  const handleSelectIncident = useCallback((incident: Incident) => {
+    setSelectedIncident(incident);
+  }, []);
+
+  const handleAssignTeam = useCallback((incident: Incident) => {
+    setSelectedIncident(incident);
+    toast({ title: "Assign Team", description: `Review incident "${incident.title}" and assign responders from detail panel.` });
+  }, []);
+
+  const handleQuickStatusUpdate = useCallback((incident: Incident) => {
+    const nextStatus = getNextStatus(incident.status);
+    if (!nextStatus) {
+      toast({ title: "Status Locked", description: "This incident is already in its final status." });
+      return;
+    }
+    updateStatus({ id: incident.id, status: nextStatus });
+  }, [getNextStatus, updateStatus]);
+
+  const incidentCards = useMemo(
+    () => incidents.map((incident) => (
+      <motion.div
+        key={incident.id}
+        layout
+        initial={{ opacity: 0, y: 16, scale: 0.985 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -8, scale: 0.985 }}
+        transition={{ duration: 0.24, ease: "easeOut" }}
+      >
+        <IncidentCard
+          incident={incident}
+          elapsedStr={getElapsed(incident.created_at)}
+          statusClass={STATUS_COLORS[incident.status] || STATUS_COLORS.open}
+          severityClass={SEVERITY_COLORS[incident.severity] || SEVERITY_COLORS.Low}
+          onSelect={() => handleSelectIncident(incident)}
+          onAssignTeam={() => handleAssignTeam(incident)}
+          onUpdateStatus={() => handleQuickStatusUpdate(incident)}
+        />
+      </motion.div>
+    )),
+    [getElapsed, handleAssignTeam, handleQuickStatusUpdate, handleSelectIncident, incidents],
+  );
 
   const open = incidents.filter(i => i.status === "open").length;
   const responding = incidents.filter(i => i.status === "responding" || i.status === "investigating").length;
@@ -476,14 +507,16 @@ export default function ControlRoom() {
       {/* Main content */}
       <main className="flex-1 overflow-auto p-4">
         {isLoading ? (
-          <div className="h-full flex items-center justify-center">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+            {Array.from({ length: 8 }).map((_, index) => <IncidentCardSkeleton key={index} />)}
           </div>
         ) : incidents.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <Shield className="w-12 h-12 text-safe/30 mb-4" />
-            <p className="text-safe font-display text-sm">All Clear</p>
-            <p className="text-muted-foreground text-xs mt-1">No active incidents. System monitoring continues.</p>
+          <div className="mx-auto max-w-xl rounded-2xl border border-dashed border-border/80 bg-card/50 p-8 text-center">
+            <div className="mx-auto mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-safe/10 text-safe">
+              <FileWarning className="h-7 w-7 opacity-70" />
+            </div>
+            <p className="text-safe font-display text-base">No incidents match current filters</p>
+            <p className="text-muted-foreground text-xs mt-1">Try changing status/severity filters or log a new incident.</p>
             {user && (
               <Button size="sm" onClick={() => setShowForm(true)} className="mt-4 text-xs h-8 bg-destructive text-destructive-foreground">
                 <Plus className="w-3.5 h-3.5 mr-1" /> Log New Incident
@@ -491,14 +524,24 @@ export default function ControlRoom() {
             )}
           </div>
         ) : (
-          <div className="space-y-3">
-            <p className="text-xs text-muted-foreground font-display">
+          <div className="space-y-4">
+            <p className="text-xs text-muted-foreground font-display px-1">
               <span className="text-foreground font-bold">{incidents.length}</span> incidents tracked
             </p>
-            {incidents.map(incident => (
-              <IncidentRow key={incident.id} incident={incident}
-                onSelect={() => setSelectedIncident(incident)} />
-            ))}
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`${filterStatus}-${filterSeverity}`}
+                layout
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.24 }}
+                className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+              >
+                {incidentCards}
+              </motion.div>
+            </AnimatePresence>
           </div>
         )}
       </main>
