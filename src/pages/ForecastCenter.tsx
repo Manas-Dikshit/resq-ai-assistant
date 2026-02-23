@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import LanguageToggle from "@/components/LanguageToggle";
 import {
@@ -75,16 +75,51 @@ function generateFloodHistory(station: FloodStation) {
   return points;
 }
 
+function getFloodForecastLevel(station: FloodStation) {
+  const forecasts = [station.forecast_24h, station.forecast_48h, station.forecast_72h].filter(
+    (value): value is number => typeof value === "number"
+  );
+  const maxForecast = forecasts.length > 0 ? Math.max(...forecasts) : null;
+  if (maxForecast === null) return "normal";
+  if (maxForecast >= station.danger_level) return "danger";
+  if (maxForecast >= station.warning_level) return "warning";
+  return "normal";
+}
+
+function getFloodAlertLevel(station: FloodStation) {
+  if (station.current_level >= station.danger_level) return "danger";
+  if (station.current_level >= station.warning_level) return "warning";
+  return getFloodForecastLevel(station);
+}
+
 // ─── Flood Section ────────────────────────────────────────────────────────────
 function FloodSection({ stations }: { stations: FloodStation[] }) {
   const [selected, setSelected] = useState<FloodStation | null>(stations[0] || null);
-  const chartData = selected ? generateFloodHistory(selected) : [];
+  const enhancedStations = useMemo(
+    () =>
+      stations.map(station => ({
+        ...station,
+        derivedStatus: getFloodAlertLevel(station),
+        forecastStatus: getFloodForecastLevel(station),
+      })),
+    [stations]
+  );
+  const chartData = useMemo(() => (selected ? generateFloodHistory(selected) : []), [selected]);
+
+  if (stations.length === 0) {
+    return (
+      <div className="glass rounded-xl p-6 border border-border text-center text-sm text-muted-foreground">
+        No flood stations available yet.
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
-        {stations.map(s => {
+        {enhancedStations.map(s => {
           const pct = Math.min(100, (s.current_level / s.danger_level) * 100);
+          const showForecast = s.forecastStatus !== "normal" && s.current_level < s.warning_level;
           return (
             <motion.button key={s.id} onClick={() => setSelected(s)}
               className={`glass rounded-xl p-4 text-left border transition-all space-y-3 ${selected?.id === s.id ? "border-primary/40 bg-primary/5" : "border-border hover:border-primary/20"}`}>
@@ -93,9 +128,16 @@ function FloodSection({ stations }: { stations: FloodStation[] }) {
                   <p className="font-display text-sm font-bold text-foreground">{s.name}</p>
                   <p className="text-xs text-muted-foreground">{s.river} · {s.state}</p>
                 </div>
-                <span className={`text-[10px] font-display px-2 py-0.5 rounded-full border capitalize ${FLOOD_STATUS_COLORS[s.status] || FLOOD_STATUS_COLORS.normal}`}>
-                  {s.status}
-                </span>
+                <div className="flex items-center gap-1">
+                  {showForecast && (
+                    <span className={`text-[10px] font-display px-2 py-0.5 rounded-full border capitalize ${FLOOD_STATUS_COLORS[s.forecastStatus]}`}>
+                      Forecast {s.forecastStatus}
+                    </span>
+                  )}
+                  <span className={`text-[10px] font-display px-2 py-0.5 rounded-full border capitalize ${FLOOD_STATUS_COLORS[s.derivedStatus] || FLOOD_STATUS_COLORS.normal}`}>
+                    {s.derivedStatus}
+                  </span>
+                </div>
               </div>
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
@@ -166,6 +208,14 @@ function FloodSection({ stations }: { stations: FloodStation[] }) {
 // ─── Landslide Section ────────────────────────────────────────────────────────
 function LandslideSection({ zones }: { zones: LandslideZone[] }) {
   const sorted = [...zones].sort((a, b) => b.risk_score - a.risk_score);
+
+  if (zones.length === 0) {
+    return (
+      <div className="glass rounded-xl p-6 border border-border text-center text-sm text-muted-foreground">
+        No landslide zones available yet.
+      </div>
+    );
+  }
   return (
     <div className="space-y-4">
       <div className="glass rounded-xl p-4 border border-border space-y-2">
@@ -222,6 +272,14 @@ function LandslideSection({ zones }: { zones: LandslideZone[] }) {
 // ─── Tsunami Section ──────────────────────────────────────────────────────────
 function TsunamiSection({ stations }: { stations: OceanStation[] }) {
   const alerts = stations.filter(s => s.alert_level !== "normal");
+
+  if (stations.length === 0) {
+    return (
+      <div className="glass rounded-xl p-6 border border-border text-center text-sm text-muted-foreground">
+        No ocean stations available yet.
+      </div>
+    );
+  }
   return (
     <div className="space-y-4">
       {alerts.length > 0 && (
@@ -288,8 +346,14 @@ export default function ForecastCenter() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("flood");
+  const queryClient = useQueryClient();
 
-  const { data: floodStations = [], isLoading: loadFlood, refetch: refetchFlood } = useQuery({
+  const {
+    data: floodStations = [],
+    isLoading: loadFlood,
+    refetch: refetchFlood,
+    error: floodError,
+  } = useQuery({
     queryKey: ["flood_stations"],
     queryFn: async () => {
       const { data, error } = await supabase.from("flood_stations").select("*").order("status", { ascending: false });
@@ -297,30 +361,70 @@ export default function ForecastCenter() {
       return data as FloodStation[];
     },
     refetchInterval: 60000,
+    staleTime: 30000,
+    retry: 2,
+    refetchOnWindowFocus: true,
   });
 
-  const { data: landslideZones = [], isLoading: loadLandslide } = useQuery({
+  const {
+    data: landslideZones = [],
+    isLoading: loadLandslide,
+    refetch: refetchLandslide,
+    error: landslideError,
+  } = useQuery({
     queryKey: ["landslide_zones"],
     queryFn: async () => {
       const { data, error } = await supabase.from("landslide_zones").select("*").order("risk_score", { ascending: false });
       if (error) throw error;
       return data as LandslideZone[];
     },
+    refetchInterval: 300000,
+    staleTime: 120000,
+    retry: 2,
+    refetchOnWindowFocus: true,
   });
 
-  const { data: oceanStations = [], isLoading: loadOcean } = useQuery({
+  const {
+    data: oceanStations = [],
+    isLoading: loadOcean,
+    refetch: refetchOcean,
+    error: oceanError,
+  } = useQuery({
     queryKey: ["ocean_stations"],
     queryFn: async () => {
       const { data, error } = await supabase.from("ocean_stations").select("*").order("tsunami_probability", { ascending: false });
       if (error) throw error;
       return data as OceanStation[];
     },
+    refetchInterval: 180000,
+    staleTime: 60000,
+    retry: 2,
+    refetchOnWindowFocus: true,
   });
 
   const isLoading = loadFlood || loadLandslide || loadOcean;
-  const criticalFlood = floodStations.filter(s => s.status === "danger").length;
-  const criticalLandslide = landslideZones.filter(z => z.risk_level === "Critical").length;
-  const tsunamiAlerts = oceanStations.filter(s => s.alert_level !== "normal").length;
+  const hasError = Boolean(floodError || landslideError || oceanError);
+  const criticalFlood = useMemo(
+    () => floodStations.filter(s => getFloodAlertLevel(s) === "danger").length,
+    [floodStations]
+  );
+  const criticalLandslide = useMemo(
+    () => landslideZones.filter(z => z.risk_level === "Critical").length,
+    [landslideZones]
+  );
+  const tsunamiAlerts = useMemo(
+    () => oceanStations.filter(s => s.alert_level !== "normal").length,
+    [oceanStations]
+  );
+
+  const refetchAll = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["flood_stations"] });
+    queryClient.invalidateQueries({ queryKey: ["landslide_zones"] });
+    queryClient.invalidateQueries({ queryKey: ["ocean_stations"] });
+    refetchFlood();
+    refetchLandslide();
+    refetchOcean();
+  }, [queryClient, refetchFlood, refetchLandslide, refetchOcean]);
 
   return (
     <div className="h-screen flex flex-col bg-background">
@@ -348,7 +452,7 @@ export default function ForecastCenter() {
           <Link to="/control-room" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
             <Shield className="w-3.5 h-3.5" /><span className="hidden sm:inline">Control Room</span>
           </Link>
-          <button onClick={() => refetchFlood()} className="p-1.5 rounded-md hover:bg-accent transition-colors" title="Refresh">
+          <button onClick={refetchAll} className="p-1.5 rounded-md hover:bg-accent transition-colors" title="Refresh">
             <RefreshCw className="w-3.5 h-3.5 text-muted-foreground" />
           </button>
           {user ? (
@@ -387,7 +491,18 @@ export default function ForecastCenter() {
       </div>
 
       {/* Content */}
-      <main className="flex-1 overflow-auto p-4">
+      <main className="flex-1 overflow-auto p-4 space-y-4">
+        {hasError && (
+          <div className="glass rounded-xl p-4 border border-destructive/30 bg-destructive/5 flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm text-destructive">
+              <AlertTriangle className="w-4 h-4" />
+              Failed to load some live feeds. Please retry.
+            </div>
+            <Button size="sm" variant="outline" onClick={refetchAll} className="text-xs">
+              Retry
+            </Button>
+          </div>
+        )}
         {isLoading ? (
           <div className="h-full flex items-center justify-center">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
