@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { MessageSquare, Map, BarChart3, Radio, ChevronLeft, ChevronRight, LogIn, LogOut, AlertTriangle, Shield, FileWarning, Satellite, Thermometer, Home, Brain, Users, GraduationCap, Route, ClipboardCheck } from "lucide-react";
+import { MessageSquare, Map, BarChart3, Radio, ChevronLeft, ChevronRight, LogIn, LogOut, AlertTriangle, Shield, FileWarning, Satellite, Thermometer, Home, Brain, Users, GraduationCap, Route, ClipboardCheck, Maximize2, Minimize2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
@@ -40,6 +40,9 @@ const Dashboard = () => {
     { id: 'satellite', label: t('sidebar.satellite'), icon: Satellite },
     { id: 'charts', label: t('sidebar.charts'), icon: BarChart3 },
   ];
+
+  const activeSidebarTab = sidebarTabs.find(tab => tab.id === sidebarTab) ?? sidebarTabs[0];
+  const ActiveSidebarIcon = activeSidebarTab.icon;
 
   return (
     <div className="h-screen flex flex-col bg-background">
@@ -171,24 +174,19 @@ const Dashboard = () => {
               transition={{ duration: 0.25, ease: "easeInOut" }}
               className="border-r border-border overflow-hidden bg-card/30 hidden lg:flex flex-col"
             >
-              <div className="flex items-center border-b border-border overflow-x-auto">
-                {sidebarTabs.map(tab => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setSidebarTab(tab.id)}
-                    className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-2.5 text-xs font-display transition-all whitespace-nowrap ${
-                      sidebarTab === tab.id
-                        ? 'text-primary border-b-2 border-primary bg-primary/5'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
-                    }`}
-                  >
-                    <tab.icon className="w-3.5 h-3.5" />
-                    <span className="hidden xl:inline">{tab.label}</span>
-                  </button>
-                ))}
+              <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2.5 bg-card/40">
+                <div className="min-w-0 flex items-center gap-2">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-primary/30 bg-primary/10 text-primary">
+                    <ActiveSidebarIcon className="w-3.5 h-3.5" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="truncate text-xs font-display font-bold text-foreground">{activeSidebarTab.label}</p>
+                    <p className="text-[10px] text-muted-foreground">Live section panel</p>
+                  </div>
+                </div>
                 <button
                   onClick={() => setBigView(v => !v)}
-                  className="px-2.5 py-2 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                  className="px-2 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
                   title={bigView ? 'Exit Big View' : 'Big View'}
                 >
                   {bigView ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
