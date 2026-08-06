@@ -1,4 +1,4 @@
-# 🚨 ResQAI — Community-Validated Federated Disaster Intelligence
+#  ResQAI — Community-Validated Federated Disaster Intelligence
 
 <div align="center">
 
@@ -10,27 +10,27 @@
 **The world's first community-validated, offline-capable AI disaster intelligence platform**  
 *Turning every smartphone into a disaster sensing node — even without internet*
 
-[🌐 Live Demo](#) • [📖 Architecture](#architecture) • [🚀 Features](#features) • [🛠 Tech Stack](#tech-stack) • [🗺 Roadmap](#roadmap)
+[ Live Demo](#) • [📖 Architecture](#architecture) • [ Features](#features) • [ Tech Stack](#tech-stack) • [ Roadmap](#roadmap)
 
 </div>
 
 ---
 
-## 🌍 What is ResQAI?
+##  What is ResQAI?
 
 ResQAI is a next-generation, open-source disaster intelligence platform built for **Odisha, India** — one of the world's most disaster-prone coastal regions, regularly battered by cyclones, floods, and heatwaves. It is the **only platform in existence** that combines:
 
-- 🤖 **AI-powered risk predictions** across a 15-point geospatial grid
-- 👥 **Community validation** of every prediction via crowd-sourced ground truth
-- 📡 **Offline-first edge ML** — continues working when networks go down
-- 🗺 **Real-time interactive heatmap** with animated risk overlays
-- 🔍 **Explainable AI** — tells you *why* each prediction was made, in plain language
-- 🆘 **SOS emergency system** with geolocation and one-tap broadcast
-- 🌐 **Multi-language support** — English, Hindi (हिंदी), and Odia (ଓଡ଼ିଆ)
+-  **AI-powered risk predictions** across a 15-point geospatial grid
+-  **Community validation** of every prediction via crowd-sourced ground truth
+-  **Offline-first edge ML** — continues working when networks go down
+-  **Real-time interactive heatmap** with animated risk overlays
+-  **Explainable AI** — tells you *why* each prediction was made, in plain language
+-  **SOS emergency system** with geolocation and one-tap broadcast
+-  **Multi-language support** — English, Hindi (हिंदी), and Odia (ଓଡ଼ିଆ)
 
 ---
 
-## ❓ Why Does ResQAI Exist?
+##  Why Does ResQAI Exist?
 
 ### The Problem
 
@@ -61,7 +61,7 @@ ResQAI is the **only platform that closes the loop** between AI predictions, rea
 
 ---
 
-## ✨ Features
+##  Features
 
 ### 🗺 Interactive Disaster Map
 - **Dark-themed cartographic base** (CARTO dark tiles) optimized for emergency readability
@@ -76,7 +76,7 @@ ResQAI is the **only platform that closes the loop** between AI predictions, rea
 - **Earthquake/NASA event overlays** — live data from external APIs
 - **Odisha boundary polyline** — teal dashed outline defining the operational region
 
-### 🧠 AI Risk Prediction Engine
+###  AI Risk Prediction Engine
 - **15 monitoring points** across Puri Coast, Cuttack, Bhubaneswar, Kendrapara, Jajpur, Balasore, Mayurbhanj, Paradip, Balangir, Sambalpur, Rourkela, Berhampur, Koraput, Boudh, and Dhenkanal
 - **6 risk types per point**: Flood, Cyclone, Wildfire, Earthquake, Landslide, Heat Wave
 - **48-hour forecast window** refreshed every 10 minutes
@@ -88,7 +88,7 @@ ResQAI is the **only platform that closes the loop** between AI predictions, rea
 - **Geographic context**: coastal proximity, river delta detection, forested areas, western highlands
 - **Weather feature integration**: precipitation (7d), wind speed, temperature max, sea surface temp
 
-### 🌡 Risk Heatmap Overlay
+###  Risk Heatmap Overlay
 - Toggle button on the map with live risk type badge
 - **6 selectable risk layers**: each with its own color signature
 - **Radial gradient blobs** interpolated from all 15 grid points using canvas 2D API
@@ -97,7 +97,7 @@ ResQAI is the **only platform that closes the loop** between AI predictions, rea
 - Automatically redraws on map pan, zoom, and resize events
 - Fully layered above the map tiles but below markers (z-index 400)
 
-### 👥 Community Validation System
+###  Community Validation System
 - Citizens can **confirm or deny** AI predictions with one tap
 - Each report has a **trust score** (0–1) based on community consensus
 - **Verified reports** (admin-confirmed) shown with green borders and "VERIFIED" badge
