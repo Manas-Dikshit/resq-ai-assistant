@@ -153,7 +153,7 @@ const PredictionPanel = () => {
   const urgentRefresh = secondsLeft <= 15;
 
   return (
-    <div className="space-y-3" role="region" aria-label="AI Risk Predictions">
+    <div className="space-y-3" role="region" aria-label="Risk Predictions">
       <MeshAlertBanner />
       <OfflinePredictionEngine />
 

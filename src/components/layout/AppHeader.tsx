@@ -8,6 +8,7 @@ import type { LucideIcon } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslation } from "react-i18next";
 import LanguageToggle from "@/components/LanguageToggle";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 interface AppHeaderProps {
@@ -82,9 +83,9 @@ const AppHeader = ({
             )}
           </div>
           {badge && (
-            <span className="hidden rounded border border-border bg-secondary px-2 py-0.5 font-display text-[10px] font-medium uppercase tracking-wide text-muted-foreground lg:inline">
+            <Badge variant="secondary" className="hidden lg:inline-flex text-[10px] font-mono uppercase tracking-wider py-0 px-2 h-5">
               {badge}
-            </span>
+            </Badge>
           )}
         </div>
       </div>
@@ -121,16 +122,13 @@ const AppHeader = ({
         <LanguageToggle />
 
         {live && (
-          <span
-            className="hidden items-center gap-1.5 rounded-full border border-safe/25 bg-safe/10 px-2.5 py-1 font-display text-[10px] font-semibold uppercase tracking-wide text-safe sm:flex"
-            title="Connected to live data sources"
-          >
+          <Badge variant="live" className="hidden sm:inline-flex py-1 px-2.5 font-mono text-[10px]" title="Connected to live data sources">
             <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full rounded-full bg-safe opacity-60" />
+              <span className="absolute inline-flex h-full w-full rounded-full bg-safe opacity-75 animate-ping" />
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-safe" />
             </span>
             {t("app.live", { defaultValue: "Live" })}
-          </span>
+          </Badge>
         )}
 
         {user ? (

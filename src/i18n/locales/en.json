@@ -105,8 +105,8 @@
     "loading": "Loading real-time data..."
   },
   "risk": {
-    "title": "Risk Forecast — Odisha",
-    "aiAssessment": "AI Risk Assessment",
+    "title": "Risk Predictions",
+    "aiAssessment": "Risk Assessment",
     "flood": "Flood",
     "earthquake": "Earthquake",
     "fire": "Fire"
@@ -196,7 +196,7 @@
     "or": "ଓଡ଼ିଆ"
   },
   "prediction": {
-    "title": "AI Risk Predictions",
+    "title": "Risk Predictions",
     "live": "LIVE",
     "overall": "Overall",
     "forecast48h": "48h forecast",

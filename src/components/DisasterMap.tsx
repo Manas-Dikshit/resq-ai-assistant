@@ -252,12 +252,9 @@ const DisasterMap = () => {
           </div>`
         : "";
 
-      const markerHtml = `<div style="position:relative;display:flex;flex-direction:column;align-items:center">
+      const markerHtml = `<div style="position:relative;display:flex;flex-direction:column;align-items:center;cursor:pointer">
         ${pulseRingsHtml}
-        <div style="background:${color};width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.3);box-shadow:0 0 ${isCritical ? '24' : '16'}px ${color}${isCritical ? '' : '80'};font-size:10px;font-family:monospace;font-weight:bold;color:#fff;position:relative;z-index:1">${RISK_ICONS[dominantRisk]}</div>
-        <div style="background:rgba(0,0,0,0.85);border:1px solid ${tierColor};border-radius:4px;padding:1px 6px;margin-top:2px;white-space:nowrap;position:relative;z-index:1">
-          <span style="font-size:9px;color:${tierColor};font-family:monospace;font-weight:bold">${tierLabel}</span>
-        </div>
+        <div style="background:${color};width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.4);box-shadow:0 0 ${isCritical ? '24' : '14'}px ${color}${isCritical ? '' : '80'};font-size:11px;font-family:monospace;font-weight:bold;color:#fff;position:relative;z-index:1">${RISK_ICONS[dominantRisk]}</div>
       </div>`;
 
       L.marker([point.latitude, point.longitude], {
