@@ -25,16 +25,6 @@ const HeroSection = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full rounded-full bg-secondary opacity-60" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-secondary" />
-            </span>
-            <span className="font-display text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-              {t('hero.badge', { defaultValue: 'Disaster response platform' })}
-            </span>
-          </div>
-
           <h1 className="font-display text-4xl font-bold leading-[1.05] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
             Res<span className="text-secondary">Q</span>AI
           </h1>
@@ -109,10 +99,6 @@ const HeroSection = () => {
               <p className="font-display text-sm font-semibold text-foreground">System status</p>
               <p className="mt-0.5 text-[11px] text-muted-foreground">Operational snapshot</p>
             </div>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-safe/25 bg-safe/10 px-2.5 py-1 font-display text-[10px] font-semibold uppercase tracking-wide text-safe">
-              <span className="h-1.5 w-1.5 rounded-full bg-safe" />
-              Online
-            </span>
           </div>
 
           <div className="divide-y divide-border">

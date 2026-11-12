@@ -121,16 +121,6 @@ const AppHeader = ({
 
         <LanguageToggle />
 
-        {live && (
-          <Badge variant="live" className="hidden sm:inline-flex py-1 px-2.5 font-mono text-[10px]" title="Connected to live data sources">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full rounded-full bg-safe opacity-75 animate-ping" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-safe" />
-            </span>
-            {t("app.live", { defaultValue: "Live" })}
-          </Badge>
-        )}
-
         {user ? (
           <>
             <Link

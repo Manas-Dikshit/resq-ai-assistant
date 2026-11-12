@@ -157,18 +157,13 @@ const PredictionPanel = () => {
       <MeshAlertBanner />
       <OfflinePredictionEngine />
 
-      {/* Header with LIVE badge + refresh */}
+      {/* Header + refresh */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Brain className="w-4 h-4 text-primary" />
           <h3 className="font-display text-xs font-bold text-muted-foreground tracking-widest uppercase">
             {t('prediction.title')}
           </h3>
-          {/* Live indicator */}
-          <span className="flex items-center gap-1 rounded-full border border-safe/25 bg-safe/10 px-1.5 py-0.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-safe" />
-            <span className="text-[9px] font-mono font-bold text-safe">{t('prediction.live')}</span>
-          </span>
         </div>
         <div className="flex items-center gap-1.5">
           {/* Countdown timer */}

@@ -157,11 +157,6 @@ const ShelterFinder = () => {
           <Home className="w-3.5 h-3.5" /> {t('shelter.finderTitle')}
         </h3>
         <div className="flex items-center gap-1.5">
-          {/* Live indicator */}
-          <span className="flex items-center gap-1 rounded-full border border-safe/25 bg-safe/10 px-1.5 py-0.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-safe" />
-            <span className="text-[9px] font-mono font-bold text-safe">{t('shelter.liveUpdates')}</span>
-          </span>
           <button
             onClick={() => fetchShelters(userPos?.lat, userPos?.lng)}
             className="p-1 rounded hover:bg-accent transition-colors"
