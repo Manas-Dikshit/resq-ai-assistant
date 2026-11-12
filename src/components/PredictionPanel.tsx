@@ -191,7 +191,7 @@ const PredictionPanel = () => {
           >
             <RefreshCw className={`w-3 h-3 ${isRefreshing ? "animate-spin text-primary" : ""}`} />
           </button>
-          {/* Model source */}
+          
           <div className="flex items-center gap-1 text-[9px] text-muted-foreground font-display">
             <Cpu className="w-3 h-3" />
             <span>{data.model_source === "ml_model" ? "ML" : "Heuristic"}</span>

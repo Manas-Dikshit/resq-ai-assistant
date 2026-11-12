@@ -19,19 +19,19 @@ interface Props {
   alertTier?: string;
 }
 
-const TIER_STYLES: Record<string, { label: string; className: string }> = {
-  VERIFIED_CRITICAL: { label: "VERIFIED CRITICAL", className: "bg-destructive/10 text-destructive border-destructive/30" },
-  AI_PREDICTED: { label: "MODEL FORECAST", className: "bg-warning/10 text-warning border-warning/30" },
-  MONITORING: { label: "MONITORING", className: "bg-primary/10 text-primary border-primary/30" },
-  LOW_WATCH: { label: "LOW WATCH", className: "bg-safe/10 text-safe border-safe/30" },
-};
-
 const ExplainabilityTooltip = ({ explainability, alertTier }: Props) => {
   const [open, setOpen] = useState(false);
 
   if (!explainability || !explainability.factors?.length) return null;
 
-  const tier = TIER_STYLES[alertTier || "LOW_WATCH"] || TIER_STYLES.LOW_WATCH;
+  const tierStyles: Record<string, { label: string; className: string }> = {
+    CRITICAL: { label: "CRITICAL", className: "bg-destructive/10 text-destructive border-destructive/30" },
+    HIGH: { label: "HIGH", className: "bg-warning/10 text-warning border-warning/30" },
+    MEDIUM: { label: "MEDIUM", className: "bg-primary/10 text-primary border-primary/30" },
+    LOW: { label: "LOW", className: "bg-safe/10 text-safe border-safe/30" },
+  };
+
+  const tier = alertTier ? tierStyles[alertTier] : tierStyles.LOW;
 
   return (
     <div className="relative">

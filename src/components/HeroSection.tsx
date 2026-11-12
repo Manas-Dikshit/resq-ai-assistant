@@ -1,18 +1,11 @@
 import { motion } from "framer-motion";
 import {
   ArrowRight, Shield, Globe, Activity, GraduationCap, Package,
-  Waves, Database, WifiOff, Bot, CheckCircle2,
+  Waves, Database, WifiOff, CheckCircle2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LanguageToggle from "@/components/LanguageToggle";
-
-const systems = [
-  { icon: Globe, label: "Disaster feeds", value: "NASA EONET · USGS", tone: "text-safe" },
-  { icon: Database, label: "Shelter registry", value: "Supabase · live", tone: "text-safe" },
-  { icon: Bot, label: "Response assistant", value: "Available", tone: "text-safe" },
-  { icon: WifiOff, label: "Offline cache", value: "Last 24 h", tone: "text-warning" },
-];
 
 const HeroSection = () => {
   const navigate = useNavigate();
@@ -34,8 +27,8 @@ const HeroSection = () => {
         >
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1">
             <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full rounded-full bg-safe opacity-60" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-safe" />
+              <span className="absolute inline-flex h-full w-full rounded-full bg-secondary opacity-60" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-secondary" />
             </span>
             <span className="font-display text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
               {t('hero.badge', { defaultValue: 'Disaster response platform' })}
@@ -43,7 +36,7 @@ const HeroSection = () => {
           </div>
 
           <h1 className="font-display text-4xl font-bold leading-[1.05] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-            Res<span className="text-primary">Q</span>AI
+            Res<span className="text-secondary">Q</span>AI
           </h1>
 
           <p className="mt-5 max-w-xl text-lg text-foreground">
@@ -88,12 +81,12 @@ const HeroSection = () => {
 
           <div className="mt-8 grid gap-3 sm:grid-cols-3">
             {[
-              { icon: Activity, label: t('hero.aiPrediction', { defaultValue: 'Risk forecasting' }), desc: t('hero.aiPredictionDesc', { defaultValue: 'Grid-level hazard outlook' }) },
-              { icon: Globe, label: t('hero.realTimeMapping', { defaultValue: 'Live mapping' }), desc: t('hero.realTimeMappingDesc', { defaultValue: 'Feeds and shelter status' }) },
-              { icon: Shield, label: t('hero.survivalGuidance', { defaultValue: 'Response guidance' }), desc: t('hero.survivalGuidanceDesc', { defaultValue: 'Steps for the field' }) },
+              { icon: Activity, label: t('hero.overview', { defaultValue: 'Operational overview' }), desc: t('hero.overviewDesc', { defaultValue: 'Live hazard feeds and shelter status across the region' }) },
+              { icon: Globe, label: t('hero.liveMapping', { defaultValue: 'Live mapping' }), desc: t('hero.liveMappingDesc', { defaultValue: 'Live feeds and shelter status' }) },
+              { icon: Shield, label: t('hero.responseGuidance', { defaultValue: 'Response guidance' }), desc: t('hero.responseGuidanceDesc', { defaultValue: 'Steps and protocols for the field' }) },
             ].map((f) => (
               <div key={f.label} className="flex gap-3">
-                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-card">
+                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-secondary">
                   <f.icon className="h-4 w-4 text-muted-foreground" />
                 </span>
                 <div>
@@ -123,9 +116,14 @@ const HeroSection = () => {
           </div>
 
           <div className="divide-y divide-border">
-            {systems.map((s) => (
+            {[
+              { label: "Feeds", value: "Live feeds", tone: "text-safe" },
+              { label: "Shelters", value: "Supabase · live", tone: "text-safe" },
+              { label: "Response", value: "Available", tone: "text-safe" },
+              { label: "Cache", value: "Last 24 h", tone: "text-warning" },
+            ].map((s) => (
               <div key={s.label} className="flex items-center gap-3 px-5 py-3.5">
-                <span className="flex h-8 w-8 items-center justify-center rounded-md border border-border bg-background">
+                <span className="flex h-8 w-8 items-center justify-center rounded-md border border-border bg-secondary">
                   <s.icon className="h-4 w-4 text-muted-foreground" />
                 </span>
                 <div className="min-w-0 flex-1">
@@ -139,7 +137,7 @@ const HeroSection = () => {
 
           <div className="border-t border-border px-5 py-4">
             <p className="text-[11px] leading-relaxed text-muted-foreground">
-              Hazard feeds and shelter records are read live. Cached and sample data are labelled in every view.
+              Feeds and shelter records are read live. Cached and sample data are labelled in every view.
             </p>
             <div className="mt-3 flex items-center gap-4">
               <button onClick={() => navigate("/control-room")} className="inline-flex items-center gap-1.5 font-display text-xs font-medium text-primary hover:underline">

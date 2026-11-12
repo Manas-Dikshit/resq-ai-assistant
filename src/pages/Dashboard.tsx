@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import DisasterMap from "@/components/DisasterMap";
-import AIChatPanel from "@/components/AIChatPanel";
+import OperationalChatPanel from "@/components/OperationalChatPanel";
 import RiskCards from "@/components/RiskCards";
 import AlertBanner from "@/components/AlertBanner";
 import LiveEventsPanel from "@/components/LiveEventsPanel";
@@ -197,7 +197,7 @@ const Dashboard = () => {
               transition={{ duration: 0.25, ease: "easeInOut" }}
               className="border-l border-border bg-card/30 overflow-hidden"
             >
-              <AIChatPanel />
+              <OperationalChatPanel />
             </motion.aside>
           )}
         </AnimatePresence>

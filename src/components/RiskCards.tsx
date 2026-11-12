@@ -1,5 +1,4 @@
 import { Droplets, Flame, Mountain } from "lucide-react";
-import { odishaRiskPredictions } from "@/data/odishaData";
 import { useRiskPrediction } from "@/hooks/useDisasterData";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
@@ -31,7 +30,7 @@ const RiskCards = () => {
       {prediction && (
         <div className="p-3 rounded-lg border border-primary/30 bg-primary/5">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-xs font-display font-bold text-primary">{t('risk.aiAssessment')}</p>
+            <p className="text-xs font-display font-bold text-primary">{t('risk.assessment')}</p>
             <span className={`text-xs font-display px-2 py-0.5 rounded-full ${prediction.risk_level === 'CRITICAL' ? 'bg-destructive/10 text-destructive' : prediction.risk_level === 'HIGH' ? 'bg-warning/10 text-warning' : 'bg-safe/10 text-safe'}`}>
               {prediction.risk_level}
             </span>
