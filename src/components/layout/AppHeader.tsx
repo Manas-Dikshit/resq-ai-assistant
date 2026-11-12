@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import {
   Activity, BarChart3, GraduationCap, LayoutDashboard, LogIn, LogOut,
-  Package, Radio, Shield, ArrowLeft,
+  Package, Radio, Shield, ArrowLeft, Siren, HeartHandshake,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -23,9 +23,11 @@ interface AppHeaderProps {
 
 const navItems = [
   { to: "/dashboard", labelKey: "nav.dashboard", fallback: "Dashboard", icon: LayoutDashboard },
-  { to: "/forecast", labelKey: "nav.forecasts", fallback: "Forecast", icon: BarChart3 },
   { to: "/control-room", labelKey: "nav.controlRoom", fallback: "Control Room", icon: Radio },
+  { to: "/forecast", labelKey: "nav.forecasts", fallback: "Forecasts", icon: BarChart3 },
+  { to: "/evacuate", labelKey: "nav.evacuate", fallback: "Evacuate", icon: Siren, highlight: "emergency" },
   { to: "/resources", labelKey: "nav.resources", fallback: "Resources", icon: Package },
+  { to: "/post-disaster", labelKey: "nav.postDisaster", fallback: "Recovery", icon: HeartHandshake },
   { to: "/training", labelKey: "nav.training", fallback: "Training", icon: GraduationCap },
 ];
 
@@ -96,10 +98,12 @@ const AppHeader = ({
                 to={item.to}
                 className={({ isActive }) =>
                   cn(
-                    "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs transition-colors",
-                    isActive
-                      ? "bg-accent text-foreground"
-                      : "text-muted-foreground hover:bg-accent/60 hover:text-foreground",
+                    "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-all",
+                    item.highlight === "emergency" && !isActive
+                      ? "border border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20"
+                      : isActive
+                        ? "bg-accent text-foreground shadow-sm font-semibold"
+                        : "text-muted-foreground hover:bg-accent/60 hover:text-foreground",
                   )
                 }
               >
