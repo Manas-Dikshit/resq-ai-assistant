@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Wifi, WifiOff, Radio, Users, AlertTriangle, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -11,21 +11,40 @@ interface MeshAlert {
   peerCount?: number;
 }
 
+interface PresenceMessage {
+  type: "presence";
+  peerId: string;
+  sentAt: number;
+}
+
+const CHANNEL_NAME = "resqai-mesh";
+const PRESENCE_INTERVAL_MS = 10_000;
+const PEER_TTL_MS = 30_000;
+
+const createPeerId = () => {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+  return `peer-${Date.now()}`;
+};
+
 const MeshAlertBanner = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [meshAlerts, setMeshAlerts] = useState<MeshAlert[]>([]);
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
-  const [peerCount, setPeerCount] = useState(0);
+  const [localPeerCount, setLocalPeerCount] = useState(0);
+  const [relayAvailable, setRelayAvailable] = useState(false);
+  const peerIdRef = useRef<string>(createPeerId());
+  const peersRef = useRef<Map<string, number>>(new Map());
 
   // Monitor connectivity
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => {
       setIsOnline(false);
-      // Add offline alert
       setMeshAlerts(prev => [{
         id: `offline-${Date.now()}`,
-        message: "Network disconnected. Using cached predictions and mesh relay for alerts.",
+        message: "Network disconnected. Using cached predictions and local relay for alerts.",
         severity: "warning" as const,
         source: "offline-cache" as const,
         timestamp: Date.now(),
@@ -40,23 +59,61 @@ const MeshAlertBanner = () => {
     };
   }, []);
 
-  // Simulate mesh peer discovery (in production: WebRTC/BLE)
+  // Same-browser relay presence. This is intentionally labelled as local tabs,
+  // not a real mesh: BroadcastChannel cannot reach other devices.
   useEffect(() => {
-    const interval = setInterval(() => {
-      setPeerCount(Math.floor(Math.random() * 8) + 1);
-    }, 15000);
-    return () => clearInterval(interval);
-  }, []);
+    if (!("BroadcastChannel" in window)) {
+      setRelayAvailable(false);
+      return;
+    }
 
-  // Listen for broadcast channel messages (simulates mesh)
-  useEffect(() => {
-    if (!("BroadcastChannel" in window)) return;
-    const channel = new BroadcastChannel("resqai-mesh");
-    channel.onmessage = (event) => {
-      const alert = event.data as MeshAlert;
-      setMeshAlerts(prev => [alert, ...prev].slice(0, 5));
+    setRelayAvailable(true);
+    const channel = new BroadcastChannel(CHANNEL_NAME);
+    const peers = peersRef.current;
+
+    const prunePeers = () => {
+      const now = Date.now();
+      peers.forEach((lastSeen, id) => {
+        if (now - lastSeen > PEER_TTL_MS) peers.delete(id);
+      });
+      setLocalPeerCount(Math.max(0, peers.size - 1));
     };
-    return () => channel.close();
+
+    const announce = () => {
+      peers.set(peerIdRef.current, Date.now());
+      const presence: PresenceMessage = {
+        type: "presence",
+        peerId: peerIdRef.current,
+        sentAt: Date.now(),
+      };
+      channel.postMessage(presence);
+      prunePeers();
+    };
+
+    channel.onmessage = (event) => {
+      const data = event.data as Partial<PresenceMessage & MeshAlert> | undefined;
+      if (!data) return;
+
+      if (data.type === "presence" && typeof data.peerId === "string") {
+        peers.set(data.peerId, Date.now());
+        prunePeers();
+        return;
+      }
+
+      if (typeof data.message === "string" && typeof data.severity === "string") {
+        setMeshAlerts(prev => [data as MeshAlert, ...prev].slice(0, 5));
+      }
+    };
+
+    announce();
+    const interval = setInterval(announce, PRESENCE_INTERVAL_MS);
+
+    return () => {
+      clearInterval(interval);
+      channel.close();
+      peers.clear();
+      setLocalPeerCount(0);
+    };
   }, []);
 
   const dismiss = (id: string) => {
@@ -67,7 +124,7 @@ const MeshAlertBanner = () => {
 
   return (
     <div className="space-y-1">
-      {/* Connectivity Status */}
+      {/* Connectivity status */}
       <div className="flex items-center gap-2 text-xs">
         {isOnline ? (
           <span className="flex items-center gap-1 text-safe">
@@ -78,12 +135,23 @@ const MeshAlertBanner = () => {
             <WifiOff className="w-3 h-3" /> Offline Mode
           </span>
         )}
-        <span className="flex items-center gap-1 text-muted-foreground">
-          <Users className="w-3 h-3" /> {peerCount} mesh peers
+        <span
+          className="flex items-center gap-1 text-muted-foreground"
+          title="Same-browser relay only (BroadcastChannel). Not WebRTC/BLE."
+        >
+          <Users className="w-3 h-3" />
+          {relayAvailable
+            ? localPeerCount === 0
+              ? "No other local tabs"
+              : `${localPeerCount} local tab${localPeerCount === 1 ? "" : "s"}`
+            : "Local relay unavailable"}
+        </span>
+        <span className="text-[9px] text-muted-foreground/60 font-display uppercase tracking-wide">
+          local relay
         </span>
       </div>
 
-      {/* Mesh Alerts */}
+      {/* Relay alerts */}
       <AnimatePresence>
         {visibleAlerts.map((alert) => (
           <motion.div

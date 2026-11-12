@@ -13,7 +13,7 @@ import {
   AffectedPopulationChart, ShelterUtilizationChart, RiskTrendLineChart,
   MonthlyAffectedChart, RiskRadarChart
 } from "@/components/AnalyticsCharts";
-import { odishaDisasters, odishaShelters } from "@/data/odishaData";
+import DemoDataBadge from "@/components/DemoDataBadge";
 
 type Tab = 'overview' | 'analytics' | 'alerts' | 'shelters' | 'reports' | 'users' | 'validation';
 
@@ -45,6 +45,27 @@ const Admin = () => {
     queryKey: ['admin-reports'],
     queryFn: async () => {
       const { data } = await supabase.from('reports').select('*').order('created_at', { ascending: false }).limit(50);
+      return data || [];
+    },
+    enabled: isAdmin === true,
+  });
+
+  const { data: shelters } = useQuery({
+    queryKey: ['admin-shelters'],
+    queryFn: async () => {
+      const { data } = await supabase.from('shelters').select('*').order('name');
+      return data || [];
+    },
+    enabled: isAdmin === true,
+  });
+
+  const { data: incidents } = useQuery({
+    queryKey: ['admin-incidents'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('incidents')
+        .select('id, status, severity, affected_population, created_at')
+        .order('created_at', { ascending: false });
       return data || [];
     },
     enabled: isAdmin === true,
@@ -136,13 +157,23 @@ const Admin = () => {
       <main className="flex-1 overflow-y-auto p-6">
         {activeTab === 'overview' && (
           <div className="space-y-6">
-            <h2 className="font-display text-2xl font-bold text-foreground">Odisha Disaster Overview</h2>
+            <h2 className="font-display text-2xl font-bold text-foreground">Odisha Operational Overview</h2>
             {/* Stats cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                { label: 'Active Events', value: odishaDisasters.length, color: 'text-destructive', bg: 'bg-destructive/10' },
-                { label: 'Total Affected', value: odishaDisasters.reduce((a, d) => a + d.affected, 0).toLocaleString(), color: 'text-warning', bg: 'bg-warning/10' },
-                { label: 'Active Shelters', value: odishaShelters.length, color: 'text-safe', bg: 'bg-safe/10' },
+                {
+                  label: 'Open Incidents',
+                  value: (incidents || []).filter(i => ['open', 'investigating', 'responding'].includes(i.status)).length,
+                  color: 'text-destructive',
+                  bg: 'bg-destructive/10',
+                },
+                {
+                  label: 'People Affected',
+                  value: (incidents || []).reduce((sum, i) => sum + Number(i.affected_population || 0), 0).toLocaleString(),
+                  color: 'text-warning',
+                  bg: 'bg-warning/10',
+                },
+                { label: 'Shelters in DB', value: shelters?.length || 0, color: 'text-safe', bg: 'bg-safe/10' },
                 { label: 'Reports Filed', value: reports?.length || 0, color: 'text-primary', bg: 'bg-primary/10' },
               ].map(s => (
                 <div key={s.label} className={`p-4 rounded-xl border border-border bg-card`}>
@@ -150,6 +181,10 @@ const Admin = () => {
                   <p className={`text-2xl font-display font-bold mt-1 ${s.color}`}>{s.value}</p>
                 </div>
               ))}
+            </div>
+            <div className="flex items-center gap-2">
+              <DemoDataBadge label="Charts use illustrative sample data" />
+              <span className="text-xs text-muted-foreground">Not live incident counts.</span>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <RiskRadarChart />
@@ -163,6 +198,10 @@ const Admin = () => {
         {activeTab === 'analytics' && (
           <div className="space-y-6">
             <h2 className="font-display text-2xl font-bold text-foreground">Detailed Analytics</h2>
+            <div className="flex items-center gap-2">
+              <DemoDataBadge label="Illustrative sample data" />
+              <span className="text-xs text-muted-foreground">Charts below are not connected to live feeds yet.</span>
+            </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <MonthlyTrendsChart />
               <DistrictBarChart />
