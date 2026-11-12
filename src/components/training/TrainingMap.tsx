@@ -89,7 +89,7 @@ export default function TrainingMap({ trainings, colorMode = "theme" }: Training
             <span style="color:#f9a8d4"><b>${t.participants_female}</b> F</span>
           </div>
           <div style="opacity:0.6;margin-top:4px">by ${t.organizer}</div>
-          ${t.verified ? '<span style="color:#10b981;font-size:10px">✓ Verified</span>' : ""}
+          ${t.verified ? '<span style="color:#10b981;font-size:10px">Verified</span>' : ""}
         </div>
       `);
 
@@ -115,9 +115,9 @@ export default function TrainingMap({ trainings, colorMode = "theme" }: Training
       <div ref={containerRef} style={{ height: "100%", width: "100%" }} />
 
       {/* Legend */}
-      <div className="absolute bottom-4 right-4 glass-strong rounded-xl p-3 z-[500] text-xs space-y-1 pointer-events-none">
-        <p className="font-display font-bold text-muted-foreground mb-2 tracking-wider uppercase" style={{ fontSize: 10 }}>
-          {colorMode === "theme" ? "By Theme" : "By Level"}
+      <div className="absolute bottom-4 right-4 z-[500] space-y-1 rounded-lg border border-border bg-card/95 p-3 text-xs shadow-lg backdrop-blur-sm pointer-events-none">
+        <p className="mb-2 font-display font-semibold uppercase tracking-wider text-muted-foreground" style={{ fontSize: 10 }}>
+          {colorMode === "theme" ? "By theme" : "By level"}
         </p>
         {legendEntries.map(([k, c]) => (
           <div key={k} className="flex items-center gap-2">

@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowLeft, Plus, BarChart3, MapPin, List, ClipboardCheck,
+  Plus, BarChart3, MapPin, List, ClipboardCheck,
   TrendingUp, AlertTriangle, Building2, DollarSign, Users,
   CheckCircle2, Clock, XCircle, Filter, Search, RefreshCw
 } from "lucide-react";
@@ -16,7 +15,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import LanguageToggle from "@/components/LanguageToggle";
+import AppHeader from "@/components/layout/AppHeader";
 import AddAssessmentForm from "@/components/postdisaster/AddAssessmentForm";
 import AssessmentList from "@/components/postdisaster/AssessmentList";
 import RecoveryAnalytics from "@/components/postdisaster/RecoveryAnalytics";
@@ -121,36 +120,19 @@ const PostDisaster = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
-      <header className="flex items-center justify-between px-4 py-2 border-b border-border glass-strong z-20">
-        <div className="flex items-center gap-3">
-          <Link to="/dashboard" className="p-1.5 rounded-md hover:bg-accent transition-colors">
-            <ArrowLeft className="w-4 h-4 text-muted-foreground" />
-          </Link>
-          <div>
-            <h1 className="font-display text-sm font-bold flex items-center gap-2">
-              <ClipboardCheck className="w-4 h-4 text-primary" />
-              Post-Disaster Management
-            </h1>
-            <p className="text-xs text-muted-foreground font-display">Damage Assessment · Recovery Tracker</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <LanguageToggle />
-          <Badge variant="outline" className="text-xs font-display border-primary/30 text-primary">
-            <span className="relative flex h-2 w-2 mr-1.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-            </span>
-            LIVE
-          </Badge>
-          {user && (
-            <Button size="sm" onClick={() => setShowForm(true)} className="gap-1.5 text-xs font-display">
-              <Plus className="w-3.5 h-3.5" /> New Assessment
+      <AppHeader
+        title="Post-Disaster Management"
+        subtitle="Damage assessment and recovery tracking"
+        icon={ClipboardCheck}
+        backTo="/dashboard"
+        actions={
+          user ? (
+            <Button size="sm" onClick={() => setShowForm(true)} className="h-8 gap-1.5 text-xs">
+              <Plus className="h-3.5 w-3.5" /> New assessment
             </Button>
-          )}
-        </div>
-      </header>
+          ) : undefined
+        }
+      />
 
       {/* Stats Row */}
       <div className="px-4 py-3 grid grid-cols-2 md:grid-cols-5 gap-3">

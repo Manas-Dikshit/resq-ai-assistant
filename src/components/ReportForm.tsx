@@ -80,7 +80,7 @@ const ReportForm = ({ open, onClose }: Props) => {
                 </button>
               </div>
             </div>
-            <button type="submit" disabled={loading || !user} className="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-gradient-primary text-primary-foreground font-display font-bold text-sm glow-primary hover:opacity-90 disabled:opacity-50">
+            <button type="submit" disabled={loading || !user} className="flex w-full items-center justify-center gap-2 rounded-md bg-primary py-2.5 font-display text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50">
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
               {loading ? t('reportForm.submitting') : t('reportForm.submit')}
             </button>

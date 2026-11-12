@@ -228,7 +228,7 @@ const AIChatPanel = () => {
             className="p-1 rounded hover:bg-accent transition-colors" title={ttsEnabled ? t('chat.muteVoice') : t('chat.enableVoice')}>
             {ttsEnabled ? <Volume2 className="w-3.5 h-3.5 text-primary" /> : <VolumeX className="w-3.5 h-3.5 text-muted-foreground" />}
           </button>
-          <span className="w-2 h-2 rounded-full bg-safe animate-pulse-glow" />
+          <span className="h-2 w-2 rounded-full bg-safe" />
         </div>
       </div>
 

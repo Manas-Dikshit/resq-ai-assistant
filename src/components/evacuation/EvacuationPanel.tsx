@@ -119,7 +119,7 @@ const EvacuationPanel = ({ selectedShelterId, onSelectShelter }: Props) => {
                   disabled={isFull}
                   className={`w-full text-left p-3 rounded-lg border transition-all ${
                     isSelected
-                      ? 'border-primary bg-primary/5 glow-primary'
+                      ? 'border-primary bg-primary/5'
                       : isFull
                         ? 'border-border bg-card/50 opacity-50 cursor-not-allowed'
                         : 'border-border bg-card hover:border-primary/30 hover:bg-primary/5'

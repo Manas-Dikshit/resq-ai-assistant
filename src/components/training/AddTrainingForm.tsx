@@ -89,9 +89,9 @@ export default function AddTrainingForm({ onClose }: AddTrainingFormProps) {
         initial={{ scale: 0.95, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.95, y: 20 }}
-        className="glass-strong rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+        className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-lg border border-border bg-card shadow-xl"
       >
-        <div className="flex items-center justify-between p-5 border-b border-border sticky top-0 glass-strong z-10">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-card p-5">
           <div>
             <h2 className="font-display font-bold text-foreground">Add Training Event</h2>
             <p className="text-xs text-muted-foreground mt-0.5">Record a new disaster management training</p>
@@ -285,7 +285,7 @@ export default function AddTrainingForm({ onClose }: AddTrainingFormProps) {
             <Button
               type="submit"
               disabled={addTraining.isPending}
-              className="flex-1 bg-gradient-primary text-primary-foreground"
+              className="flex-1 bg-primary text-primary-foreground"
             >
               {addTraining.isPending ? (
                 <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Saving...</>

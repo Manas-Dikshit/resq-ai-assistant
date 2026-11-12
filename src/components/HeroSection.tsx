@@ -1,170 +1,164 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Shield, Brain, Globe, Activity, Zap, Users, GraduationCap, Package, Waves } from "lucide-react";
+import {
+  ArrowRight, Shield, Globe, Activity, GraduationCap, Package,
+  Waves, Database, WifiOff, Bot, CheckCircle2,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import heroGlobe from "@/assets/hero-globe.jpg";
 import LanguageToggle from "@/components/LanguageToggle";
 
-const StatCard = ({ value, label, delay }: { value: string; label: string; delay: number }) => (
-  <motion.div
-    initial={{ opacity: 0, scale: 0.9 }}
-    animate={{ opacity: 1, scale: 1 }}
-    transition={{ duration: 0.5, delay }}
-    className="text-center"
-  >
-    <p className="text-2xl md:text-3xl font-display font-bold text-gradient-primary">{value}</p>
-    <p className="text-xs text-muted-foreground mt-1">{label}</p>
-  </motion.div>
-);
+const systems = [
+  { icon: Globe, label: "Disaster feeds", value: "NASA EONET · USGS", tone: "text-safe" },
+  { icon: Database, label: "Shelter registry", value: "Supabase · live", tone: "text-safe" },
+  { icon: Bot, label: "Response assistant", value: "Available", tone: "text-safe" },
+  { icon: WifiOff, label: "Offline cache", value: "Last 24 h", tone: "text-warning" },
+];
 
 const HeroSection = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-dark">
-      {/* Background image */}
-      <div className="absolute inset-0">
-        <img src={heroGlobe} alt="Global disaster intelligence visualization" className="w-full h-full object-cover opacity-30" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background/50 via-transparent to-background/50" />
-      </div>
+    <section className="relative min-h-screen bg-background">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-border" />
 
-      {/* Scan line effect */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="w-full h-px bg-primary/20 animate-scan-line" />
-      </div>
-
-      {/* Grid overlay */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.03]"
-        style={{ backgroundImage: 'linear-gradient(hsl(168 80% 45%) 1px, transparent 1px), linear-gradient(90deg, hsl(168 80% 45%) 1px, transparent 1px)', backgroundSize: '60px 60px' }}
-      />
-
-      {/* Language toggle top-right */}
-      <div className="absolute top-6 right-6 z-20">
+      <div className="absolute right-6 top-5 z-20">
         <LanguageToggle />
       </div>
 
-      {/* Live status indicator */}
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 1 }}
-        className="absolute top-6 left-6 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full glass text-xs font-display text-muted-foreground"
-      >
-        <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-safe opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-safe"></span>
-        </span>
-        Systems Active
-      </motion.div>
-
-      <div className="relative z-10 container mx-auto px-6 text-center">
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/5 mb-8">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse-glow" />
-            <span className="text-sm font-display text-primary tracking-wide">{t('hero.badge')}</span>
+      <div className="mx-auto grid min-h-screen max-w-6xl grid-cols-1 items-center gap-12 px-6 py-24 lg:grid-cols-[1.1fr_0.9fr] lg:py-0">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-safe opacity-60" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-safe" />
+            </span>
+            <span className="font-display text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+              {t('hero.badge', { defaultValue: 'Disaster response platform' })}
+            </span>
           </div>
 
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-bold tracking-tight mb-6">
-            <span className="text-foreground">Res</span>
-            <span className="text-gradient-primary">Q</span>
-            <span className="text-foreground">AI</span>
+          <h1 className="font-display text-4xl font-bold leading-[1.05] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+            Res<span className="text-primary">Q</span>AI
           </h1>
 
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-4 font-body">{t('hero.subtitle')}</p>
-          <p className="text-base text-muted-foreground/70 max-w-2xl mx-auto mb-12 font-body">{t('hero.description')}</p>
+          <p className="mt-5 max-w-xl text-lg text-foreground">
+            {t('hero.subtitle', { defaultValue: 'Disaster intelligence for Odisha.' })}
+          </p>
+          <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
+            {t('hero.description', {
+              defaultValue:
+                'Live hazard feeds, shelter capacity, and incident command in one operational view — built for responders working under pressure.',
+            })}
+          </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <motion.button
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <button
               onClick={() => navigate("/dashboard")}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
-              className="group inline-flex items-center gap-2 px-8 py-4 rounded-lg bg-gradient-primary text-primary-foreground font-display font-bold text-lg animate-glow-pulse transition-all"
+              className="group inline-flex items-center justify-center gap-2 rounded-md bg-primary px-5 py-2.5 font-display text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
-              {t('hero.openDashboard')}
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </motion.button>
-            <motion.button
-              onClick={() => navigate("/training")}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-primary/30 text-foreground font-display hover:bg-primary/10 hover:border-primary/50 transition-all text-sm"
-            >
-              <GraduationCap className="w-4 h-4 text-primary" />
-              Training
-            </motion.button>
-            <motion.button
-              onClick={() => navigate("/control-room")}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-destructive/30 text-foreground font-display hover:bg-destructive/10 hover:border-destructive/50 transition-all text-sm"
-            >
-              <Shield className="w-4 h-4 text-destructive" />
-              Control Room
-            </motion.button>
-            <motion.button
-              onClick={() => navigate("/resources")}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-border text-foreground font-display hover:bg-accent hover:border-primary/30 transition-all text-sm"
-            >
-              <Package className="w-4 h-4 text-warning" />
-              Resources
-            </motion.button>
-            <motion.button
+              {t('hero.openDashboard', { defaultValue: 'Open dashboard' })}
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </button>
+            <button
               onClick={() => navigate("/forecast")}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-border text-foreground font-display hover:bg-accent hover:border-primary/30 transition-all text-sm"
+              className="inline-flex items-center justify-center gap-2 rounded-md border border-border bg-card px-5 py-2.5 font-display text-sm font-medium text-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
-              <Waves className="w-4 h-4 text-flood" />
-              Forecast Center
-            </motion.button>
+              <Waves className="h-4 w-4 text-muted-foreground" />
+              View forecasts
+            </button>
+          </div>
+
+          <div className="mt-10 grid grid-cols-3 divide-x divide-border border-y border-border">
+            {[
+              { value: "15", label: "Monitoring points" },
+              { value: "6", label: "Risk categories" },
+              { value: "48h", label: "Forecast window" },
+            ].map((s) => (
+              <div key={s.label} className="px-4 py-4 first:pl-0">
+                <p className="font-display text-xl font-semibold tabular-nums text-foreground">{s.value}</p>
+                <p className="mt-0.5 text-[11px] text-muted-foreground">{s.label}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-8 grid gap-3 sm:grid-cols-3">
+            {[
+              { icon: Activity, label: t('hero.aiPrediction', { defaultValue: 'Risk forecasting' }), desc: t('hero.aiPredictionDesc', { defaultValue: 'Grid-level hazard outlook' }) },
+              { icon: Globe, label: t('hero.realTimeMapping', { defaultValue: 'Live mapping' }), desc: t('hero.realTimeMappingDesc', { defaultValue: 'Feeds and shelter status' }) },
+              { icon: Shield, label: t('hero.survivalGuidance', { defaultValue: 'Response guidance' }), desc: t('hero.survivalGuidanceDesc', { defaultValue: 'Steps for the field' }) },
+            ].map((f) => (
+              <div key={f.label} className="flex gap-3">
+                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-card">
+                  <f.icon className="h-4 w-4 text-muted-foreground" />
+                </span>
+                <div>
+                  <p className="font-display text-xs font-semibold text-foreground">{f.label}</p>
+                  <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">{f.desc}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </motion.div>
 
-        {/* Stats row */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="mt-16 flex items-center justify-center gap-8 md:gap-16"
+        <motion.aside
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
+          className="rounded-xl border border-border bg-card"
         >
-          <StatCard value="15+" label="Monitoring Points" delay={0.7} />
-          <div className="w-px h-10 bg-border" />
-          <StatCard value="6" label="Risk Categories" delay={0.8} />
-          <div className="w-px h-10 bg-border" />
-          <StatCard value="48h" label="Forecast Window" delay={0.9} />
-          <div className="hidden md:block w-px h-10 bg-border" />
-          <div className="hidden md:block">
-            <StatCard value="Real-time" label="Data Feeds" delay={1.0} />
+          <div className="flex items-center justify-between border-b border-border px-5 py-4">
+            <div>
+              <p className="font-display text-sm font-semibold text-foreground">System status</p>
+              <p className="mt-0.5 text-[11px] text-muted-foreground">Operational snapshot</p>
+            </div>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-safe/25 bg-safe/10 px-2.5 py-1 font-display text-[10px] font-semibold uppercase tracking-wide text-safe">
+              <span className="h-1.5 w-1.5 rounded-full bg-safe" />
+              Online
+            </span>
           </div>
-        </motion.div>
 
-        {/* Feature cards */}
-        <motion.div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto" initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}>
-          {[
-            { icon: Brain, label: t('hero.aiPrediction'), desc: t('hero.aiPredictionDesc'), accent: "from-primary/20 to-primary/5" },
-            { icon: Globe, label: t('hero.realTimeMapping'), desc: t('hero.realTimeMappingDesc'), accent: "from-flood/20 to-flood/5" },
-            { icon: Shield, label: t('hero.survivalGuidance'), desc: t('hero.survivalGuidanceDesc'), accent: "from-safe/20 to-safe/5" },
-          ].map((f, i) => (
-            <motion.div
-              key={f.label}
-              whileHover={{ y: -4, borderColor: 'hsl(168 80% 45% / 0.3)' }}
-              transition={{ type: "spring", stiffness: 300 }}
-              className={`flex items-center gap-4 p-5 rounded-xl border border-border bg-gradient-to-br ${f.accent} backdrop-blur-sm`}
-            >
-              <div className="p-2.5 rounded-lg bg-primary/10 border border-primary/20">
-                <f.icon className="w-5 h-5 text-primary" />
+          <div className="divide-y divide-border">
+            {systems.map((s) => (
+              <div key={s.label} className="flex items-center gap-3 px-5 py-3.5">
+                <span className="flex h-8 w-8 items-center justify-center rounded-md border border-border bg-background">
+                  <s.icon className="h-4 w-4 text-muted-foreground" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-medium text-foreground">{s.label}</p>
+                  <p className="truncate text-[11px] text-muted-foreground">{s.value}</p>
+                </div>
+                <span className={`h-1.5 w-1.5 rounded-full ${s.tone === "text-safe" ? "bg-safe" : "bg-warning"}`} />
               </div>
-              <div className="text-left">
-                <p className="font-display text-sm font-bold text-foreground">{f.label}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{f.desc}</p>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
+            ))}
+          </div>
+
+          <div className="border-t border-border px-5 py-4">
+            <p className="text-[11px] leading-relaxed text-muted-foreground">
+              Hazard feeds and shelter records are read live. Cached and sample data are labelled in every view.
+            </p>
+            <div className="mt-3 flex items-center gap-4">
+              <button onClick={() => navigate("/control-room")} className="inline-flex items-center gap-1.5 font-display text-xs font-medium text-primary hover:underline">
+                <Shield className="h-3.5 w-3.5" /> Control room
+              </button>
+              <button onClick={() => navigate("/training")} className="inline-flex items-center gap-1.5 font-display text-xs font-medium text-muted-foreground hover:text-foreground">
+                <GraduationCap className="h-3.5 w-3.5" /> Training
+              </button>
+              <button onClick={() => navigate("/resources")} className="inline-flex items-center gap-1.5 font-display text-xs font-medium text-muted-foreground hover:text-foreground">
+                <Package className="h-3.5 w-3.5" /> Resources
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 rounded-b-xl border-t border-border bg-background/60 px-5 py-3">
+            <CheckCircle2 className="h-3.5 w-3.5 text-safe" />
+            <p className="text-[10px] text-muted-foreground">Last checked just now · Odisha region</p>
+          </div>
+        </motion.aside>
       </div>
     </section>
   );

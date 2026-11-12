@@ -108,10 +108,10 @@ const RecoveryTimeline = ({ assessments, phaseColors, severityColors }: Props) =
                   <p className="text-[10px] text-muted-foreground mt-2 line-clamp-2">{a.description}</p>
                 )}
 
-                <div className="flex items-center gap-4 mt-2 text-[9px] text-muted-foreground">
-                  <span>👥 {a.affected_population.toLocaleString()} affected</span>
-                  <span>🏠 {a.affected_households} households</span>
-                  <span>💰 ₹{(Number(a.estimated_cost_inr) / 100000).toFixed(1)}L</span>
+                <div className="mt-2 flex flex-wrap items-center gap-4 text-[9px] text-muted-foreground">
+                  <span>{a.affected_population.toLocaleString()} affected</span>
+                  <span>{a.affected_households} households</span>
+                  <span>₹{(Number(a.estimated_cost_inr) / 100000).toFixed(1)}L</span>
                 </div>
               </div>
             </motion.div>

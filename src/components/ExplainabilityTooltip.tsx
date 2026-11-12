@@ -20,10 +20,10 @@ interface Props {
 }
 
 const TIER_STYLES: Record<string, { label: string; className: string }> = {
-  VERIFIED_CRITICAL: { label: "⚠ VERIFIED CRITICAL", className: "bg-destructive/10 text-destructive border-destructive/30" },
-  AI_PREDICTED: { label: "🤖 AI PREDICTED", className: "bg-warning/10 text-warning border-warning/30" },
-  MONITORING: { label: "👁 MONITORING", className: "bg-primary/10 text-primary border-primary/30" },
-  LOW_WATCH: { label: "✅ LOW WATCH", className: "bg-safe/10 text-safe border-safe/30" },
+  VERIFIED_CRITICAL: { label: "VERIFIED CRITICAL", className: "bg-destructive/10 text-destructive border-destructive/30" },
+  AI_PREDICTED: { label: "MODEL FORECAST", className: "bg-warning/10 text-warning border-warning/30" },
+  MONITORING: { label: "MONITORING", className: "bg-primary/10 text-primary border-primary/30" },
+  LOW_WATCH: { label: "LOW WATCH", className: "bg-safe/10 text-safe border-safe/30" },
 };
 
 const ExplainabilityTooltip = ({ explainability, alertTier }: Props) => {

@@ -217,7 +217,7 @@ const DisasterMap = () => {
         const val = point.predictions[key];
         const barColor = RISK_COLORS[key];
         return `<div style="display:flex;align-items:center;gap:4px;margin:2px 0">
-          <span style="font-size:10px;width:14px">${RISK_ICONS[key]}</span>
+          <span style="font-size:9px;width:16px;font-family:monospace;font-weight:bold;color:#9ca3af">${RISK_ICONS[key]}</span>
           <span style="font-size:10px;color:#aaa;width:65px">${RISK_LABELS[key]}</span>
           <div style="flex:1;height:4px;background:#333;border-radius:2px"><div style="width:${val*100}%;height:100%;background:${barColor};border-radius:2px"></div></div>
           <span style="font-size:10px;color:white;width:30px;text-align:right">${(val*100).toFixed(0)}%</span>
@@ -225,12 +225,12 @@ const DisasterMap = () => {
       }).join("");
 
       const actionsHtml = (point.recommended_actions || []).slice(0, 2).map(a =>
-        `<p style="font-size:10px;color:#fbbf24;margin:2px 0">⚠ ${a}</p>`
+        `<p style="font-size:10px;color:#fbbf24;margin:2px 0">— ${a}</p>`
       ).join("");
 
       const explainHtml = point.explainability?.factors?.length
         ? `<div style="border-top:1px solid #333;padding-top:6px;margin-top:6px">
-            <p style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">🔍 Why this prediction</p>
+            <p style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Why this forecast</p>
             <p style="font-size:10px;color:#d1d5db;line-height:1.4">${point.explainability.summary}</p>
             ${point.explainability.factors.slice(0, 2).map(f =>
               `<div style="display:flex;align-items:center;gap:4px;margin:2px 0">
@@ -254,7 +254,7 @@ const DisasterMap = () => {
 
       const markerHtml = `<div style="position:relative;display:flex;flex-direction:column;align-items:center">
         ${pulseRingsHtml}
-        <div style="background:${color};width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.3);box-shadow:0 0 ${isCritical ? '24' : '16'}px ${color}${isCritical ? '' : '80'};font-size:14px;position:relative;z-index:1">${RISK_ICONS[dominantRisk]}</div>
+        <div style="background:${color};width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.3);box-shadow:0 0 ${isCritical ? '24' : '16'}px ${color}${isCritical ? '' : '80'};font-size:10px;font-family:monospace;font-weight:bold;color:#fff;position:relative;z-index:1">${RISK_ICONS[dominantRisk]}</div>
         <div style="background:rgba(0,0,0,0.85);border:1px solid ${tierColor};border-radius:4px;padding:1px 6px;margin-top:2px;white-space:nowrap;position:relative;z-index:1">
           <span style="font-size:9px;color:${tierColor};font-family:monospace;font-weight:bold">${tierLabel}</span>
         </div>
@@ -267,7 +267,7 @@ const DisasterMap = () => {
         .bindPopup(
           `<div style="font-family:Inter,sans-serif;min-width:220px;max-width:280px">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-              <b style="font-size:13px;color:white">${RISK_ICONS[dominantRisk]} ${point.label}</b>
+              <b style="font-size:13px;color:white">${point.label}</b>
               <span style="font-size:10px;color:${tierColor};background:${tierColor}20;padding:1px 6px;border-radius:10px;border:1px solid ${tierColor}40">${tierLabel}</span>
             </div>
             <div style="margin:8px 0">${barsHtml}</div>
@@ -298,7 +298,7 @@ const DisasterMap = () => {
           .addTo(shelterLayerRef.current!)
           .bindPopup(
             `<div style="font-family:Inter,sans-serif;font-size:13px;min-width:180px">
-              <b>🏠 ${s.name}</b>
+              <b>${s.name}</b>
               <div style="margin-top:6px">
                 <div style="display:flex;justify-content:space-between"><span>Capacity:</span><span>${s.occupancy}/${s.capacity}</span></div>
                 <div style="width:100%;height:6px;background:#333;border-radius:3px;margin-top:4px">
@@ -332,7 +332,7 @@ const DisasterMap = () => {
               <span style="width:8px;height:8px;border-radius:50%;background:${color};display:inline-block"></span>
               <b style="font-size:14px">${e.title}</b>
             </div>
-            <p style="color:#2dd4bf;font-size:10px;margin:2px 0">📡 ${e.source || 'API'} — LIVE</p>
+            <p style="color:#2dd4bf;font-size:10px;margin:2px 0">${e.source || 'API'} — LIVE</p>
             <p style="color:#999;margin:4px 0">${e.description}</p>
             ${e.magnitude ? `<p style="color:${color}">Magnitude: ${e.magnitude}</p>` : ''}
             <p style="color:#666;font-size:11px;margin-top:6px">${new Date(e.timestamp).toLocaleString()}</p>
@@ -347,14 +347,14 @@ const DisasterMap = () => {
       L.marker([c.lat, c.lng], {
         icon: L.divIcon({
           className: '',
-          html: `<div style="background:rgba(0,0,0,0.7);border:1px solid ${tempColor};border-radius:6px;padding:2px 6px;font-size:11px;color:${tempColor};font-family:monospace;white-space:nowrap;transform:translate(-50%,-50%)">${c.temperature.toFixed(0)}°C 💨${c.windSpeed?.toFixed(0)}</div>`,
+          html: `<div style="background:rgba(0,0,0,0.7);border:1px solid ${tempColor};border-radius:6px;padding:2px 6px;font-size:11px;color:${tempColor};font-family:monospace;white-space:nowrap;transform:translate(-50%,-50%)">${c.temperature.toFixed(0)}°C / ${c.windSpeed?.toFixed(0)} km/h</div>`,
           iconSize: [0, 0],
         }),
       })
         .addTo(realLayerRef.current!)
         .bindPopup(
           `<div style="font-family:Inter,sans-serif;font-size:13px;min-width:180px">
-            <b>🌡 ${c.city}</b>
+            <b>${c.city}</b>
             <div style="margin-top:6px;line-height:1.8">
               <div>Temperature: <b style="color:${tempColor}">${c.temperature?.toFixed(1)}°C</b> (feels ${c.feelsLike?.toFixed(1)}°C)</div>
               <div>Humidity: ${c.humidity}%</div>
@@ -376,14 +376,14 @@ const DisasterMap = () => {
       reportLayerRef.current.clearLayers();
 
       reports.forEach((r: any) => {
-        const emoji: Record<string, string> = { flood: "🌊", cyclone: "🌀", fire: "🔥", earthquake: "🏔️", landslide: "⛰️", storm: "⛈️", other: "⚠️" };
+        const code: Record<string, string> = { flood: "FL", cyclone: "CY", fire: "FR", earthquake: "EQ", landslide: "LS", storm: "ST", other: "OT" };
         const trustColor = r.verified ? "#22c55e" : r.trust_score >= 0.5 ? "#eab308" : "#888";
         const tierLabel = r.verified ? "VERIFIED" : r.trust_score > 0 ? "COMMUNITY" : "UNCONFIRMED";
 
         const icon = L.divIcon({
           className: '',
           html: `<div style="display:flex;flex-direction:column;align-items:center">
-            <div style="background:rgba(0,0,0,0.8);border:2px solid ${trustColor};width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:0 0 10px ${trustColor}60">${emoji[r.disaster_type] || "⚠️"}</div>
+            <div style="background:rgba(0,0,0,0.8);border:2px solid ${trustColor};width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-family:monospace;font-weight:bold;color:#fff;box-shadow:0 0 10px ${trustColor}60">${code[r.disaster_type] || "OT"}</div>
             <div style="background:rgba(0,0,0,0.85);border:1px solid ${trustColor};border-radius:3px;padding:0 4px;margin-top:1px">
               <span style="font-size:7px;color:${trustColor};font-family:monospace">${tierLabel}</span>
             </div>
@@ -396,10 +396,10 @@ const DisasterMap = () => {
           .addTo(reportLayerRef.current!)
           .bindPopup(
             `<div style="font-family:Inter,sans-serif;min-width:200px">
-              <b style="font-size:13px;color:white">${emoji[r.disaster_type] || "⚠️"} ${r.title}</b>
+              <b style="font-size:13px;color:white">${r.title}</b>
               <div style="display:flex;align-items:center;gap:4px;margin-top:4px">
                 <span style="font-size:9px;color:${trustColor};background:${trustColor}20;padding:1px 6px;border-radius:10px;border:1px solid ${trustColor}40">${tierLabel}</span>
-                <span style="font-size:9px;color:#888">${r.confirm_count || 0} 👍 ${r.deny_count || 0} 👎</span>
+                <span style="font-size:9px;color:#888">${r.confirm_count || 0} confirms · ${r.deny_count || 0} denies</span>
               </div>
               ${r.description ? `<p style="font-size:11px;color:#aaa;margin-top:4px">${r.description}</p>` : ""}
               <div style="display:flex;justify-content:space-between;margin-top:6px;padding-top:4px;border-top:1px solid #333">

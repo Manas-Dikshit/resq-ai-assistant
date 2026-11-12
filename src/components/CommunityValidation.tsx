@@ -22,9 +22,9 @@ interface Report {
   user_id: string;
 }
 
-const DISASTER_EMOJI: Record<string, string> = {
-  flood: "🌊", cyclone: "🌀", fire: "🔥", earthquake: "🏔️",
-  landslide: "⛰️", storm: "⛈️", lightning: "⚡", other: "⚠️",
+const DISASTER_CODE: Record<string, string> = {
+  flood: "FL", cyclone: "CY", fire: "FR", earthquake: "EQ",
+  landslide: "LS", storm: "ST", lightning: "LT", other: "OT",
 };
 
 const CommunityValidation = () => {
@@ -158,7 +158,9 @@ const CommunityValidation = () => {
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-start gap-2 flex-1 min-w-0">
-                    <span className="text-lg mt-0.5">{DISASTER_EMOJI[report.disaster_type] || "⚠️"}</span>
+                    <span className="mt-0.5 flex h-6 w-7 shrink-0 items-center justify-center rounded border border-border bg-secondary font-display text-[9px] font-bold text-muted-foreground">
+                      {DISASTER_CODE[report.disaster_type] || "OT"}
+                    </span>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <p className="text-sm font-display font-bold text-foreground truncate">{report.title}</p>

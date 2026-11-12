@@ -468,9 +468,9 @@ export default function ControlRoom() {
             </Button>
           )}
         </div>
-        <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-destructive/10 border border-destructive/20 text-xs text-destructive font-display flex-shrink-0">
-          <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-destructive" /></span>
-          LIVE
+        <span className="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-destructive/25 bg-destructive/10 px-2.5 py-1 font-display text-[10px] font-semibold uppercase tracking-wide text-destructive">
+          <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
+          Live
         </span>
       </div>
 

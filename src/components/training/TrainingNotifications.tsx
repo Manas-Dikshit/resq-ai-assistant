@@ -52,7 +52,7 @@ export default function TrainingNotifications() {
 
           // Show toast
           toast({
-            title: "📋 New Training Submitted",
+            title: "New training submitted",
             description: `"${training.title}" — ${training.state} · ${training.participants_total} participants`,
           });
         }
@@ -115,7 +115,7 @@ export default function TrainingNotifications() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.96 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full mt-2 w-80 glass-strong rounded-xl border border-border shadow-2xl z-[9999]"
+            className="absolute right-0 top-full z-[9999] mt-2 w-80 rounded-lg border border-border bg-card shadow-xl"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-border">

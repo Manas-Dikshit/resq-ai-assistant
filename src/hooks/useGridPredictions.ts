@@ -75,12 +75,12 @@ export const RISK_LABELS: Record<RiskType, string> = {
 };
 
 export const RISK_ICONS: Record<RiskType, string> = {
-  flood_risk: "🌊",
-  cyclone_risk: "🌀",
-  fire_risk: "🔥",
-  earthquake_risk: "🏔️",
-  landslide_risk: "⛰️",
-  heat_wave_risk: "🌡️",
+  flood_risk: "FL",
+  cyclone_risk: "CY",
+  fire_risk: "FR",
+  earthquake_risk: "EQ",
+  landslide_risk: "LS",
+  heat_wave_risk: "HW",
 };
 
 export const REFETCH_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes

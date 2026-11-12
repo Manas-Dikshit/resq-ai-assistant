@@ -45,8 +45,8 @@ const AlertBanner = () => {
   const latestAlert = realtimeAlerts[currentIdx] || realtimeAlerts[0];
 
   const severityStyles = {
-    critical: "bg-destructive/10 border-destructive/40 glow-danger",
-    emergency: "bg-destructive/15 border-destructive/50 glow-danger",
+    critical: "bg-destructive/10 border-destructive/40",
+    emergency: "bg-destructive/15 border-destructive/50",
     warning: "bg-warning/10 border-warning/30",
     info: "bg-primary/10 border-primary/30",
   };
@@ -56,14 +56,9 @@ const AlertBanner = () => {
     <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`flex items-center gap-3 px-4 py-2.5 rounded-lg border ${style} relative overflow-hidden`}
+      className={`relative flex items-center gap-3 overflow-hidden rounded-lg border px-4 py-2.5 ${style}`}
     >
-      {/* Animated background shimmer for critical */}
-      {(latestAlert.severity === 'critical' || latestAlert.severity === 'emergency') && (
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-destructive/5 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
-      )}
-
-      <AlertTriangle className="w-4 h-4 text-destructive animate-pulse-glow flex-shrink-0 relative z-10" />
+      <AlertTriangle className="relative z-10 h-4 w-4 shrink-0 text-destructive" />
 
       <AnimatePresence mode="wait">
         <motion.p

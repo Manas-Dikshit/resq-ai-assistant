@@ -113,7 +113,9 @@ const EvacuationMap = ({ selectedShelterId, onSelectShelter }: Props) => {
       const icon = L.divIcon({
         className: '',
         html: `<div style="position:relative;display:flex;flex-direction:column;align-items:center">
-          <div style="background:${color};width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid ${isSelected ? '#fff' : 'rgba(255,255,255,0.4)'};box-shadow:0 0 16px ${color}80;font-size:13px;cursor:pointer">🏠</div>
+          <div style="background:${color};width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid ${isSelected ? '#fff' : 'rgba(255,255,255,0.4)'};box-shadow:0 0 16px ${color}80;cursor:pointer">
+            <div style="width:8px;height:8px;border-radius:50%;background:#fff"></div>
+          </div>
           <div style="background:rgba(0,0,0,0.85);border:1px solid ${color};border-radius:4px;padding:1px 5px;margin-top:2px;white-space:nowrap">
             <span style="font-size:9px;color:${color};font-family:monospace;font-weight:bold">${isFull ? 'FULL' : `${available} spots`}</span>
           </div>
@@ -127,7 +129,7 @@ const EvacuationMap = ({ selectedShelterId, onSelectShelter }: Props) => {
         .on('click', () => onSelectShelter(s.id))
         .bindPopup(
           `<div style="font-family:'JetBrains Mono',monospace;min-width:200px">
-            <b style="font-size:13px;color:white">🏠 ${s.name}</b>
+            <b style="font-size:13px;color:white">${s.name}</b>
             <div style="margin-top:6px">
               <div style="display:flex;justify-content:space-between;font-size:11px;color:#aaa">
                 <span>Capacity</span><span>${s.occupancy}/${s.capacity}</span>
@@ -135,7 +137,7 @@ const EvacuationMap = ({ selectedShelterId, onSelectShelter }: Props) => {
               <div style="width:100%;height:6px;background:#333;border-radius:3px;margin-top:4px">
                 <div style="width:${utilization * 100}%;height:100%;background:${color};border-radius:3px"></div>
               </div>
-              <p style="font-size:11px;color:${color};margin-top:6px;font-weight:bold">${isFull ? '⛔ FULL — Try another shelter' : `✅ ${available} spots available`}</p>
+              <p style="font-size:11px;color:${color};margin-top:6px;font-weight:bold">${isFull ? 'FULL — try another shelter' : `${available} spots available`}</p>
             </div>
           </div>`,
           { className: 'prediction-popup' }
@@ -150,24 +152,30 @@ const EvacuationMap = ({ selectedShelterId, onSelectShelter }: Props) => {
       <div ref={mapRef} className="w-full h-full" />
 
       {/* Legend overlay */}
-      <div className="absolute bottom-4 left-4 glass-strong rounded-xl p-4 z-[500] max-w-xs">
-        <p className="text-[10px] font-display font-bold text-muted-foreground mb-3 tracking-wider uppercase">Shelter Status</p>
+      <div className="absolute bottom-4 left-4 z-[500] max-w-xs rounded-lg border border-border bg-card/95 p-3 shadow-lg backdrop-blur-sm">
+        <p className="mb-2 font-display text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Shelter status</p>
         <div className="space-y-2">
           <div>
-            <p className="text-[9px] font-display font-bold text-safe mb-1">🟢 Available</p>
-            <p className="text-[9px] text-muted-foreground">Occupancy &lt; 50% • Accepting people</p>
+            <p className="mb-1 flex items-center gap-1.5 font-display text-[9px] font-bold text-safe">
+              <span className="h-1.5 w-1.5 rounded-full bg-safe" />Available
+            </p>
+            <p className="text-[9px] text-muted-foreground">Occupancy &lt; 50% · accepting people</p>
           </div>
           <div>
-            <p className="text-[9px] font-display font-bold text-warning mb-1">🟡 Filling</p>
-            <p className="text-[9px] text-muted-foreground">Occupancy 50-80% • Limited spaces</p>
+            <p className="mb-1 flex items-center gap-1.5 font-display text-[9px] font-bold text-warning">
+              <span className="h-1.5 w-1.5 rounded-full bg-warning" />Filling
+            </p>
+            <p className="text-[9px] text-muted-foreground">Occupancy 50–80% · limited spaces</p>
           </div>
           <div>
-            <p className="text-[9px] font-display font-bold text-destructive mb-1">🔴 Full</p>
+            <p className="mb-1 flex items-center gap-1.5 font-display text-[9px] font-bold text-destructive">
+              <span className="h-1.5 w-1.5 rounded-full bg-destructive" />Full
+            </p>
             <p className="text-[9px] text-muted-foreground">Occupancy &gt; 80% or at capacity</p>
           </div>
-          <hr className="border-border my-2" />
-          <p className="text-[9px] font-display font-bold text-primary mb-1">
-            📊 {loading ? "Loading shelters…" : `${shelters.length} Shelters`}
+          <hr className="my-2 border-border" />
+          <p className="mb-1 font-display text-[9px] font-bold text-foreground">
+            {loading ? "Loading shelters…" : `${shelters.length} shelters`}
           </p>
           <p className="text-[9px] text-muted-foreground">
             Total capacity: {totalCapacity.toLocaleString()} people

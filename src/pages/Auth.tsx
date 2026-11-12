@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { motion } from "framer-motion";
-import { Shield, ArrowLeft, AlertCircle } from "lucide-react";
+import { Activity, AlertCircle, ArrowLeft, CheckCircle2 } from "lucide-react";
+import LanguageToggle from "@/components/LanguageToggle";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -39,106 +39,138 @@ const Auth = () => {
     setLoading(false);
   };
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-dark px-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md"
-      >
-        <button
-          onClick={() => navigate("/")}
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span className="text-sm font-display">Back</span>
-        </button>
+  const inputClass =
+    "w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-colors focus:border-primary/60 focus:ring-1 focus:ring-primary/40";
 
-        <div className="border border-border rounded-xl bg-card p-8">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 rounded-lg bg-primary/10">
-              <Shield className="w-6 h-6 text-primary" />
-            </div>
-            <div>
-              <h1 className="font-display text-xl font-bold text-foreground">
-                {isLogin ? "Sign In" : "Create Account"}
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                {isLogin ? "Access your ResQAI dashboard" : "Join the disaster response network"}
+  return (
+    <div className="flex min-h-screen flex-col bg-background">
+      <header className="flex h-14 shrink-0 items-center justify-between border-b border-border px-4">
+        <Link to="/" className="flex items-center gap-2.5" aria-label="ResQAI home">
+          <span className="flex h-7 w-7 items-center justify-center rounded-md border border-primary/30 bg-primary/10">
+            <Activity className="h-4 w-4 text-primary" strokeWidth={2.25} />
+          </span>
+          <span className="font-display text-[15px] font-bold tracking-tight text-foreground">
+            Res<span className="text-primary">Q</span>AI
+          </span>
+        </Link>
+        <div className="flex items-center gap-2">
+          <LanguageToggle />
+          <Link
+            to="/"
+            className="flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Back
+          </Link>
+        </div>
+      </header>
+
+      <main className="flex flex-1 items-center justify-center px-4 py-12">
+        <div className="w-full max-w-sm">
+          <div className="rounded-lg border border-border bg-card p-6">
+            <h1 className="font-display text-lg font-semibold text-foreground">
+              {isLogin ? "Sign in" : "Create account"}
+            </h1>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {isLogin
+                ? "Access the response dashboard and incident tools."
+                : "Register for access to the response network."}
+            </p>
+
+            {error && (
+              <div className="mt-4 flex items-start gap-2 rounded-md border border-destructive/30 bg-destructive/10 p-3">
+                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
+                <p className="text-xs text-destructive">{error}</p>
+              </div>
+            )}
+
+            {success && (
+              <div className="mt-4 flex items-start gap-2 rounded-md border border-safe/30 bg-safe/10 p-3">
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-safe" />
+                <p className="text-xs text-safe">{success}</p>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+              {!isLogin && (
+                <div>
+                  <label htmlFor="name" className="mb-1.5 block font-display text-[11px] font-medium text-muted-foreground">
+                    Full name
+                  </label>
+                  <input
+                    id="name"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required={!isLogin}
+                    autoComplete="name"
+                    className={inputClass}
+                    placeholder="Your name"
+                  />
+                </div>
+              )}
+              <div>
+                <label htmlFor="email" className="mb-1.5 block font-display text-[11px] font-medium text-muted-foreground">
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  autoComplete="email"
+                  className={inputClass}
+                  placeholder="you@organisation.org"
+                />
+              </div>
+              <div>
+                <label htmlFor="password" className="mb-1.5 block font-display text-[11px] font-medium text-muted-foreground">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  autoComplete={isLogin ? "current-password" : "new-password"}
+                  className={inputClass}
+                  placeholder="At least 6 characters"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-md bg-primary py-2.5 font-display text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+              >
+                {loading ? "Please wait…" : isLogin ? "Sign in" : "Create account"}
+              </button>
+            </form>
+
+            <div className="mt-5 border-t border-border pt-4">
+              <p className="text-center text-xs text-muted-foreground">
+                {isLogin ? "No account yet?" : "Already registered?"}{" "}
+                <button
+                  onClick={() => {
+                    setIsLogin(!isLogin);
+                    setError("");
+                    setSuccess("");
+                  }}
+                  className="font-display font-medium text-primary hover:underline"
+                >
+                  {isLogin ? "Create one" : "Sign in"}
+                </button>
               </p>
             </div>
           </div>
 
-          {error && (
-            <div className="flex items-center gap-2 p-3 mb-4 rounded-lg bg-destructive/10 border border-destructive/30">
-              <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0" />
-              <p className="text-sm text-destructive">{error}</p>
-            </div>
-          )}
-
-          {success && (
-            <div className="flex items-center gap-2 p-3 mb-4 rounded-lg bg-safe/10 border border-safe/30">
-              <p className="text-sm text-safe">{success}</p>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {!isLogin && (
-              <div>
-                <label className="block text-xs font-display text-muted-foreground mb-1.5">Full Name</label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required={!isLogin}
-                  className="w-full bg-secondary rounded-lg px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-1 focus:ring-primary"
-                  placeholder="Your name"
-                />
-              </div>
-            )}
-            <div>
-              <label className="block text-xs font-display text-muted-foreground mb-1.5">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full bg-secondary rounded-lg px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-1 focus:ring-primary"
-                placeholder="you@example.com"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-display text-muted-foreground mb-1.5">Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-                className="w-full bg-secondary rounded-lg px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-1 focus:ring-primary"
-                placeholder="Min 6 characters"
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 rounded-lg bg-gradient-primary text-primary-foreground font-display font-bold text-sm glow-primary hover:opacity-90 transition-opacity disabled:opacity-50"
-            >
-              {loading ? "Please wait..." : isLogin ? "Sign In" : "Create Account"}
-            </button>
-          </form>
-
-          <p className="text-center text-sm text-muted-foreground mt-6">
-            {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
-            <button
-              onClick={() => { setIsLogin(!isLogin); setError(""); setSuccess(""); }}
-              className="text-primary hover:underline font-display"
-            >
-              {isLogin ? "Sign Up" : "Sign In"}
-            </button>
+          <p className="mt-4 text-center text-[10px] leading-relaxed text-muted-foreground">
+            Access is logged. Report incidents only with verified field information.
           </p>
         </div>
-      </motion.div>
+      </main>
     </div>
   );
 };

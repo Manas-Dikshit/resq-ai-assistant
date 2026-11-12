@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { ArrowLeft, MessageSquare } from "lucide-react";
+import { MessageSquare, Siren } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import EvacuationMap from "@/components/evacuation/EvacuationMap";
 import EvacuationPanel from "@/components/evacuation/EvacuationPanel";
 import AIChatPanel from "@/components/AIChatPanel";
-import LanguageToggle from "@/components/LanguageToggle";
+import AppHeader from "@/components/layout/AppHeader";
 import SOSButton from "@/components/SOSButton";
 
 const EvacuationPlanner = () => {
@@ -16,38 +15,31 @@ const EvacuationPlanner = () => {
 
   return (
     <div className="h-screen flex flex-col bg-background">
-      {/* Header */}
-      <header className="flex items-center justify-between px-4 py-2 border-b border-border glass-strong z-20">
-        <div className="flex items-center gap-3">
-          <Link to="/dashboard" className="p-1.5 rounded-md hover:bg-accent transition-colors text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="w-4 h-4" />
-          </Link>
-          <div className="flex items-center gap-2">
-            <span className="font-display text-lg font-bold">
-              <span className="text-foreground">Res</span>
-              <span className="text-gradient-primary">Q</span>
-              <span className="text-foreground">AI</span>
+      <AppHeader
+        title={t('evacuation.title', { defaultValue: 'Evacuation Planner' })}
+        subtitle={t('evacuation.emergency', { defaultValue: 'Emergency evacuation' })}
+        icon={Siren}
+        backTo="/dashboard"
+        live={false}
+        actions={
+          <>
+            <span className="hidden items-center gap-1.5 rounded-full border border-destructive/25 bg-destructive/10 px-2.5 py-1 font-display text-[10px] font-semibold uppercase tracking-wide text-destructive sm:flex">
+              {t('evacuation.emergency', { defaultValue: 'Emergency' })}
             </span>
-            <span className="text-xs text-muted-foreground font-display hidden sm:inline">/ {t('evacuation.title')}</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <LanguageToggle />
-          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-destructive/10 border border-destructive/20 text-xs text-destructive font-display">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-destructive" />
-            </span>
-            {t('evacuation.emergency')}
-          </span>
-          <button
-            onClick={() => setShowChat(!showChat)}
-            className={`p-2 rounded-md transition-colors ${showChat ? 'bg-primary/10 text-primary' : 'hover:bg-accent text-muted-foreground hover:text-foreground'}`}
-          >
-            <MessageSquare className="w-4 h-4" />
-          </button>
-        </div>
-      </header>
+            <button
+              onClick={() => setShowChat(!showChat)}
+              className={`flex h-8 w-8 items-center justify-center rounded-md transition-colors ${
+                showChat ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+              }`}
+              title="Toggle assistant"
+              aria-label="Toggle assistant"
+              aria-pressed={showChat}
+            >
+              <MessageSquare className="h-4 w-4" />
+            </button>
+          </>
+        }
+      />
 
       <div className="flex-1 flex overflow-hidden">
         {/* Side Panel */}

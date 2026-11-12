@@ -158,12 +158,9 @@ const ShelterFinder = () => {
         </h3>
         <div className="flex items-center gap-1.5">
           {/* Live indicator */}
-          <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-safe/10 border border-safe/20">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-safe opacity-75" />
-              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-safe" />
-            </span>
-            <span className="text-[9px] font-mono text-safe font-bold">{t('shelter.liveUpdates')}</span>
+          <span className="flex items-center gap-1 rounded-full border border-safe/25 bg-safe/10 px-1.5 py-0.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-safe" />
+            <span className="text-[9px] font-mono font-bold text-safe">{t('shelter.liveUpdates')}</span>
           </span>
           <button
             onClick={() => fetchShelters(userPos?.lat, userPos?.lng)}
@@ -310,8 +307,9 @@ const ShelterFinder = () => {
                   {/* Distance + occupancy counts */}
                   <div className="flex items-center gap-3 mt-1 text-xs flex-wrap">
                     {s.distance < Infinity && (
-                      <span className="text-primary font-display font-bold">
-                        📍 {s.distance < 1 ? `${(s.distance * 1000).toFixed(0)}m` : `${s.distance.toFixed(1)}km`}
+                      <span className="flex items-center gap-1 font-display font-bold text-primary">
+                        <MapPin className="h-3 w-3" />
+                        {s.distance < 1 ? `${(s.distance * 1000).toFixed(0)} m` : `${s.distance.toFixed(1)} km`}
                       </span>
                     )}
                     <span className="text-muted-foreground flex items-center gap-1">
@@ -336,7 +334,7 @@ const ShelterFinder = () => {
                   {/* Verified timestamp */}
                   {s.verified_at && (
                     <p className="text-[10px] text-muted-foreground mt-1">
-                      ✓ {t('shelter.lastUpdated')}: {new Date(s.verified_at).toLocaleDateString()}
+                      {t('shelter.lastUpdated')}: {new Date(s.verified_at).toLocaleDateString()}
                     </p>
                   )}
 

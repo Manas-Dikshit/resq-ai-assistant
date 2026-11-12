@@ -50,7 +50,7 @@ const SOSButton = () => {
             </div>
             <p className="text-xs text-muted-foreground mb-3">{t('sos.description')}</p>
             <button onClick={sendSOS} disabled={sending || !user}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-lg bg-gradient-emergency text-foreground font-display font-bold text-sm hover:opacity-90 disabled:opacity-50 glow-danger">
+              className="flex w-full items-center justify-center gap-2 rounded-md bg-destructive py-2.5 font-display text-sm font-semibold text-destructive-foreground transition-colors hover:bg-destructive/90 disabled:opacity-50">
               {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4" />}
               {sending ? t('sos.sending') : t('sos.sendNow')}
             </button>
@@ -60,7 +60,7 @@ const SOSButton = () => {
       </AnimatePresence>
 
       <motion.button onClick={() => setExpanded(!expanded)} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-        className="w-14 h-14 rounded-full bg-gradient-emergency flex items-center justify-center shadow-lg glow-danger">
+        className="flex h-14 w-14 items-center justify-center rounded-full bg-destructive shadow-lg transition-colors hover:bg-destructive/90">
         {expanded ? <X className="w-6 h-6 text-foreground" /> : <Phone className="w-6 h-6 text-foreground" />}
       </motion.button>
     </div>

@@ -29,8 +29,8 @@ function SummaryCard({ icon: Icon, label, value, sub, color }: {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="glass-strong rounded-lg p-3 border border-border text-xs">
-      <p className="font-display font-bold text-foreground mb-1">{label}</p>
+    <div className="rounded-md border border-border bg-card p-2.5 text-xs shadow-sm">
+      <p className="mb-1 font-display font-semibold text-foreground">{label}</p>
       {payload.map((p: any, i: number) => (
         <p key={i} style={{ color: p.color }}>{p.name}: {p.value}</p>
       ))}

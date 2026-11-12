@@ -477,7 +477,7 @@ function ForestFireSection() {
           <div className="flex items-center gap-2">
             <Flame className="w-4 h-4 text-destructive" />
             <h3 className="font-display text-sm font-bold text-foreground">Hotspot Detail</h3>
-            <button onClick={() => setSelected(null)} className="ml-auto text-xs text-muted-foreground hover:text-foreground">✕ Close</button>
+            <button onClick={() => setSelected(null)} className="ml-auto text-xs text-muted-foreground hover:text-foreground">Close</button>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
             {[
@@ -636,23 +636,26 @@ export default function ForecastCenter() {
           </button>
         ))}
         <div className="flex-1" />
-        <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-safe/10 border border-safe/20 text-xs text-safe font-display">
-          <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-safe opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-safe" /></span>
-          LIVE
+        <span className="flex items-center gap-1.5 rounded-full border border-safe/25 bg-safe/10 px-2.5 py-1 font-display text-[10px] font-semibold uppercase tracking-wide text-safe">
+          <span className="h-1.5 w-1.5 rounded-full bg-safe" />
+          Live
         </span>
       </div>
 
       {/* Content */}
       <main className="flex-1 overflow-auto p-4 space-y-4">
         {hasError && (
-          <div className="glass rounded-xl p-4 border border-destructive/30 bg-destructive/5 flex items-center justify-between">
-            <div className="flex items-center gap-2 text-sm text-destructive">
-              <AlertTriangle className="w-4 h-4" />
+          <div className="flex items-center justify-between rounded-lg border border-destructive/30 bg-destructive/5 p-3">
+            <div className="flex items-center gap-2 text-xs text-destructive">
+              <AlertTriangle className="h-4 w-4" />
               Failed to load some live feeds. Please retry.
             </div>
-            <Button size="sm" variant="outline" onClick={refetchAll} className="text-xs">
+            <button
+              onClick={refetchAll}
+              className="rounded-md border border-border bg-card px-2.5 py-1 text-xs text-foreground transition-colors hover:bg-accent"
+            >
               Retry
-            </Button>
+            </button>
           </div>
         )}
         {isLoading ? (

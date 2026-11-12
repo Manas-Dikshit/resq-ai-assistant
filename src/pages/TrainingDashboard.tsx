@@ -77,62 +77,13 @@ export default function TrainingDashboard() {
 
   return (
     <div className="h-screen flex flex-col bg-background">
-      {/* Header */}
-      <header className="flex items-center justify-between px-4 py-2 border-b border-border glass-strong z-20">
-        <div className="flex items-center gap-3">
-          <Link to="/" className="font-display text-lg font-bold">
-            <span className="text-foreground">Res</span>
-            <span className="text-gradient-primary">Q</span>
-            <span className="text-foreground">AI</span>
-          </Link>
-          <div className="w-px h-5 bg-border mx-1" />
-          <div className="flex items-center gap-2">
-            <GraduationCap className="w-4 h-4 text-primary" />
-            <span className="font-display text-sm font-bold text-foreground">Training Monitoring</span>
-            <span className="text-[10px] font-display px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">NDMA · CBT</span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <LanguageToggle />
-          <Link to="/dashboard" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-            <Radio className="w-3.5 h-3.5" /> Dashboard
-          </Link>
-          <Link to="/control-room" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-            <Shield className="w-3.5 h-3.5" /> Control Room
-          </Link>
-          <Link to="/resources" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-            <Bell className="w-3.5 h-3.5" /> Resources
-          </Link>
-          <Link to="/forecast" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-            <BarChart3 className="w-3.5 h-3.5" /> Forecasts
-          </Link>
-          {/* Realtime notifications bell */}
-          <TrainingNotifications />
-          {/* Live indicator */}
-          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-safe/10 border border-safe/20 text-xs text-safe font-display">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-safe opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-safe" />
-            </span>
-            LIVE
-          </span>
-          {user ? (
-            <>
-              <Link to="/admin" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-                <Shield className="w-3.5 h-3.5" /> Admin
-              </Link>
-              <button onClick={signOut} className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-                <LogOut className="w-3.5 h-3.5" /> Sign Out
-              </button>
-            </>
-          ) : (
-            <Button size="sm" onClick={() => navigate("/auth")} className="text-xs font-display h-8">
-              <LogIn className="w-3.5 h-3.5 mr-1" /> Sign In
-            </Button>
-          )}
-        </div>
-      </header>
+      <AppHeader
+        title="Training Monitoring"
+        subtitle="Capacity building and verification"
+        badge="NDMA · CBT"
+        icon={GraduationCap}
+        actions={<TrainingNotifications />}
+      />
 
       {/* Quick stats bar */}
       <div className="flex items-center gap-4 px-4 py-2 border-b border-border bg-card/30 overflow-x-auto">
@@ -275,7 +226,7 @@ export default function TrainingDashboard() {
                   {user && (
                     <Button
                       onClick={() => setShowForm(true)}
-                      className="w-full text-xs h-9 bg-gradient-primary text-primary-foreground"
+                      className="w-full text-xs h-9 bg-primary text-primary-foreground"
                     >
                       <Plus className="w-3.5 h-3.5 mr-1.5" /> Add Training
                     </Button>
@@ -354,7 +305,7 @@ export default function TrainingDashboard() {
                       <Button
                         size="sm"
                         onClick={() => setShowForm(true)}
-                        className="text-xs h-8 bg-gradient-primary text-primary-foreground lg:hidden"
+                        className="text-xs h-8 bg-primary text-primary-foreground lg:hidden"
                       >
                         <Plus className="w-3.5 h-3.5 mr-1" /> Add Training
                       </Button>
@@ -373,7 +324,7 @@ export default function TrainingDashboard() {
                   className="h-full min-h-[500px] relative"
                 >
                   <TrainingMap trainings={trainings} colorMode={colorMode} />
-                  <div className="absolute top-3 left-3 glass-strong rounded-lg px-3 py-1.5 z-[500] text-xs text-muted-foreground font-display">
+                  <div className="absolute left-3 top-3 z-[500] rounded-md border border-border bg-card/95 px-2.5 py-1 font-display text-[11px] text-muted-foreground backdrop-blur-sm">
                     {trainings.filter(t => t.lat && t.lng).length} of {trainings.length} events mapped
                   </div>
                 </motion.div>

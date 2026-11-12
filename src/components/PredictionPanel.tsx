@@ -164,13 +164,10 @@ const PredictionPanel = () => {
           <h3 className="font-display text-xs font-bold text-muted-foreground tracking-widest uppercase">
             {t('prediction.title')}
           </h3>
-          {/* LIVE pulsing dot */}
-          <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-safe/10 border border-safe/20">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-safe opacity-75" />
-              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-safe" />
-            </span>
-            <span className="text-[9px] font-mono text-safe font-bold">{t('prediction.live')}</span>
+          {/* Live indicator */}
+          <span className="flex items-center gap-1 rounded-full border border-safe/25 bg-safe/10 px-1.5 py-0.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-safe" />
+            <span className="text-[9px] font-mono font-bold text-safe">{t('prediction.live')}</span>
           </span>
         </div>
         <div className="flex items-center gap-1.5">

@@ -201,7 +201,7 @@ function AddResourceModal({ onClose }: { onClose: () => void }) {
           <div className="flex gap-2 pt-2">
             <Button variant="outline" onClick={onClose} className="flex-1 border-border text-xs">Cancel</Button>
             <Button onClick={() => mutate()} disabled={isPending || !form.name || !form.location_name || !form.owner_org}
-              className="flex-1 bg-gradient-primary text-primary-foreground text-xs">
+              className="flex-1 bg-primary text-primary-foreground text-xs">
               {isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> : <Plus className="w-3.5 h-3.5 mr-1" />}
               Add Resource
             </Button>
@@ -462,7 +462,7 @@ export default function ResourceInventory() {
                 <div className="space-y-2 pt-2 border-t border-border">
                   <p className="text-xs font-display font-bold text-muted-foreground">Actions</p>
                   {user && (
-                    <Button onClick={() => setShowForm(true)} className="w-full text-xs h-9 bg-gradient-primary text-primary-foreground">
+                    <Button onClick={() => setShowForm(true)} className="w-full text-xs h-9 bg-primary text-primary-foreground">
                       <Plus className="w-3.5 h-3.5 mr-1.5" /> Add Resource
                     </Button>
                   )}
@@ -498,7 +498,7 @@ export default function ResourceInventory() {
                   Showing <span className="text-foreground font-bold">{filtered.length}</span> of {resources.length} resources
                 </p>
                 {user && (
-                  <Button size="sm" onClick={() => setShowForm(true)} className="text-xs h-8 bg-gradient-primary text-primary-foreground lg:hidden">
+                  <Button size="sm" onClick={() => setShowForm(true)} className="text-xs h-8 bg-primary text-primary-foreground lg:hidden">
                     <Plus className="w-3.5 h-3.5 mr-1" /> Add
                   </Button>
                 )}

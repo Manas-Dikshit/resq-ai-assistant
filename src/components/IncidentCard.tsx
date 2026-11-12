@@ -53,7 +53,7 @@ function IncidentCardComponent({
         }
       }}
     >
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      <div className="absolute inset-0 rounded-2xl bg-primary/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
       <div className="relative flex h-full flex-col gap-4">
         <div className="flex items-start justify-between gap-3">
