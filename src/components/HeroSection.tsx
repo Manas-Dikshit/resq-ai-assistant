@@ -117,10 +117,10 @@ const HeroSection = () => {
 
           <div className="divide-y divide-border">
             {[
-              { label: "Feeds", value: "Live feeds", tone: "text-safe" },
-              { label: "Shelters", value: "Supabase · live", tone: "text-safe" },
-              { label: "Response", value: "Available", tone: "text-safe" },
-              { label: "Cache", value: "Last 24 h", tone: "text-warning" },
+              { icon: Activity, label: "Feeds", value: "Live feeds", tone: "text-safe" },
+              { icon: Database, label: "Shelters", value: "Supabase · live", tone: "text-safe" },
+              { icon: CheckCircle2, label: "Response", value: "Available", tone: "text-safe" },
+              { icon: WifiOff, label: "Cache", value: "Last 24 h", tone: "text-warning" },
             ].map((s) => (
               <div key={s.label} className="flex items-center gap-3 px-5 py-3.5">
                 <span className="flex h-8 w-8 items-center justify-center rounded-md border border-border bg-secondary">
