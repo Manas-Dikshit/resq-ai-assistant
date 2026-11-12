@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { MessageSquare, Map, BarChart3, Radio, ChevronLeft, ChevronRight, LogIn, LogOut, AlertTriangle, Shield, FileWarning, Satellite, Thermometer, Home, Brain, Users, GraduationCap, Route, ClipboardCheck, Maximize2, Minimize2 } from "lucide-react";
+import { MessageSquare, BarChart3, ChevronLeft, ChevronRight, AlertTriangle, FileWarning, Satellite, Thermometer, Home, Brain, Users, Maximize2, Minimize2, Activity } from "lucide-react";
+import AppHeader from "@/components/layout/AppHeader";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
@@ -27,8 +27,7 @@ const Dashboard = () => {
   const [showReport, setShowReport] = useState(false);
   const [sidebarTab, setSidebarTab] = useState<SidebarTab>('predictions');
   const [bigView, setBigView] = useState(false);
-  const { user, signOut } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
   const { t } = useTranslation();
 
   const sidebarTabs: { id: SidebarTab; label: string; icon: any }[] = [
@@ -46,120 +45,73 @@ const Dashboard = () => {
 
   return (
     <div className="h-screen flex flex-col bg-background">
-      {/* Enhanced header */}
-      <header className="flex items-center justify-between px-4 py-2 border-b border-border glass-strong z-20">
-        <div className="flex items-center gap-3">
-          <Link to="/" className="font-display text-lg font-bold group">
-            <span className="text-foreground">Res</span>
-            <span className="text-gradient-primary">Q</span>
-            <span className="text-foreground">AI</span>
-          </Link>
-          <div className="hidden sm:flex items-center gap-2 ml-2">
-            <span className="text-xs text-muted-foreground font-display">{t('app.tagline')}</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <LanguageToggle />
-          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-safe/10 border border-safe/20 text-xs text-safe font-display">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-safe opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-safe"></span>
-            </span>
-            {t('app.live')}
-          </span>
-          {user && (
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => setShowReport(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display bg-warning/10 text-warning hover:bg-warning/20 border border-warning/20 transition-colors"
-            >
-              <FileWarning className="w-3.5 h-3.5" />
-              {t('app.report')}
-            </motion.button>
-          )}
-          <Link to="/training" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-            <GraduationCap className="w-3.5 h-3.5 text-primary" /><span className="hidden sm:inline">{t('nav.training')}</span>
-          </Link>
-          <Link to="/evacuate" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display bg-destructive/10 text-destructive hover:bg-destructive/20 border border-destructive/20 transition-colors">
-            <Route className="w-3.5 h-3.5" /><span className="hidden sm:inline">{t('nav.evacuate')}</span>
-          </Link>
-          <Link to="/post-disaster" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-            <ClipboardCheck className="w-3.5 h-3.5 text-primary" /><span className="hidden sm:inline">{t('nav.postDisaster')}</span>
-          </Link>
-          <Link to="/resources" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-            <Map className="w-3.5 h-3.5 text-primary" /><span className="hidden sm:inline">{t('nav.resources')}</span>
-          </Link>
-          <Link to="/control-room" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-            <Radio className="w-3.5 h-3.5 text-primary" /><span className="hidden sm:inline">{t('nav.controlRoom')}</span>
-          </Link>
-          <Link to="/forecast" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-            <BarChart3 className="w-3.5 h-3.5 text-primary" /><span className="hidden sm:inline">{t('nav.forecasts')}</span>
-          </Link>
-          <button onClick={() => setShowChat(!showChat)} className={`p-2 rounded-md transition-colors ${showChat ? 'bg-primary/10 text-primary' : 'hover:bg-accent text-muted-foreground hover:text-foreground'}`} title="Toggle AI Chat">
-            <MessageSquare className="w-4 h-4" />
-          </button>
-          {user ? (
-            <>
-              <Link to="/admin" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-                <Shield className="w-3.5 h-3.5" />{t('app.admin')}
-              </Link>
-              <button onClick={() => signOut()} className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-                <LogOut className="w-3.5 h-3.5" />{t('app.signOut')}
+      <AppHeader
+        title={t('nav.dashboard', { defaultValue: 'Live Dashboard' })}
+        subtitle={t('app.tagline', { defaultValue: 'Disaster response operations' })}
+        icon={Activity}
+        actions={
+          <>
+            {user && (
+              <button
+                onClick={() => setShowReport(true)}
+                className="hidden items-center gap-1.5 rounded-md border border-warning/25 bg-warning/10 px-2.5 py-1.5 text-xs text-warning transition-colors hover:bg-warning/15 sm:flex"
+              >
+                <FileWarning className="h-3.5 w-3.5" />
+                {t('app.report', { defaultValue: 'Report' })}
               </button>
-            </>
-          ) : (
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => navigate("/auth")}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
+            )}
+            <button
+              onClick={() => setShowChat(!showChat)}
+              className={`flex h-8 w-8 items-center justify-center rounded-md transition-colors ${
+                showChat ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+              }`}
+              title="Toggle assistant"
+              aria-label="Toggle assistant"
+              aria-pressed={showChat}
             >
-              <LogIn className="w-3.5 h-3.5" />{t('app.signIn')}
-            </motion.button>
-          )}
-        </div>
-      </header>
+              <MessageSquare className="h-4 w-4" />
+            </button>
+          </>
+        }
+      />
 
       <div className="px-4 py-2">
         <AlertBanner />
       </div>
 
-      <div className="px-4 pb-2">
-        <div className="glass rounded-xl border border-border/70 px-3 py-2 flex items-center gap-2 overflow-x-auto">
-          {sidebarTabs.map(tab => (
-            <button
-              key={`quick-${tab.id}`}
-              onClick={() => {
-                setSidebarTab(tab.id);
-                setShowSidebar(true);
-              }}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-display transition-colors whitespace-nowrap ${
-                sidebarTab === tab.id
-                  ? 'bg-primary/15 text-primary border border-primary/30'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-              }`}
-            >
-              <tab.icon className="w-3.5 h-3.5" />
-              <span>{tab.label}</span>
-            </button>
-          ))}
+      <div className="flex items-center gap-1 overflow-x-auto border-b border-border bg-card/30 px-3 py-1.5">
+        {sidebarTabs.map(tab => (
+          <button
+            key={`quick-${tab.id}`}
+            onClick={() => {
+              setSidebarTab(tab.id);
+              setShowSidebar(true);
+            }}
+            className={`flex items-center gap-1.5 whitespace-nowrap rounded-md px-2.5 py-1.5 text-xs transition-colors ${
+              sidebarTab === tab.id
+                ? 'bg-secondary text-foreground'
+                : 'text-muted-foreground hover:bg-accent/60 hover:text-foreground'
+            }`}
+            aria-pressed={sidebarTab === tab.id}
+          >
+            <tab.icon className="h-3.5 w-3.5" />
+            <span>{tab.label}</span>
+          </button>
+        ))}
 
-          <div className="w-px h-5 bg-border mx-1" />
+        <div className="ml-auto flex items-center gap-1 pl-2">
           <button
             onClick={() => {
               setShowSidebar(true);
               setBigView(v => !v);
             }}
-            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-display transition-colors whitespace-nowrap ${
-              bigView
-                ? 'bg-primary/15 text-primary border border-primary/30'
-                : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+            className={`flex items-center gap-1.5 whitespace-nowrap rounded-md px-2 py-1.5 text-xs transition-colors ${
+              bigView ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:bg-accent/60 hover:text-foreground'
             }`}
-            title={bigView ? 'Exit Big View' : 'Open Big View'}
+            title={bigView ? 'Exit expanded panel' : 'Expand panel'}
+            aria-label={bigView ? 'Exit expanded panel' : 'Expand panel'}
           >
-            {bigView ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
-            <span>{bigView ? 'Exit Big View' : 'Big View'}</span>
+            {bigView ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
           </button>
         </div>
       </div>
@@ -169,19 +121,19 @@ const Dashboard = () => {
           {showSidebar && (
             <motion.aside
               initial={{ width: 0, opacity: 0 }}
-              animate={{ width: bigView ? 640 : 384, opacity: 1 }}
+              animate={{ width: bigView ? 560 : 360, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.25, ease: "easeInOut" }}
               className="border-r border-border overflow-hidden bg-card/30 hidden lg:flex flex-col"
             >
-              <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2.5 bg-card/40">
+              <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2.5">
                 <div className="min-w-0 flex items-center gap-2">
-                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-primary/30 bg-primary/10 text-primary">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border bg-secondary text-foreground">
                     <ActiveSidebarIcon className="w-3.5 h-3.5" />
                   </span>
                   <div className="min-w-0">
-                    <p className="truncate text-xs font-display font-bold text-foreground">{activeSidebarTab.label}</p>
-                    <p className="text-[10px] text-muted-foreground">Live section panel</p>
+                    <p className="truncate text-xs font-display font-semibold text-foreground">{activeSidebarTab.label}</p>
+                    <p className="text-[10px] text-muted-foreground">Operational feed</p>
                   </div>
                 </div>
                 <button
@@ -216,8 +168,8 @@ const Dashboard = () => {
           <DisasterMap />
 
           {/* Map legend */}
-          <div className="absolute bottom-4 left-4 glass-strong rounded-xl p-3 z-[500] animate-fade-in">
-            <p className="text-xs font-display font-bold text-muted-foreground mb-2 tracking-wider">{t('legend.title')}</p>
+          <div className="absolute bottom-4 left-4 z-[500] max-w-[220px] rounded-lg border border-border bg-card/95 p-3 shadow-lg backdrop-blur-sm">
+            <p className="mb-2 font-display text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{t('legend.title')}</p>
             <div className="space-y-1.5">
               {[
                 { color: "bg-flood", label: t('legend.floodZone') },
@@ -228,24 +180,11 @@ const Dashboard = () => {
                 { color: "bg-warning", label: t('legend.shelterModerate') },
               ].map((item) => (
                 <div key={item.label} className="flex items-center gap-2">
-                  <span className={`w-2.5 h-2.5 rounded-full ${item.color}`} />
-                  <span className="text-xs text-muted-foreground">{item.label}</span>
+                  <span className={`h-2 w-2 rounded-full ${item.color}`} />
+                  <span className="text-[11px] text-muted-foreground">{item.label}</span>
                 </div>
               ))}
             </div>
-          </div>
-
-          {/* Mobile stat cards */}
-          <div className="lg:hidden absolute top-4 left-4 right-4 flex gap-2 z-[500]">
-            {[
-              { label: t('sidebar.events'), value: t('app.live'), icon: BarChart3 },
-              { label: t('sidebar.shelters'), value: "DB", icon: Map },
-            ].map((s) => (
-              <div key={s.label} className="flex items-center gap-2 glass-strong rounded-lg px-3 py-2">
-                <s.icon className="w-3.5 h-3.5 text-primary" />
-                <span className="text-xs font-display text-foreground">{s.value} {s.label}</span>
-              </div>
-            ))}
           </div>
         </main>
 

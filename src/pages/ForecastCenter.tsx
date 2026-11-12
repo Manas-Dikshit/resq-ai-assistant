@@ -1,9 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Waves, Mountain, Activity, AlertTriangle, ChevronLeft, ChevronRight,
-  LogOut, LogIn, Radio, GraduationCap, Package, Shield, Loader2,
+  Waves, Mountain, Activity, AlertTriangle, Loader2,
   TrendingUp, TrendingDown, Minus, Droplets, Wind, Thermometer,
   MapPin, Clock, RefreshCw, Volume2, Flame, Satellite, Info
 } from "lucide-react";
@@ -11,8 +9,7 @@ import { useForestFireData, ForestFireHotspot } from "@/hooks/useDisasterData";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import LanguageToggle from "@/components/LanguageToggle";
+import AppHeader from "@/components/layout/AppHeader";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, ReferenceLine, AreaChart, Area
@@ -515,8 +512,7 @@ function ForestFireSection() {
 type Tab = "flood" | "landslide" | "tsunami" | "forest_fire";
 
 export default function ForecastCenter() {
-  const { user, signOut } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
   const [tab, setTab] = useState<Tab>("flood");
   const queryClient = useQueryClient();
 
@@ -604,47 +600,25 @@ export default function ForecastCenter() {
 
   return (
     <div className="h-screen flex flex-col bg-background">
-      {/* Header */}
-      <header className="flex items-center justify-between px-4 py-2 border-b border-border glass-strong z-20 flex-shrink-0">
-        <div className="flex items-center gap-3">
-          <Link to="/" className="font-display text-lg font-bold">
-            <span className="text-foreground">Res</span><span className="text-gradient-primary">Q</span><span className="text-foreground">AI</span>
-          </Link>
-          <div className="w-px h-5 bg-border mx-1" />
-          <div className="flex items-center gap-2">
-            <Activity className="w-4 h-4 text-primary" />
-            <span className="font-display text-sm font-bold text-foreground">Forecast Center</span>
-            <span className="text-[10px] font-display px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">CWC · GSI · INCOIS</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <LanguageToggle />
-          <Link to="/dashboard" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-            <Radio className="w-3.5 h-3.5" /><span className="hidden sm:inline">Dashboard</span>
-          </Link>
-          <Link to="/resources" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-            <Package className="w-3.5 h-3.5" /><span className="hidden sm:inline">Resources</span>
-          </Link>
-          <Link to="/control-room" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-            <Shield className="w-3.5 h-3.5" /><span className="hidden sm:inline">Control Room</span>
-          </Link>
-          <button onClick={refetchAll} className="p-1.5 rounded-md hover:bg-accent transition-colors" title="Refresh">
-            <RefreshCw className="w-3.5 h-3.5 text-muted-foreground" />
+      <AppHeader
+        title="Forecast Center"
+        subtitle="Flood, landslide, ocean and fire outlook"
+        badge="CWC · GSI · INCOIS"
+        icon={Activity}
+        actions={
+          <button
+            onClick={refetchAll}
+            className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            title="Refresh data"
+            aria-label="Refresh data"
+          >
+            <RefreshCw className="h-3.5 w-3.5" />
           </button>
-          {user ? (
-            <button onClick={signOut} className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-              <LogOut className="w-3.5 h-3.5" /> Sign Out
-            </button>
-          ) : (
-            <Button size="sm" onClick={() => navigate("/auth")} className="text-xs font-display h-8">
-              <LogIn className="w-3.5 h-3.5 mr-1" /> Sign In
-            </Button>
-          )}
-        </div>
-      </header>
+        }
+      />
 
       {/* Tab bar */}
-      <div className="flex items-center gap-1 px-4 py-2 border-b border-border bg-card/30 flex-shrink-0">
+      <div className="flex items-center gap-1 overflow-x-auto border-b border-border bg-card/30 px-3 py-1.5">
         {([
           { id: "flood", icon: Waves, label: "Flood Watch", badge: criticalFlood, color: "text-flood" },
           { id: "landslide", icon: Mountain, label: "Landslide Forecast", badge: criticalLandslide, color: "text-fire" },
@@ -652,11 +626,12 @@ export default function ForecastCenter() {
           { id: "forest_fire", icon: Flame, label: "Forest Fire", badge: forestFireCount, color: "text-destructive" },
         ] as const).map(t => (
           <button key={t.id} onClick={() => setTab(t.id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-display transition-all ${tab === t.id ? "bg-primary/10 text-primary border border-primary/20" : "text-muted-foreground hover:text-foreground hover:bg-accent"}`}>
-            <t.icon className={`w-3.5 h-3.5 ${tab === t.id ? "text-primary" : t.color}`} />
+            className={`flex items-center gap-2 whitespace-nowrap rounded-md px-3 py-1.5 text-xs transition-colors ${tab === t.id ? "bg-secondary text-foreground" : "text-muted-foreground hover:bg-accent/60 hover:text-foreground"}`}
+            aria-pressed={tab === t.id}>
+            <t.icon className={`w-3.5 h-3.5 ${tab === t.id ? "text-foreground" : t.color}`} />
             {t.label}
             {t.badge > 0 && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-destructive text-destructive-foreground font-bold">{t.badge}</span>
+              <span className="rounded-full bg-destructive px-1.5 py-0.5 text-[10px] font-semibold text-destructive-foreground">{t.badge}</span>
             )}
           </button>
         ))}

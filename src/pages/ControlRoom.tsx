@@ -1,17 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Radio, Shield, AlertTriangle, Clock, Users, Truck,
-  Plus, X, LogOut, LogIn, Package, Activity,
-  Loader2, Send, FileWarning, Siren, RefreshCw
+  Radio, AlertTriangle, Clock, Users, Truck,
+  Plus, X, Loader2, Send, FileWarning, Siren, RefreshCw
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import LanguageToggle from "@/components/LanguageToggle";
+import AppHeader from "@/components/layout/AppHeader";
 import IncidentCard from "@/components/IncidentCard";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -318,8 +316,7 @@ function IncidentCardSkeleton() {
 
 // ─── Main Page ───────────────────────────────────────────────────────────────
 export default function ControlRoom() {
-  const { user, signOut } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
@@ -421,44 +418,22 @@ export default function ControlRoom() {
 
   return (
     <div className="h-screen flex flex-col bg-background">
-      {/* Header */}
-      <header className="flex items-center justify-between px-4 py-2 border-b border-border glass-strong z-20 flex-shrink-0">
-        <div className="flex items-center gap-3">
-          <Link to="/" className="font-display text-lg font-bold">
-            <span className="text-foreground">Res</span><span className="text-gradient-primary">Q</span><span className="text-foreground">AI</span>
-          </Link>
-          <div className="w-px h-5 bg-border mx-1" />
-          <div className="flex items-center gap-2">
-            <Shield className="w-4 h-4 text-destructive" />
-            <span className="font-display text-sm font-bold text-foreground">Control Room</span>
-            <span className="text-[10px] font-display px-2 py-0.5 rounded-full bg-destructive/10 text-destructive border border-destructive/20">ICR-ER · NDMA</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <LanguageToggle />
-          <Link to="/dashboard" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-            <Radio className="w-3.5 h-3.5" /><span className="hidden sm:inline">Dashboard</span>
-          </Link>
-          <Link to="/resources" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-            <Package className="w-3.5 h-3.5" /><span className="hidden sm:inline">Resources</span>
-          </Link>
-          <Link to="/forecast" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-            <Activity className="w-3.5 h-3.5" /><span className="hidden sm:inline">Forecasts</span>
-          </Link>
-          <button onClick={() => refetch()} className="p-1.5 rounded-md hover:bg-accent transition-colors">
-            <RefreshCw className="w-3.5 h-3.5 text-muted-foreground" />
+      <AppHeader
+        title="Control Room"
+        subtitle="Incident command and response log"
+        badge="ICR-ER · NDMA"
+        icon={Radio}
+        actions={
+          <button
+            onClick={() => refetch()}
+            className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            title="Refresh incidents"
+            aria-label="Refresh incidents"
+          >
+            <RefreshCw className="h-3.5 w-3.5" />
           </button>
-          {user ? (
-            <button onClick={signOut} className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-              <LogOut className="w-3.5 h-3.5" /> Sign Out
-            </button>
-          ) : (
-            <Button size="sm" onClick={() => navigate("/auth")} className="text-xs font-display h-8">
-              <LogIn className="w-3.5 h-3.5 mr-1" /> Sign In
-            </Button>
-          )}
-        </div>
-      </header>
+        }
+      />
 
       {/* Stats + controls */}
       <div className="flex items-center gap-4 px-4 py-2 border-b border-border bg-card/30 overflow-x-auto flex-shrink-0">

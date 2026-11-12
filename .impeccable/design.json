@@ -1,0 +1,186 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-12T00:00:00.000Z",
+  "title": "Design System: ResQAI",
+  "extensions": {
+    "colorMeta": {
+      "signal-teal": {
+        "role": "primary",
+        "displayName": "Signal Teal",
+        "canonical": "hsl(168 80% 45%)",
+        "tonalRamp": ["#04211d", "#063a33", "#085449", "#0a6e60", "#0d8a78", "#12a892", "#2dc4ae", "#7fe3d5"]
+      },
+      "deck-black": {
+        "role": "neutral",
+        "displayName": "Deck Black",
+        "canonical": "hsl(220 20% 7%)",
+        "tonalRamp": ["#070a0f", "#0b1018", "#101722", "#161f2c", "#1d2837", "#263343", "#334154", "#4a586c"]
+      },
+      "panel": {
+        "role": "neutral",
+        "displayName": "Panel",
+        "canonical": "hsl(220 18% 10%)",
+        "tonalRamp": ["#080b11", "#0d1119", "#121821", "#18202b", "#1f2835", "#283240", "#354050", "#4c5666"]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "hsl(210 20% 92%)",
+        "tonalRamp": ["#1a1f24", "#2e343b", "#454c54", "#5d656e", "#77808a", "#939ca6", "#b6bec7", "#e6ebf0"]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Ink Muted",
+        "canonical": "hsl(215 15% 55%)",
+        "tonalRamp": ["#171a1e", "#272b31", "#393e45", "#4c525a", "#616870", "#7a828b", "#9aa2ab", "#c6ccd3"]
+      },
+      "critical-red": {
+        "role": "tertiary",
+        "displayName": "Critical Red",
+        "canonical": "hsl(0 72% 51%)",
+        "tonalRamp": ["#2a0707", "#4a0b0b", "#6d1010", "#8f1515", "#b31a1a", "#d62222", "#ea4a4a", "#f59a9a"]
+      },
+      "caution-amber": {
+        "role": "tertiary",
+        "displayName": "Caution Amber",
+        "canonical": "hsl(38 92% 50%)",
+        "tonalRamp": ["#2b1a03", "#4a2d05", "#6b4106", "#8c5608", "#ad6c0a", "#d0860d", "#eda52a", "#f7cf85"]
+      },
+      "safe-green": {
+        "role": "tertiary",
+        "displayName": "Safe Green",
+        "canonical": "hsl(145 65% 42%)",
+        "tonalRamp": ["#04190f", "#082c1a", "#0c4227", "#105934", "#157043", "#1b8a53", "#2aa96a", "#7dd8a9"]
+      }
+    },
+    "typographyMeta": {
+      "hero": { "displayName": "Hero", "purpose": "Landing hero only, one per page." },
+      "display": { "displayName": "Display", "purpose": "Page titles and panel headlines." },
+      "title": { "displayName": "Title", "purpose": "Uppercase panel headers and table heads." },
+      "body": { "displayName": "Body", "purpose": "Descriptions and instructions." },
+      "label": { "displayName": "Label", "purpose": "Badges, timestamps, axis ticks, telemetry captions." }
+    },
+    "shadows": [
+      { "name": "signal-glow", "value": "0 0 30px hsl(168 80% 45% / 0.2)", "purpose": "Focus and hero emphasis on teal elements." },
+      { "name": "critical-glow", "value": "0 0 30px hsl(0 72% 51% / 0.3)", "purpose": "Active SOS or critical alert." },
+      { "name": "caution-glow", "value": "0 0 20px hsl(38 92% 50% / 0.25)", "purpose": "Warning banners." },
+      { "name": "popup-lift", "value": "0 20px 40px hsl(0 0% 0% / 0.5)", "purpose": "Leaflet popups above map tiles." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Default state transitions." },
+      { "name": "duration-fast", "value": "150ms", "purpose": "Hover and color changes." },
+      { "name": "duration-base", "value": "300ms", "purpose": "Panel and route transitions." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" },
+      { "name": "2xl", "value": "1400px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single teal action per view.",
+      "html": "<button class=\"ds-btn-primary\">Send Alert</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 16px; border: none; border-radius: 6px; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); font-family: 'Inter', system-ui, sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-primary:hover { background: hsl(var(--primary) / 0.9); } .ds-btn-primary:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Destructive Button",
+      "kind": "button",
+      "refersTo": "button-destructive",
+      "description": "SOS and irreversible emergency actions.",
+      "html": "<button class=\"ds-btn-danger\">SOS</button>",
+      "css": ".ds-btn-danger { display: inline-flex; align-items: center; justify-content: center; height: 40px; padding: 0 16px; border: none; border-radius: 6px; background: hsl(var(--destructive)); color: hsl(var(--destructive-foreground)); font-family: 'Inter', system-ui, sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 150ms; } .ds-btn-danger:hover { background: hsl(var(--destructive) / 0.9); } .ds-btn-danger:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary action with a hairline border.",
+      "html": "<button class=\"ds-btn-outline\">View Route</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; height: 40px; padding: 0 16px; border: 1px solid hsl(var(--input)); border-radius: 6px; background: hsl(var(--background)); color: hsl(var(--foreground)); font-family: 'Inter', system-ui, sans-serif; font-size: 14px; cursor: pointer; transition: background 150ms, border-color 150ms; } .ds-btn-outline:hover { background: hsl(var(--accent)); } .ds-btn-outline:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Telemetry Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Flat panel for a single metric or chart.",
+      "html": "<section class=\"ds-card\"><p class=\"ds-card-label\">Open Incidents</p><p class=\"ds-card-value\">12</p><p class=\"ds-card-meta\">Updated 2 min ago</p></section>",
+      "css": ".ds-card { padding: 16px; border: 1px solid hsl(var(--border)); border-radius: 8px; background: hsl(var(--card)); color: hsl(var(--card-foreground)); } .ds-card-label { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: hsl(var(--muted-foreground)); } .ds-card-value { margin: 4px 0 0; font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 700; line-height: 1.2; color: hsl(var(--foreground)); } .ds-card-meta { margin: 4px 0 0; font-family: 'Inter', system-ui, sans-serif; font-size: 12px; color: hsl(var(--muted-foreground)); }"
+    },
+    {
+      "name": "Live Badge",
+      "kind": "chip",
+      "refersTo": "badge-live",
+      "description": "Confirms a feed is live.",
+      "html": "<span class=\"ds-badge-live\"><span class=\"ds-dot\"></span>Live</span>",
+      "css": ".ds-badge-live { display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; border: 1px solid hsl(var(--safe) / 0.2); border-radius: 9999px; background: hsl(var(--safe) / 0.1); color: hsl(var(--safe)); font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; } .ds-dot { width: 6px; height: 6px; border-radius: 50%; background: hsl(var(--safe)); }"
+    },
+    {
+      "name": "Sample Data Badge",
+      "kind": "chip",
+      "refersTo": "badge-demo",
+      "description": "Mandatory marker for synthetic or seeded data.",
+      "html": "<span class=\"ds-badge-demo\">Sample data</span>",
+      "css": ".ds-badge-demo { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border: 1px solid hsl(var(--warning) / 0.3); border-radius: 9999px; background: hsl(var(--warning) / 0.1); color: hsl(var(--warning)); font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Single-line input with a teal focus ring.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">District</span><input class=\"ds-input\" placeholder=\"Cuttack\" /></label>",
+      "css": ".ds-field { display: grid; gap: 6px; } .ds-field-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: hsl(var(--muted-foreground)); } .ds-input { height: 40px; padding: 0 12px; border: 1px solid hsl(var(--input)); border-radius: 6px; background: hsl(var(--background)); color: hsl(var(--foreground)); font-family: 'Inter', system-ui, sans-serif; font-size: 14px; transition: border-color 150ms, box-shadow 150ms; } .ds-input::placeholder { color: hsl(var(--muted-foreground)); } .ds-input:focus { outline: none; border-color: hsl(var(--ring)); box-shadow: 0 0 0 2px hsl(var(--ring) / 0.4); }"
+    },
+    {
+      "name": "Top Navigation",
+      "kind": "nav",
+      "refersTo": "nav-item",
+      "description": "Glass command bar with mono links.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-item ds-nav-active\" href=\"#\">Dashboard</a><a class=\"ds-nav-item\" href=\"#\">Forecast</a><a class=\"ds-nav-item\" href=\"#\">Resources</a></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 4px; padding: 8px 16px; border-bottom: 1px solid hsl(var(--border)); background: hsl(var(--card) / 0.85); backdrop-filter: blur(24px); } .ds-nav-item { padding: 6px 12px; border-radius: 6px; color: hsl(var(--muted-foreground)); font-family: 'JetBrains Mono', monospace; font-size: 12px; text-decoration: none; transition: background 150ms, color 150ms; } .ds-nav-item:hover { background: hsl(var(--accent)); color: hsl(var(--foreground)); } .ds-nav-active { color: hsl(var(--primary)); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Command Deck",
+    "overview": "ResQAI is read like an operations console, not a marketing site. The screen is a dark instrument panel: near-black ground, one signal-teal channel carrying live status, and mono-spaced labels that read like telemetry. Every surface is built for a responder glancing at a phone in bad weather or an operator watching a wall display for six hours. Calm urgency beats spectacle — the interface stays quiet until something is actually wrong.",
+    "keyCharacteristics": [
+      "Dark, telemetry-first surfaces with a single teal signal channel",
+      "Mono for labels, numbers, and headings; Inter for prose",
+      "Severity color is semantic: red = critical, amber = caution/sample, green = safe/live",
+      "Tonal layering and glass instead of drop shadows",
+      "Compact 4/8px rhythm tuned for dashboards, not landing pages",
+      "Honest data states: live, cached, and sample are visually distinct"
+    ],
+    "rules": [
+      { "name": "The One Signal Rule", "body": "Signal Teal occupies ≤10% of any screen. If two elements compete for it, one is wrong.", "section": "colors" },
+      { "name": "The Severity Means Something Rule", "body": "Red, amber, and green are reserved for operational state. Decorative use of a severity hue is a bug, not a style choice.", "section": "colors" },
+      { "name": "The Sample Is Amber Rule", "body": "Any synthetic, seeded, or illustrative data wears DemoDataBadge in Caution Amber. No sample data ships unlabeled.", "section": "colors" },
+      { "name": "The Numbers Are Mono Rule", "body": "Any value a user compares — counts, percentages, coordinates, timestamps — uses the display face and tabular-nums where available.", "section": "typography" },
+      { "name": "The Uppercase Is Small Rule", "body": "Uppercase tracking is for ≤12px labels only. Never set a sentence in uppercase.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Panels are flat at rest. A shadow appears only as a response to state (hover, focus, alert) or to lift a map popup above tiles.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep Signal Teal to one primary action and the live channel per view.",
+      "Do use mono for every number, timestamp, coordinate, and status label.",
+      "Do label every sample, seeded, or cached dataset with DemoDataBadge and say what is live.",
+      "Do use 1px Hairline borders and tonal steps for separation before reaching for a shadow.",
+      "Do keep body text at 14px Inter with ≥4.5:1 contrast against Panel.",
+      "Do keep touch targets ≥44×44px and preserve map height on small screens.",
+      "Do respect prefers-reduced-motion: status pulses and scan lines stop, final states remain."
+    ],
+    "donts": [
+      "Don't introduce a light theme or a second accent hue; the system is dark-only and single-signal.",
+      "Don't use severity colors (red/amber/green) for decoration, gradients, or visual interest.",
+      "Don't use emoji as structural icons; use Lucide at a consistent 16px.",
+      "Don't set sentences in uppercase or use mono for long-form prose.",
+      "Don't stack glass surfaces or add drop shadows to resting cards.",
+      "Don't show a metric derived from Math.random() or seed data without a visible badge.",
+      "Don't let a fixed header, legend, or chat panel cover keyboard focus or content on mobile."
+    ]
+  }
+}

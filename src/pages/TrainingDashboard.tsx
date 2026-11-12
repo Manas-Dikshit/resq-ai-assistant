@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   GraduationCap, Plus, List, Map, BarChart3, Filter, RefreshCw,
-  LogOut, LogIn, Shield, ChevronLeft, ChevronRight, Radio, Download,
+  ChevronLeft, ChevronRight, Download,
   Bell, CheckCircle, Clock, Users, BookOpen, MapPin, Loader2
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,7 +12,7 @@ import TrainingList from "@/components/training/TrainingList";
 import TrainingAnalytics from "@/components/training/TrainingAnalytics";
 import AddTrainingForm from "@/components/training/AddTrainingForm";
 import TrainingNotifications from "@/components/training/TrainingNotifications";
-import LanguageToggle from "@/components/LanguageToggle";
+import AppHeader from "@/components/layout/AppHeader";
 import { Button } from "@/components/ui/button";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
@@ -31,8 +30,7 @@ type View = "list" | "map" | "analytics";
 type ColorMode = "theme" | "level";
 
 export default function TrainingDashboard() {
-  const { user, signOut } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [view, setView] = useState<View>("list");
   const [showForm, setShowForm] = useState(false);

@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Package, Plus, Search, Filter, Map, List, BarChart3,
-  LogOut, LogIn, Shield, RefreshCw, Download, Truck,
-  Wrench, Users, Radio, GraduationCap, Warehouse, CheckCircle,
+  RefreshCw, Download, Truck,
+  Wrench, Users, Radio, Warehouse, CheckCircle,
   Clock, AlertTriangle, ChevronLeft, ChevronRight, Loader2,
   MapPin, Phone, Building2, X, ArrowRight
 } from "lucide-react";
@@ -13,7 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import LanguageToggle from "@/components/LanguageToggle";
+import AppHeader from "@/components/layout/AppHeader";
 import { useEffect as useMapEffect, useRef } from "react";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -331,8 +330,7 @@ function ResourceAnalytics({ resources }: { resources: Resource[] }) {
 
 // ─── Main Page ───────────────────────────────────────────────────────────────
 export default function ResourceInventory() {
-  const { user, signOut } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("");
@@ -386,44 +384,22 @@ export default function ResourceInventory() {
 
   return (
     <div className="h-screen flex flex-col bg-background">
-      {/* Header */}
-      <header className="flex items-center justify-between px-4 py-2 border-b border-border glass-strong z-20 flex-shrink-0">
-        <div className="flex items-center gap-3">
-          <Link to="/" className="font-display text-lg font-bold">
-            <span className="text-foreground">Res</span><span className="text-gradient-primary">Q</span><span className="text-foreground">AI</span>
-          </Link>
-          <div className="w-px h-5 bg-border mx-1" />
-          <div className="flex items-center gap-2">
-            <Package className="w-4 h-4 text-primary" />
-            <span className="font-display text-sm font-bold text-foreground">Resource Inventory</span>
-            <span className="text-[10px] font-display px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">IDRN · National</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <LanguageToggle />
-          <Link to="/dashboard" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-            <Radio className="w-3.5 h-3.5" /><span className="hidden sm:inline">Dashboard</span>
-          </Link>
-          <Link to="/training" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-            <GraduationCap className="w-3.5 h-3.5" /><span className="hidden sm:inline">Training</span>
-          </Link>
-          <Link to="/control-room" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-            <Shield className="w-3.5 h-3.5" /><span className="hidden sm:inline">Control Room</span>
-          </Link>
-          <Link to="/forecast" className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-            <BarChart3 className="w-3.5 h-3.5" /><span className="hidden sm:inline">Forecasts</span>
-          </Link>
-          {user ? (
-            <button onClick={signOut} className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-display text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-              <LogOut className="w-3.5 h-3.5" /> Sign Out
-            </button>
-          ) : (
-            <Button size="sm" onClick={() => navigate("/auth")} className="text-xs font-display h-8">
-              <LogIn className="w-3.5 h-3.5 mr-1" /> Sign In
-            </Button>
-          )}
-        </div>
-      </header>
+      <AppHeader
+        title="Resource Inventory"
+        subtitle="Deployment status across agencies"
+        badge="IDRN · National"
+        icon={Package}
+        actions={
+          <button
+            onClick={() => refetch()}
+            className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            title="Refresh inventory"
+            aria-label="Refresh inventory"
+          >
+            <RefreshCw className="h-3.5 w-3.5" />
+          </button>
+        }
+      />
 
       {/* Stats bar */}
       <div className="flex items-center gap-4 px-4 py-2 border-b border-border bg-card/30 overflow-x-auto flex-shrink-0">
