@@ -448,7 +448,7 @@ Keep changes consistent with the existing component, hook, and styling patterns.
 
 ## License
 
-Released under the MIT License. Free to use, modify, and distribute.
+Released under the [MIT License](LICENSE). Free to use, modify, and distribute.
 
 ---
 
