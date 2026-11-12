@@ -15,7 +15,8 @@
     "controlRoom": "नियंत्रण कक्ष",
     "forecasts": "पूर्वानुमान",
     "aiChat": "AI चैट",
-    "evacuate": "निकासी"
+    "evacuate": "निकासी",
+    "postDisaster": "आपदा प्रबंधन"
   },
   "evacuation": {
     "title": "निकासी आश्रय",

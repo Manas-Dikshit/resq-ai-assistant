@@ -1,14 +1,16 @@
 import { odishaDisasters } from "@/data/odishaData";
 import { getDisasterColor } from "@/data/mockDisasters";
 import { Droplets, Flame, Mountain, CloudLightning } from "lucide-react";
+import DemoDataBadge from "@/components/DemoDataBadge";
 
 const typeIcons = { flood: Droplets, fire: Flame, earthquake: Mountain, storm: CloudLightning };
 
 const ActiveEvents = () => {
   return (
     <div className="space-y-3">
-      <h3 className="font-display text-xs font-bold text-muted-foreground tracking-widest uppercase">
-        Active Events — Odisha
+      <h3 className="font-display text-xs font-bold text-muted-foreground tracking-widest uppercase flex items-center gap-2">
+        Sample Events — Odisha
+        <DemoDataBadge label="Seed data" />
       </h3>
       {odishaDisasters.map((d) => {
         const Icon = typeIcons[d.type];

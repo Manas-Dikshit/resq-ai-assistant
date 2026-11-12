@@ -3,6 +3,7 @@ import { odishaRiskPredictions } from "@/data/odishaData";
 import { useRiskPrediction } from "@/hooks/useDisasterData";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
+import DemoDataBadge from "@/components/DemoDataBadge";
 
 const riskIcons = { flood_risk: Droplets, quake_risk: Mountain, fire_risk: Flame };
 const riskColors = { flood_risk: "text-flood", quake_risk: "text-quake", fire_risk: "text-fire" };
@@ -22,7 +23,10 @@ const RiskCards = () => {
 
   return (
     <div className="space-y-3">
-      <h3 className="font-display text-xs font-bold text-muted-foreground tracking-widest uppercase">{t('risk.title')}</h3>
+      <div className="flex items-center justify-between gap-2">
+        <h3 className="font-display text-xs font-bold text-muted-foreground tracking-widest uppercase">{t('risk.title')}</h3>
+        <DemoDataBadge label="Sample regional outlook" />
+      </div>
       
       {prediction && (
         <div className="p-3 rounded-lg border border-primary/30 bg-primary/5">

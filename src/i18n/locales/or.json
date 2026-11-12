@@ -15,7 +15,8 @@
     "controlRoom": "ନିୟନ୍ତ୍ରଣ କକ୍ଷ",
     "forecasts": "ପୂର୍ବାନୁମାନ",
     "aiChat": "AI ଚାଟ",
-    "evacuate": "ସ୍ଥାନାନ୍ତର"
+    "evacuate": "ସ୍ଥାନାନ୍ତର",
+    "postDisaster": "ବିପର୍ଯ୍ୟୟ ପରବର୍ତ୍ତୀ ପରିଚାଳନା"
   },
   "evacuation": {
     "title": "ସ୍ଥାନାନ୍ତର ଆଶ୍ରୟ",
