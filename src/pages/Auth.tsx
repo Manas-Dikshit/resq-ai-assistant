@@ -203,7 +203,7 @@ const Auth = () => {
                       minLength={6}
                       autoComplete="current-password"
                       className={inputClass}
-                      placeholder="At least 6 characters"
+                      placeholder="1234"
                     />
                   </div>
                   <button
