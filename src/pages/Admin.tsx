@@ -18,7 +18,7 @@ import DemoDataBadge from "@/components/DemoDataBadge";
 type Tab = 'overview' | 'analytics' | 'alerts' | 'shelters' | 'reports' | 'users' | 'validation';
 
 const Admin = () => {
-  const { user, signOut } = useAuth();
+  const { user, role, signOut } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [alertMessage, setAlertMessage] = useState("");
@@ -104,7 +104,7 @@ const Admin = () => {
 
   if (!user) { navigate('/auth'); return null; }
   if (roleLoading) return <div className="min-h-screen bg-background flex items-center justify-center"><Activity className="w-8 h-8 text-primary animate-spin" /></div>;
-  if (!isAdmin) return (
+  if (role !== 'admin' && !isAdmin) return (
     <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="text-center p-8 border border-destructive/30 rounded-xl bg-card">
         <Shield className="w-12 h-12 text-destructive mx-auto mb-4" />

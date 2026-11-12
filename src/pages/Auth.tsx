@@ -1,18 +1,18 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Activity, AlertCircle, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { Activity, AlertCircle, ArrowLeft, CheckCircle2, Lock, ShieldCheck } from "lucide-react";
 import LanguageToggle from "@/components/LanguageToggle";
 
 const Auth = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [tab, setTab] = useState<"admin" | "user">("admin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const { signIn, signInAdmin, signUp } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,7 +21,14 @@ const Auth = () => {
     setSuccess("");
     setLoading(true);
 
-    if (isLogin) {
+    if (tab === "admin") {
+      const { error } = await signInAdmin(email, password);
+      if (error) {
+        setError(error.message);
+      } else {
+        navigate("/admin");
+      }
+    } else if (e.currentTarget.matches("#login-form")) {
       const { error } = await signIn(email, password);
       if (error) {
         setError(error.message);
@@ -66,104 +73,201 @@ const Auth = () => {
       </header>
 
       <main className="flex flex-1 items-center justify-center px-4 py-12">
-        <div className="w-full max-w-sm">
+        <div className="w-full max-w-lg">
           <div className="rounded-lg border border-border bg-card p-6">
-            <h1 className="font-display text-lg font-semibold text-foreground">
-              {isLogin ? "Sign in" : "Create account"}
-            </h1>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {isLogin
-                ? "Access the response dashboard and incident tools."
-                : "Register for access to the response network."}
-            </p>
+            <div className="flex gap-2 mb-4">
+              <button
+                onClick={() => setTab("admin")}
+                className={`flex-1 py-2 rounded-md text-sm font-medium transition-colors ${
+                  tab === "admin"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                }`}
+              >
+                Admin Login
+              </button>
+              <button
+                onClick={() => setTab("user")}
+                className={`flex-1 py-2 rounded-md text-sm font-medium transition-colors ${
+                  tab === "user"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                }`}
+              >
+                User Login
+              </button>
+            </div>
 
-            {error && (
-              <div className="mt-4 flex items-start gap-2 rounded-md border border-destructive/30 bg-destructive/10 p-3">
-                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
-                <p className="text-xs text-destructive">{error}</p>
-              </div>
-            )}
+            {tab === "admin" ? (
+              <>
+                <ShieldCheck className="mb-2 h-5 w-5 text-primary" />
+                <h1 className="font-display text-lg font-semibold text-foreground">Admin Sign in</h1>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Enter admin ID and password below.
+                </p>
 
-            {success && (
-              <div className="mt-4 flex items-start gap-2 rounded-md border border-safe/30 bg-safe/10 p-3">
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-safe" />
-                <p className="text-xs text-safe">{success}</p>
-              </div>
-            )}
+                {error && (
+                  <div className="mt-4 flex items-start gap-2 rounded-md border border-destructive/30 bg-destructive/10 p-3">
+                    <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
+                    <p className="text-xs text-destructive">{error}</p>
+                  </div>
+                )}
 
-            <form onSubmit={handleSubmit} className="mt-5 space-y-4">
-              {!isLogin && (
                 <div>
-                  <label htmlFor="name" className="mb-1.5 block font-display text-[11px] font-medium text-muted-foreground">
-                    Full name
+                  <label htmlFor="admin-id" className="mb-1.5 block font-display text-[11px] font-medium text-muted-foreground">
+                    Admin ID
                   </label>
                   <input
-                    id="name"
+                    id="admin-id"
                     type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required={!isLogin}
-                    autoComplete="name"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    autoComplete="off"
                     className={inputClass}
-                    placeholder="Your name"
+                    placeholder="ADMIN"
                   />
                 </div>
-              )}
-              <div>
-                <label htmlFor="email" className="mb-1.5 block font-display text-[11px] font-medium text-muted-foreground">
-                  Email
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  autoComplete="email"
-                  className={inputClass}
-                  placeholder="you@organisation.org"
-                />
-              </div>
-              <div>
-                <label htmlFor="password" className="mb-1.5 block font-display text-[11px] font-medium text-muted-foreground">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={6}
-                  autoComplete={isLogin ? "current-password" : "new-password"}
-                  className={inputClass}
-                  placeholder="At least 6 characters"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full rounded-md bg-primary py-2.5 font-display text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
-              >
-                {loading ? "Please wait…" : isLogin ? "Sign in" : "Create account"}
-              </button>
-            </form>
+                <div>
+                  <label htmlFor="admin-password" className="mb-1.5 block font-display text-[11px] font-medium text-muted-foreground">
+                    Password
+                  </label>
+                  <input
+                    id="admin-password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    autoComplete="current-password"
+                    className={inputClass}
+                    placeholder="1234"
+                  />
+                </div>
 
-            <div className="mt-5 border-t border-border pt-4">
-              <p className="text-center text-xs text-muted-foreground">
-                {isLogin ? "No account yet?" : "Already registered?"}{" "}
                 <button
-                  onClick={() => {
-                    setIsLogin(!isLogin);
-                    setError("");
-                    setSuccess("");
-                  }}
-                  className="font-display font-medium text-primary hover:underline"
+                  onClick={handleSubmit}
+                  disabled={loading}
+                  className="mt-4 w-full rounded-md bg-primary py-2.5 font-display text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
                 >
-                  {isLogin ? "Create one" : "Sign in"}
+                  {loading ? "Signing in…" : "Sign in as Admin"}
                 </button>
-              </p>
-            </div>
+              </>
+            ) : (
+              <>
+                <Lock className="mb-2 h-5 w-5 text-primary" />
+                <h1 className="font-display text-lg font-semibold text-foreground">User Sign in</h1>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Access the response dashboard and incident tools.
+                </p>
+
+                {error && (
+                  <div className="mt-4 flex items-start gap-2 rounded-md border border-destructive/30 bg-destructive/10 p-3">
+                    <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
+                    <p className="text-xs text-destructive">{error}</p>
+                  </div>
+                )}
+
+                {success && (
+                  <div className="mt-4 flex items-start gap-2 rounded-md border border-safe/30 bg-safe/10 p-3">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-safe" />
+                    <p className="text-xs text-safe">{success}</p>
+                  </div>
+                )}
+
+                <form id="login-form" onSubmit={handleSubmit} className="mt-5 space-y-4">
+                  <div>
+                    <label htmlFor="email" className="mb-1.5 block font-display text-[11px] font-medium text-muted-foreground">
+                      Email
+                    </label>
+                    <input
+                      id="email"
+                      type="text"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      autoComplete="email"
+                      className={inputClass}
+                      placeholder="admin@gmail.com"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="password" className="mb-1.5 block font-display text-[11px] font-medium text-muted-foreground">
+                      Password
+                    </label>
+                    <input
+                      id="password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      minLength={6}
+                      autoComplete="current-password"
+                      className={inputClass}
+                      placeholder="At least 6 characters"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full rounded-md bg-primary py-2.5 font-display text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+                  >
+                    {loading ? "Signing in…" : "Sign in"}
+                  </button>
+                </form>
+
+                <div className="mt-5 border-t border-border pt-4">
+                  <p className="text-center text-xs text-muted-foreground">
+                    No account yet?{" "}
+                    <button
+                      onClick={() => {
+                        setError("");
+                        setSuccess("");
+                        setTab("user");
+                      }}
+                      className="font-display font-medium text-primary hover:underline"
+                    >
+                      Create one
+                    </button>
+                  </p>
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      setError("");
+                      setSuccess("");
+                      setLoading(true);
+                      signUp(email, password, name).then(({ error }) => {
+                        if (error) setError(error.message);
+                        else setSuccess("Check your email to verify your account before signing in.");
+                        setLoading(false);
+                      });
+                    }}
+                    className="mt-3 space-y-4"
+                  >
+                    <div>
+                      <label htmlFor="name" className="mb-1.5 block font-display text-[11px] font-medium text-muted-foreground">
+                        Full name
+                      </label>
+                      <input
+                        id="name"
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        autoComplete="name"
+                        className={inputClass}
+                        placeholder="Your name"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full rounded-md bg-primary py-2.5 font-display text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+                    >
+                      {loading ? "Please wait…" : "Create account"}
+                    </button>
+                  </form>
+                </div>
+              </>
+            )}
           </div>
 
           <p className="mt-4 text-center text-[10px] leading-relaxed text-muted-foreground">

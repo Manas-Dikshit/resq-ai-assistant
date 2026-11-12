@@ -31,7 +31,10 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
-            <Route element={<ProtectedRoute />}>
+            <Route element={<ProtectedRoute role="admin" />}>
+              <Route path="/admin" element={<Admin />} />
+            </Route>
+            <Route element={<ProtectedRoute role="user" />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/training" element={<TrainingDashboard />} />
               <Route path="/resources" element={<ResourceInventory />} />
@@ -39,7 +42,6 @@ const App = () => (
               <Route path="/control-room" element={<ControlRoom />} />
               <Route path="/evacuate" element={<EvacuationPlanner />} />
               <Route path="/post-disaster" element={<PostDisaster />} />
-              <Route path="/admin" element={<Admin />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
