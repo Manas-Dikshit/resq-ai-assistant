@@ -35,7 +35,9 @@ const AlertBanner = () => {
         gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
         osc.start();
         osc.stop(ctx.currentTime + 0.3);
-      } catch {}
+      } catch {
+        // Audio is best-effort: autoplay policies or missing Web Audio support must not break alerts.
+      }
     }
   }, [currentIdx, soundEnabled, realtimeAlerts]);
 

@@ -101,28 +101,11 @@ export const useGridPredictions = () => {
         (window as any).__resqai_cache_predictions(data.predictions);
       }
 
-      // Persist grid to risk_predictions table for realtime sync across clients
-      try {
-        await supabase.from("risk_predictions").insert(
-          data.predictions.map((p: GridPredictionPoint) => ({
-            lat: p.latitude,
-            lng: p.longitude,
-            region: p.label,
-            flood_risk: p.predictions.flood_risk,
-            quake_risk: p.predictions.earthquake_risk,
-            fire_risk: p.predictions.fire_risk,
-            cyclone_risk: p.predictions.cyclone_risk,
-            landslide_risk: p.predictions.landslide_risk,
-            heat_wave_risk: p.predictions.heat_wave_risk,
-            risk_level: p.risk_level,
-            explanation: p.explainability as any,
-            trust_score: p.confidence,
-          }))
-        );
-      } catch (_) {
-        // Non-critical — don't throw if DB write fails
-      }
-
+      // NOTE: predictions are intentionally not written to risk_predictions here.
+      // Inserting from the read path used to trigger the realtime listener below,
+      // which invalidated this query and re-inserted on every refetch (endless loop),
+      // and RLS only allows admins to insert, so it silently failed for everyone else.
+      // Persistence belongs server-side (edge function / cron), not in a queryFn.
       return data;
     },
     staleTime: 60 * 1000,               // 1 min cache

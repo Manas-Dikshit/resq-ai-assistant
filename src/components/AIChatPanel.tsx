@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Send, Bot, User, Loader2, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import ReactMarkdown from "react-markdown";
@@ -150,9 +151,17 @@ const AIChatPanel = () => {
     const allMessages = [...messages, userMsg].filter(m => m.role === "user" || m.role === "assistant");
 
     try {
+      // The edge function requires a signed-in user; send the session token, not the anon key.
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error(t('chat.signInPlaceholder'));
+        setIsLoading(false);
+        return;
+      }
+
       const resp = await fetch(CHAT_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
         body: JSON.stringify({ messages: allMessages, language: i18n.language }),
       });
 

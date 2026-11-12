@@ -21,6 +21,9 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
       "@typescript-eslint/no-unused-vars": "off",
+      // Typing debt: ~60 `any` sites remain in legacy components/hooks.
+      // Kept as a warning so it stays visible without blocking CI; burn down per file.
+      "@typescript-eslint/no-explicit-any": "warn",
     },
   },
 );

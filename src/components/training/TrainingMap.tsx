@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import L from "leaflet";
 import { motion } from "framer-motion";
 import type { Training } from "@/hooks/useTrainings";
+import { getCartoTileUrl, CARTO_ATTRIBUTION } from "@/lib/mapUtils";
 import "leaflet/dist/leaflet.css";
 
 const THEME_COLORS: Record<string, string> = {
@@ -43,8 +44,9 @@ export default function TrainingMap({ trainings, colorMode = "theme" }: Training
       zoom: 5,
       zoomControl: true,
     });
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-      attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+    L.tileLayer(getCartoTileUrl("dark_all"), {
+      attribution: CARTO_ATTRIBUTION,
+      subdomains: "abcd",
       maxZoom: 19,
     }).addTo(mapRef.current);
     return () => {

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import L from "leaflet";
 import { ODISHA_CENTER, ODISHA_ZOOM, odishaShelters } from "@/data/odishaData";
+import { getCartoTileUrl, CARTO_ATTRIBUTION } from "@/lib/mapUtils";
 import "leaflet/dist/leaflet.css";
 
 interface Shelter {
@@ -38,8 +39,10 @@ const EvacuationMap = ({ selectedShelterId, onSelectShelter }: Props) => {
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-      attribution: '&copy; CARTO',
+    L.tileLayer(getCartoTileUrl("dark_all"), {
+      attribution: CARTO_ATTRIBUTION,
+      subdomains: "abcd",
+      maxZoom: 19,
     }).addTo(map);
 
     // Odisha boundary

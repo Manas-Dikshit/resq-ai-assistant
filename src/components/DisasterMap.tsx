@@ -5,6 +5,7 @@ import { useRealDisasterData } from "@/hooks/useDisasterData";
 import { useGridPredictions, RISK_COLORS, RISK_LABELS, RISK_ICONS, RiskType } from "@/hooks/useGridPredictions";
 import { supabase } from "@/integrations/supabase/client";
 import { ODISHA_CENTER, ODISHA_ZOOM } from "@/data/odishaData";
+import { getCartoTileUrl, CARTO_ATTRIBUTION } from "@/lib/mapUtils";
 import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
@@ -93,8 +94,10 @@ const DisasterMap = () => {
     predictionLayerRef.current = L.layerGroup().addTo(map);
     reportLayerRef.current = L.layerGroup().addTo(map);
 
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-      attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+    L.tileLayer(getCartoTileUrl("dark_all"), {
+      attribution: CARTO_ATTRIBUTION,
+      subdomains: "abcd",
+      maxZoom: 19,
     }).addTo(map);
 
     L.polyline([

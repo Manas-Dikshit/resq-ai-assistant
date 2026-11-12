@@ -33,7 +33,9 @@ const OfflinePredictionEngine = () => {
         setCachedPredictions(parsed.predictions || []);
         setLastSync(parsed.syncedAt);
       }
-    } catch {}
+    } catch {
+      // Ignore malformed/absent cache — component falls back to empty state.
+    }
   }, []);
 
   // Monitor online/offline

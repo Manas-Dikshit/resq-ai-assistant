@@ -4,7 +4,7 @@ declare const Deno: {
   };
 };
 
-// @ts-ignore Deno runtime URL imports are resolved by Supabase Edge Functions runtime.
+// @ts-expect-error Deno runtime URL imports are resolved by Supabase Edge Functions runtime.
 import { serve } from "https://deno.land/std@0.218.2/http/server.ts";
 
 const corsHeaders = {
@@ -16,6 +16,29 @@ serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    // ─── Auth gate ───────────────────────────────────────────────────────────
+    // This function spends AI credits, so it must only run for signed-in users.
+    // The client sends its Supabase access token as the Bearer token.
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+    const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
+    const token = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "").trim();
+
+    if (!token || !SUPABASE_URL || !SUPABASE_ANON_KEY) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const userResponse = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      headers: { Authorization: `Bearer ${token}`, apikey: SUPABASE_ANON_KEY },
+    });
+
+    if (!userResponse.ok) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { messages, location, language } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");

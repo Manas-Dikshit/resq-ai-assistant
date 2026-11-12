@@ -105,7 +105,7 @@ const ShelterFinder = () => {
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, []);
+  }, [userPos]);
 
   const findNearest = () => {
     setLocating(true);
