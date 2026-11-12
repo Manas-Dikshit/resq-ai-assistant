@@ -246,6 +246,10 @@ const Admin = () => {
         {activeTab === 'shelters' && (
           <div className="space-y-6">
             <h2 className="font-display text-2xl font-bold text-foreground">Shelter Management</h2>
+            <div className="flex items-center gap-2">
+              <DemoDataBadge label="Utilization chart uses sample data" />
+              <span className="text-xs text-muted-foreground">Table below is read live from Supabase.</span>
+            </div>
             <ShelterUtilizationChart />
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -258,18 +262,28 @@ const Admin = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {odishaShelters.map(s => (
-                    <tr key={s.id} className="border-b border-border/50 hover:bg-accent/30">
-                      <td className="py-3 px-4 text-foreground">{s.name}</td>
-                      <td className="py-3 px-4 text-muted-foreground">{s.capacity}</td>
-                      <td className="py-3 px-4 text-muted-foreground">{s.occupancy}</td>
-                      <td className="py-3 px-4">
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-display ${s.occupancy / s.capacity > 0.8 ? 'bg-destructive/10 text-destructive' : s.occupancy / s.capacity > 0.5 ? 'bg-warning/10 text-warning' : 'bg-safe/10 text-safe'}`}>
-                          {s.occupancy / s.capacity > 0.8 ? 'Near Full' : s.occupancy / s.capacity > 0.5 ? 'Moderate' : 'Available'}
-                        </span>
+                  {(shelters || []).map((s) => {
+                    const utilization = s.capacity > 0 ? s.occupancy / s.capacity : 1;
+                    return (
+                      <tr key={s.id} className="border-b border-border/50 hover:bg-accent/30">
+                        <td className="py-3 px-4 text-foreground">{s.name}</td>
+                        <td className="py-3 px-4 text-muted-foreground">{s.capacity}</td>
+                        <td className="py-3 px-4 text-muted-foreground">{s.occupancy}</td>
+                        <td className="py-3 px-4">
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-display ${utilization > 0.8 ? 'bg-destructive/10 text-destructive' : utilization > 0.5 ? 'bg-warning/10 text-warning' : 'bg-safe/10 text-safe'}`}>
+                            {utilization > 0.8 ? 'Near Full' : utilization > 0.5 ? 'Moderate' : 'Available'}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {(!shelters || shelters.length === 0) && (
+                    <tr>
+                      <td colSpan={4} className="py-6 px-4 text-center text-sm text-muted-foreground">
+                        No shelters in the database. Add rows to the <code className="text-primary">shelters</code> table to populate this view.
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>

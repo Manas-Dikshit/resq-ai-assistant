@@ -1,7 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import { ODISHA_CENTER, ODISHA_ZOOM, odishaShelters } from "@/data/odishaData";
 import { getCartoTileUrl, CARTO_ATTRIBUTION } from "@/lib/mapUtils";
+import { supabase } from "@/integrations/supabase/client";
+import DemoDataBadge from "@/components/DemoDataBadge";
 import "leaflet/dist/leaflet.css";
 
 interface Shelter {
@@ -18,11 +20,15 @@ interface Props {
   onSelectShelter: (id: string | null) => void;
 }
 
+type ShelterSource = "live" | "seed";
+
 const EvacuationMap = ({ selectedShelterId, onSelectShelter }: Props) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const shelterLayerRef = useRef<L.LayerGroup | null>(null);
-  const sheltersRef = useRef<Shelter[]>([]);
+  const [shelters, setShelters] = useState<Shelter[]>([]);
+  const [source, setSource] = useState<ShelterSource>("live");
+  const [loading, setLoading] = useState(true);
 
   // Initialize map
   useEffect(() => {
@@ -37,7 +43,7 @@ const EvacuationMap = ({ selectedShelterId, onSelectShelter }: Props) => {
     mapInstanceRef.current = map;
     shelterLayerRef.current = L.layerGroup().addTo(map);
 
-    L.control.zoom({ position: 'bottomright' }).addTo(map);
+    L.control.zoom({ position: "bottomright" }).addTo(map);
 
     L.tileLayer(getCartoTileUrl("dark_all"), {
       attribution: CARTO_ATTRIBUTION,
@@ -54,62 +60,90 @@ const EvacuationMap = ({ selectedShelterId, onSelectShelter }: Props) => {
     return () => {
       map.remove();
       mapInstanceRef.current = null;
+      shelterLayerRef.current = null;
     };
   }, []);
 
-  // Load shelters
+  // Load live shelters; fall back to clearly-labelled seed data only when empty.
   useEffect(() => {
-    const loadShelters = () => {
-      sheltersRef.current = odishaShelters;
-      renderShelters(odishaShelters);
-    };
+    let cancelled = false;
 
-    const renderShelters = (shelters: Shelter[]) => {
-      if (!shelterLayerRef.current) return;
-      shelterLayerRef.current.clearLayers();
+    const loadShelters = async () => {
+      const { data, error } = await supabase.from("shelters").select("*").order("name");
+      if (cancelled) return;
 
-      shelters.forEach(s => {
-        const utilization = s.capacity > 0 ? s.occupancy / s.capacity : 1;
-        const isFull = utilization >= 1;
-        const color = isFull ? '#ef4444' : utilization > 0.8 ? '#ef4444' : utilization > 0.5 ? '#eab308' : '#22c55e';
-        const available = Math.max(0, s.capacity - s.occupancy);
-
-        const icon = L.divIcon({
-          className: '',
-          html: `<div style="position:relative;display:flex;flex-direction:column;align-items:center">
-            <div style="background:${color};width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.4);box-shadow:0 0 16px ${color}80;font-size:13px;cursor:pointer">🏠</div>
-            <div style="background:rgba(0,0,0,0.85);border:1px solid ${color};border-radius:4px;padding:1px 5px;margin-top:2px;white-space:nowrap">
-              <span style="font-size:9px;color:${color};font-family:monospace;font-weight:bold">${isFull ? 'FULL' : `${available} spots`}</span>
-            </div>
-          </div>`,
-          iconSize: [40, 50],
-          iconAnchor: [20, 25],
-        });
-
-        L.marker([s.lat, s.lng], { icon })
-          .addTo(shelterLayerRef.current!)
-          .on('click', () => onSelectShelter(s.id))
-          .bindPopup(
-            `<div style="font-family:'JetBrains Mono',monospace;min-width:200px">
-              <b style="font-size:13px;color:white">🏠 ${s.name}</b>
-              <div style="margin-top:6px">
-                <div style="display:flex;justify-content:space-between;font-size:11px;color:#aaa">
-                  <span>Capacity</span><span>${s.occupancy}/${s.capacity}</span>
-                </div>
-                <div style="width:100%;height:6px;background:#333;border-radius:3px;margin-top:4px">
-                  <div style="width:${utilization * 100}%;height:100%;background:${color};border-radius:3px"></div>
-                </div>
-                <p style="font-size:11px;color:${color};margin-top:6px;font-weight:bold">${isFull ? '⛔ FULL — Try another shelter' : `✅ ${available} spots available`}</p>
-              </div>
-            </div>`,
-            { className: 'prediction-popup' }
-          );
-      });
+      if (!error && data && data.length > 0) {
+        setShelters(data);
+        setSource("live");
+      } else {
+        setShelters(odishaShelters);
+        setSource("seed");
+      }
+      setLoading(false);
     };
 
     loadShelters();
-    return () => {};
-  }, [onSelectShelter]);
+
+    const channel = supabase
+      .channel("evac-map-shelters")
+      .on("postgres_changes", { event: "*", schema: "public", table: "shelters" }, () => {
+        loadShelters();
+      })
+      .subscribe();
+
+    return () => {
+      cancelled = true;
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  // Render shelters whenever data or selection changes.
+  useEffect(() => {
+    const shelterLayer = shelterLayerRef.current;
+    if (!shelterLayer) return;
+    shelterLayer.clearLayers();
+
+    shelters.forEach(s => {
+      const utilization = s.capacity > 0 ? s.occupancy / s.capacity : 1;
+      const isFull = utilization >= 1;
+      const color = isFull ? '#ef4444' : utilization > 0.8 ? '#ef4444' : utilization > 0.5 ? '#eab308' : '#22c55e';
+      const available = Math.max(0, s.capacity - s.occupancy);
+      const isSelected = selectedShelterId === s.id;
+
+      const icon = L.divIcon({
+        className: '',
+        html: `<div style="position:relative;display:flex;flex-direction:column;align-items:center">
+          <div style="background:${color};width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid ${isSelected ? '#fff' : 'rgba(255,255,255,0.4)'};box-shadow:0 0 16px ${color}80;font-size:13px;cursor:pointer">🏠</div>
+          <div style="background:rgba(0,0,0,0.85);border:1px solid ${color};border-radius:4px;padding:1px 5px;margin-top:2px;white-space:nowrap">
+            <span style="font-size:9px;color:${color};font-family:monospace;font-weight:bold">${isFull ? 'FULL' : `${available} spots`}</span>
+          </div>
+        </div>`,
+        iconSize: [40, 50],
+        iconAnchor: [20, 25],
+      });
+
+      L.marker([s.lat, s.lng], { icon })
+        .addTo(shelterLayer)
+        .on('click', () => onSelectShelter(s.id))
+        .bindPopup(
+          `<div style="font-family:'JetBrains Mono',monospace;min-width:200px">
+            <b style="font-size:13px;color:white">🏠 ${s.name}</b>
+            <div style="margin-top:6px">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:#aaa">
+                <span>Capacity</span><span>${s.occupancy}/${s.capacity}</span>
+              </div>
+              <div style="width:100%;height:6px;background:#333;border-radius:3px;margin-top:4px">
+                <div style="width:${utilization * 100}%;height:100%;background:${color};border-radius:3px"></div>
+              </div>
+              <p style="font-size:11px;color:${color};margin-top:6px;font-weight:bold">${isFull ? '⛔ FULL — Try another shelter' : `✅ ${available} spots available`}</p>
+            </div>
+          </div>`,
+          { className: 'prediction-popup' }
+        );
+    });
+  }, [shelters, selectedShelterId, onSelectShelter]);
+
+  const totalCapacity = shelters.reduce((sum, s) => sum + s.capacity, 0);
 
   return (
     <div className="w-full h-full relative">
@@ -132,8 +166,15 @@ const EvacuationMap = ({ selectedShelterId, onSelectShelter }: Props) => {
             <p className="text-[9px] text-muted-foreground">Occupancy &gt; 80% or at capacity</p>
           </div>
           <hr className="border-border my-2" />
-          <p className="text-[9px] font-display font-bold text-primary mb-1">📊 {odishaShelters.length} Shelters</p>
-          <p className="text-[9px] text-muted-foreground">Total capacity: {odishaShelters.reduce((sum, s) => sum + s.capacity, 0).toLocaleString()} people</p>
+          <p className="text-[9px] font-display font-bold text-primary mb-1">
+            📊 {loading ? "Loading shelters…" : `${shelters.length} Shelters`}
+          </p>
+          <p className="text-[9px] text-muted-foreground">
+            Total capacity: {totalCapacity.toLocaleString()} people
+          </p>
+          {source === "seed" && (
+            <DemoDataBadge label="Seed shelter data" className="mt-1" />
+          )}
         </div>
       </div>
     </div>

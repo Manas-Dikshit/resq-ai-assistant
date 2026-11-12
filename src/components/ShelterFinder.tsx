@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { MapPin, Navigation, Loader2, Home, Footprints, Car, X, Phone, RefreshCw, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { odishaShelters } from "@/data/odishaData";
 
 interface Shelter {
   id: string;
@@ -49,16 +48,16 @@ const ShelterFinder = () => {
   const [mode, setMode] = useState<'walking' | 'driving'>('driving');
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  const evacuationTotalCapacity = odishaShelters.reduce((sum, shelter) => sum + shelter.capacity, 0);
-  const evacuationAvailable = odishaShelters.reduce((sum, shelter) => sum + Math.max(0, shelter.capacity - shelter.occupancy), 0);
-  const topEvacShelters = [...odishaShelters]
+  const evacuationTotalCapacity = shelters.reduce((sum, shelter) => sum + shelter.capacity, 0);
+  const evacuationAvailable = shelters.reduce((sum, shelter) => sum + Math.max(0, shelter.capacity - shelter.occupancy), 0);
+  const topEvacShelters = useMemo(() => [...shelters]
     .map((shelter) => ({
       ...shelter,
       availableSpots: Math.max(0, shelter.capacity - shelter.occupancy),
       utilization: shelter.capacity > 0 ? shelter.occupancy / shelter.capacity : 1,
     }))
     .sort((a, b) => b.availableSpots - a.availableSpots)
-    .slice(0, 3);
+    .slice(0, 3), [shelters]);
 
   const fetchShelters = async (uLat?: number, uLng?: number) => {
     const { data } = await supabase.from('shelters').select('*');
@@ -234,7 +233,7 @@ const ShelterFinder = () => {
       <div className="rounded-xl border border-border/70 bg-card/70 p-3 space-y-2">
         <div className="flex items-center justify-between">
           <p className="text-[11px] font-display font-bold uppercase tracking-wider text-muted-foreground">Evacuation Shelter Snapshot</p>
-          <span className="text-[10px] text-primary font-display">{odishaShelters.length} linked</span>
+          <span className="text-[10px] text-primary font-display">{shelters.length} live</span>
         </div>
         <div className="grid grid-cols-2 gap-2 text-[11px]">
           <div className="rounded-md bg-muted/40 px-2 py-1.5 text-muted-foreground">
@@ -261,6 +260,11 @@ const ShelterFinder = () => {
               </p>
             </div>
           ))}
+          {topEvacShelters.length === 0 && (
+            <p className="text-[10px] text-muted-foreground text-center py-2">
+              No live shelter records in the database.
+            </p>
+          )}
         </div>
       </div>
 
