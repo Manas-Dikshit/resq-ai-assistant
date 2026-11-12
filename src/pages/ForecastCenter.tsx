@@ -635,11 +635,6 @@ export default function ForecastCenter() {
             )}
           </button>
         ))}
-        <div className="flex-1" />
-        <span className="flex items-center gap-1.5 rounded-full border border-safe/25 bg-safe/10 px-2.5 py-1 font-display text-[10px] font-semibold uppercase tracking-wide text-safe">
-          <span className="h-1.5 w-1.5 rounded-full bg-safe" />
-          Live
-        </span>
       </div>
 
       {/* Content */}

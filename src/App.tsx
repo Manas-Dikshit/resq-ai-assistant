@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import OfflineIndicator from "@/components/OfflineIndicator";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
@@ -28,16 +29,18 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-          <Route path="/" element={<Index />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/training" element={<TrainingDashboard />} />
-            <Route path="/resources" element={<ResourceInventory />} />
-            <Route path="/forecast" element={<ForecastCenter />} />
-            <Route path="/control-room" element={<ControlRoom />} />
+            <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/evacuate" element={<EvacuationPlanner />} />
-            <Route path="/post-disaster" element={<PostDisaster />} />
-            <Route path="/admin" element={<Admin />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/training" element={<TrainingDashboard />} />
+              <Route path="/resources" element={<ResourceInventory />} />
+              <Route path="/forecast" element={<ForecastCenter />} />
+              <Route path="/control-room" element={<ControlRoom />} />
+              <Route path="/evacuate" element={<EvacuationPlanner />} />
+              <Route path="/post-disaster" element={<PostDisaster />} />
+              <Route path="/admin" element={<Admin />} />
+            </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

@@ -468,10 +468,6 @@ export default function ControlRoom() {
             </Button>
           )}
         </div>
-        <span className="flex flex-shrink-0 items-center gap-1.5 rounded-full border border-destructive/25 bg-destructive/10 px-2.5 py-1 font-display text-[10px] font-semibold uppercase tracking-wide text-destructive">
-          <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
-          Live
-        </span>
       </div>
 
       {/* Main content */}
