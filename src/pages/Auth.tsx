@@ -132,16 +132,16 @@ const Auth = () => {
                   <label htmlFor="admin-password" className="mb-1.5 block font-display text-[11px] font-medium text-muted-foreground">
                     Password
                   </label>
-                  <input
-                    id="admin-password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    autoComplete="current-password"
-                    className={inputClass}
-                    placeholder="1234"
-                  />
+                    <input
+                      id="admin-password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      autoComplete="current-password"
+                      className={inputClass}
+                      placeholder="123456"
+                    />
                 </div>
 
                 <button
@@ -203,7 +203,7 @@ const Auth = () => {
                       minLength={6}
                       autoComplete="current-password"
                       className={inputClass}
-                      placeholder="1234"
+                      placeholder="123456"
                     />
                   </div>
                   <button

@@ -54,9 +54,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const ADMIN_EMAIL = "ADMIN";
-  const ADMIN_PASSWORD = "1234";
+  const ADMIN_PASSWORD = "123456";
   const USER_EMAIL = "admin@gmail.com";
-  const USER_PASSWORD = "1234";
+  const USER_PASSWORD = "123456";
 
   const mockUser = {
     id: "admin-local",
