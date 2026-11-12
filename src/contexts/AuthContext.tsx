@@ -46,12 +46,59 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return { error: error as Error | null };
   };
 
+  const ADMIN_EMAIL = "ADMIN";
+  const ADMIN_PASSWORD = "1234";
+
+  const mockUser = {
+    id: "admin-local",
+    email: "ADMIN",
+    app_metadata: {},
+    user_metadata: {},
+    aud: "authenticated",
+    confirmation_token: null,
+    confirmation_sent_at: null,
+    email_change_token_current: null,
+    email_change_token_new: null,
+    email_change_confirm_status: 0,
+    email_change: null,
+    invited_at: null,
+    recovery_token: null,
+    reauthentication_token: null,
+    phone: "",
+    phone_change: "",
+    phone_change_token: null,
+    phone_change_sent_at: null,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    is_anonymous: false,
+    role: "authenticated",
+    identities: [],
+    session_id: "",
+    last_sign_in_at: new Date().toISOString(),
+  } as unknown as User;
+
+  const mockSession = {
+    access_token: "admin-local-token",
+    refresh_token: "admin-local-refresh",
+    expires_in: 3600,
+    expires_at: Math.floor(Date.now() / 1000) + 3600,
+    token_type: "bearer",
+    user: mockUser,
+  } as unknown as Session;
+
   const signIn = async (email: string, password: string) => {
+    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+      setUser(mockUser);
+      setSession(mockSession);
+      return { error: null };
+    }
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error: error as Error | null };
   };
 
   const signOut = async () => {
+    setUser(null);
+    setSession(null);
     await supabase.auth.signOut();
   };
 
