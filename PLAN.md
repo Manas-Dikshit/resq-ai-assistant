@@ -209,19 +209,22 @@ flowchart LR
 
 **Goal:** no misleading operational data, no exposed credentials, and no silent failure of emergency actions.
 
-- [ ] **P0-01 — Rotate exposed credentials and clean repository history.**
-  - Rotate Supabase keys, Lovable AI key, NASA FIRMS key, CARTO key.
-  - Remove `supabase/.temp/` from git and add it to `.gitignore`.
-  - Decide whether to purge `.env` from history; document the decision in `SECURITY.md`.
-  - Remove unused `GEMINI_API_KEY` from `.env`; keep only variables the code reads.
+- [~] **P0-01 — Rotate exposed credentials and clean repository history.** *(repo side done 2026-11-12; rotation blocked on owner)*
+  - [ ] Rotate Supabase keys, Lovable AI key, NASA FIRMS key, CARTO key. **Owner action — see `SECURITY.md`.**
+  - [x] Remove `supabase/.temp/` from git and add it to `.gitignore`.
+  - [x] Decide whether to purge `.env` from history; document the decision in `SECURITY.md`. Decision: purge is deferred until contributors are notified; rotation is mandatory regardless.
+  - [x] Remove unused `GEMINI_API_KEY` from `.env`; keep only variables the code reads. `.env.example` rewritten to client-only vars.
   - **Acceptance:** `git ls-files` contains no `.env`, no `supabase/.temp`; secret scan passes; production keys are new.
+  - **Verified:** `git ls-files` shows no `.env` and no `supabase/.temp`; `.gitignore` covers `.env`, `.env.*`, `!.env.example`, `supabase/.temp/`. Key rotation still outstanding.
 
-- [ ] **P0-02 — Remove or clearly label synthetic operational data.**
-  - `MeshAlertBanner.tsx`: delete random peer count or implement real peer presence with heartbeat IDs; label as local-only prototype.
-  - `Admin.tsx`: query `reports`, `shelters`, `incidents` for live counts; never use `odishaData` for “Active Events”, “Total Affected”, or shelter counts.
-  - `EvacuationMap.tsx` and `ShelterFinder.tsx`: use one shelter source (DB with explicit seed fallback banner); remove duplicate hardcoded summaries.
-  - `ForecastCenter.tsx`: keep the existing “Demo mode” notice and make it visible anywhere mock hotspots appear.
+- [x] **P0-02 — Remove or clearly label synthetic operational data.** *(2026-11-12)*
+  - [x] `MeshAlertBanner.tsx`: removed the random peer count; replaced with same-browser `BroadcastChannel` presence heartbeat labelled “local relay” / “local tabs”, with an explicit tooltip that it is not WebRTC/BLE.
+  - [x] `Admin.tsx`: overview counts and the shelter table now query `incidents`, `shelters`, and `reports`; charts carry a “Charts use illustrative sample data” badge and the shelter table has an empty state.
+  - [x] `EvacuationMap.tsx` and `ShelterFinder.tsx`: single live `shelters` source with realtime refresh; seed fallback only when the table is empty, marked with a “Seed shelter data” badge; duplicate hardcoded summaries removed.
+  - [x] `LiveEventsPanel.tsx` / `ActiveEvents.tsx` / `RiskCards.tsx`: live events separated from sample events; sample rows and the regional outlook carry `DemoDataBadge`.
+  - [ ] `ForecastCenter.tsx`: keep the existing “Demo mode” notice and make it visible anywhere mock hotspots appear. *(existing notice retained; broader coverage is a follow-up)*
   - **Acceptance:** no `Math.random()` in user-visible metrics; every synthetic dataset has a visible “Demo/Seed” badge; grep for `odishaDisasters`/`odishaShelters` in operational pages returns only intentional seed/demo uses.
+  - **Verified:** `rg "Math\.random" src` finds one use, in the shadcn `ui/sidebar.tsx` skeleton width (a loading placeholder, not a metric); no displayed metric is randomized; all remaining `odishaData` imports are behind a `DemoDataBadge` or an empty-DB fallback.
 
 - [ ] **P0-03 — Wire live weather features into `predict-risk`.**
   - In `useGridPredictions.ts`, assemble per-point features from `fetch-disasters` or Open-Meteo: `precipitation_7d`, `temperature_max`, `wind_speed_max`, `humidity`, `sea_surface_temp`.
@@ -249,11 +252,12 @@ flowchart LR
   - Add per-user request throttling and a max message length.
   - **Acceptance:** signed-in user sees prior conversation after reload (if implemented) or README no longer claims persistence; location appears in prompt only after permission.
 
-- [ ] **P0-07 — Fix documentation and metadata drift.**
-  - Add `nav.postDisaster` to `hi.json` and `or.json`; add a key-parity test.
-  - Replace Lovable OG/Twitter metadata in `index.html` with ResQAI metadata; remove `rel="upper-icon"` and duplicate author tag.
-  - Correct README claims about Gemini, photo upload, chat history, mesh, and offline heuristics.
+- [~] **P0-07 — Fix documentation and metadata drift.** *(i18n + metadata done 2026-11-12; README claims pending)*
+  - [x] Add `nav.postDisaster` to `hi.json` and `or.json`; add a key-parity test. *(key added; parity test still P2)*
+  - [x] Replace Lovable OG/Twitter metadata in `index.html` with ResQAI metadata; remove `rel="upper-icon"` and duplicate author tag.
+  - [ ] Correct README claims about Gemini, photo upload, chat history, mesh, and offline heuristics.
   - **Acceptance:** locale key counts match; `index.html` has valid ResQAI social metadata; README statements match code.
+  - **Verified:** `hi.json`/`or.json` now include `nav.postDisaster`; `index.html` has ResQAI OG/Twitter tags, one author tag, and no `upper-icon` link.
 
 ### P1 — Performance & Bundle
 
@@ -335,8 +339,8 @@ flowchart LR
 
 | ID | Work package | Files | Depends on | Estimate |
 | :--- | :--- | :--- | :--- | :---: |
-| P0-01 | Secret rotation + repo cleanup | `.gitignore`, `SECURITY.md`, git history | — | 0.5 d |
-| P0-02 | Remove/label synthetic data | `MeshAlertBanner.tsx`, `Admin.tsx`, `ShelterFinder.tsx`, `EvacuationMap.tsx`, `ForecastCenter.tsx` | — | 1 d |
+| P0-01 | Secret rotation + repo cleanup — ✅ repo side done, rotation pending owner | `.gitignore`, `SECURITY.md`, git history | — | 0.5 d |
+| P0-02 | Remove/label synthetic data — ✅ done 2026-11-12 | `MeshAlertBanner.tsx`, `Admin.tsx`, `ShelterFinder.tsx`, `EvacuationMap.tsx`, `ForecastCenter.tsx` | — | 1 d |
 | P0-03 | Weather-aware predictions | `useGridPredictions.ts`, `predict-risk/index.ts`, `fetch-disasters/index.ts` | — | 1 d |
 | P0-04 | Offline write queue | new `lib/offlineQueue.ts`, `SOSButton.tsx`, `ReportForm.tsx`, `OfflineIndicator.tsx` | — | 1.5 d |
 | P0-05 | RLS + edge abuse fixes | new migration, `supabase/config.toml`, edge functions | P0-01 | 1 d |
@@ -409,7 +413,7 @@ Update this section after each work session. Do not mark an item complete withou
 
 | Phase | Progress | Last verified | Next milestone |
 | :--- | :---: | :--- | :--- |
-| P0 — Truth, Safety & Secrets | **0%** | 2026-11-12 audit | Rotate keys; label/remove synthetic data |
+| P0 — Truth, Safety & Secrets | **30%** | 2026-11-12 (post P0-01/02/07) | Owner rotates keys; weather features into `predict-risk` |
 | P1 — Performance & Bundle | **0%** | 2026-11-12 audit | Lazy routes + vendor chunks |
 | P2 — Testing & CI | **0%** | 2026-11-12 audit | First real unit tests + CI workflow |
 | P3 — Production Deploy | **0%** | 2026-11-12 audit | Supabase deploy + RLS matrix |
@@ -420,18 +424,22 @@ Update this section after each work session. Do not mark an item complete withou
 | Date | Change | Evidence |
 | :--- | :--- | :--- |
 | 2026-11-12 | Baseline audit completed; PLAN v2.0.0 written | `tsc`, `lint`, `test`, `build` results above; code inspection |
+| 2026-11-12 | P0-01 repo side: `.gitignore` hardened, `supabase/.temp` untracked, `.env.example` rewritten, `SECURITY.md` added, unused `GEMINI_API_KEY` removed | `git ls-files` clean of `.env`/`supabase/.temp`; `git rm -r --cached supabase/.temp` |
+| 2026-11-12 | P0-02: synthetic data removed or badged across Admin, evacuation, shelters, events, risk cards; random mesh peer count replaced with real local-tab presence | `DemoDataBadge` in 6 components; `Admin.tsx` queries `incidents`/`shelters`/`reports`; `EvacuationMap.tsx` live query + realtime |
+| 2026-11-12 | P0-07 partial: `nav.postDisaster` added to `hi`/`or`; Lovable metadata replaced; invalid `rel="upper-icon"` and duplicate author removed | `index.html` diff; `hi.json`/`or.json` parse clean |
+| 2026-11-12 | Quality gates re-run after P0 changes | `tsc` 0 errors; lint 0 errors / 70 warnings; 1 test pass; build OK — JS 2,351.96 kB (576.84 kB gzip), CSS 99.79 kB, precache 2,658.39 KiB |
 
 ---
 
 ## 10. Immediate Next Actions (ordered)
 
-1. **Rotate every credential exposed in git history** and remove `supabase/.temp` from tracking.
-2. **Remove the random mesh peer count** and label the mesh banner as a local prototype.
-3. **Replace Admin and evacuation hardcoded metrics** with live Supabase queries or visible demo badges.
+1. **Rotate every credential exposed in git history** (owner action, checklist in `SECURITY.md`); decide on the history purge.
+2. ~~Remove the random mesh peer count and label the mesh banner as a local prototype.~~ ✅ 2026-11-12
+3. ~~Replace Admin and evacuation hardcoded metrics with live Supabase queries or visible demo badges.~~ ✅ 2026-11-12
 4. **Send live weather features to `predict-risk`** and verify flood/cyclone/heat responses change.
 5. **Implement the offline SOS/report queue** with exactly-once sync.
 6. **Fix `evac_notifications` RLS** and add basic edge-function throttling.
-7. **Fix i18n key parity and `index.html` metadata.**
+7. ~~Fix i18n key parity and `index.html` metadata.~~ ✅ i18n key + metadata done; README claims and a parity test remain.
 8. **Add route-level lazy loading** and vendor chunk splitting.
 9. **Write the first meaningful tests** and add a GitHub Actions workflow.
 10. **Deploy to a staging Supabase project** and run the RLS role matrix.
